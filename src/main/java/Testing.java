@@ -1,6 +1,5 @@
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
-import java.util.stream.Stream;
 
 public class Testing {
 
@@ -34,16 +33,15 @@ public class Testing {
 
         //System.out.println(new TemplateClass("test").generateClass());
 
-
         System.out.println(new HtmlTemplate()
                 .setTemplate(new File("test.html"))
                 .render()
         );
 
+       /* var test = "hello a<dsdfsdf";
+        System.out.println(test.substring(0,test.indexOf('<')));
+*/
     }
 
 
-    public String test() {
-        return "aadasdasd";
-    }
 }

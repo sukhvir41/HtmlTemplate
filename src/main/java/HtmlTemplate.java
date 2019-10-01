@@ -3,32 +3,37 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.nio.file.Files;
-import java.util.Objects;
-import java.util.Stack;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.Optional;
 
 public class HtmlTemplate implements AutoCloseable {
 
     private BufferedReader reader;
-    private StringReader stringReader;
-    private Stack<HtmlTag> tagsStack = new Stack<>();
+    private Deque<HtmlTag> tagsStack = new ArrayDeque<>();
     private TemplateClass templateClass;
+    protected HtmlBreaks htmlBeingProcessed;
+
+    public Deque<HtmlTag> getTagsStack() {
+        return tagsStack;
+    }
 
     public HtmlTemplate setTemplate(File template) {
         try {
             reader = Files.newBufferedReader(template.toPath());
-            templateClass = new TemplateClass("Test");
-
+            templateClass = new TemplateClass("Test", this);
+            htmlBeingProcessed = HtmlBreaks.REGULAR;
             return this;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public HtmlTemplate setTemplate(String template) {
-        stringReader = new StringReader(template);
+    public HtmlTemplate setTemplate(String template, String name) {
+        var stringReader = new StringReader(template);
         reader = new BufferedReader(stringReader);
-        templateClass = new TemplateClass("Test");
-
+        templateClass = new TemplateClass(name, this);
+        htmlBeingProcessed = HtmlBreaks.REGULAR;
         return this;
     }
 
@@ -53,10 +58,12 @@ public class HtmlTemplate implements AutoCloseable {
         String line;
 
         while ((line = reader.readLine()) != null) {
-            String[] lineParts = line.split(">");
-            for (var tagString : lineParts) {
-                processTag(tagString);
+            if (HtmlUtils.containsHtmlComment(line)) {
+                htmlBeingProcessed = HtmlBreaks.COMMENT;
+            } else {
+                processRegularTag(line);
             }
+
         }
 
         if (tagsStack.size() > 0) {
@@ -65,21 +72,51 @@ public class HtmlTemplate implements AutoCloseable {
         }
     }
 
-    private void processTag(String tagString) {
-        if (!tagString.isBlank()) {
-            var htmlTag = new HtmlTag(tagString);
+    private void processHtmlComment(String line) {
 
-            templateClass.appendString(htmlTag.toString());
+    }
 
-            if (!htmlTag.isClosingTag()) {
-                tagsStack.push(htmlTag);
-            } else {
-                var stackHtmlTag = tagsStack.peek();
-                if (stackHtmlTag.isClosingTag(htmlTag)) {
-                    tagsStack.pop();
-                }
-            }
+
+    private void processRegularTag(String line) {
+        String[] lineParts = line.split(">");
+        for (var tagString : lineParts) {
+            processHtmlTag(tagString);
         }
+    }
+
+    private void processHtmlTag(String tagString) {
+        if (!tagString.isBlank()) {
+
+            if (HtmlUtils.isDocTypeTag(tagString)) {
+                templateClass.appendString(tagString + ">");
+                return;
+            }
+
+            Content.parseContent(tagString)
+                    .ifPresent(content -> templateClass.appendContent(content));
+
+            HtmlTag.parse(tagString)
+                    .ifPresent(this::addOrRemoveHtmlTagFromStack);
+
+        }
+    }
+
+    private void addOrRemoveHtmlTagFromStack(HtmlTag htmlTag) {
+
+
+        if (htmlTag.isClosingTag()) {
+            Optional.ofNullable(tagsStack.peek())
+                    .filter(tag -> tag.isClosingTag(htmlTag))
+                    .ifPresentOrElse(tag -> tagsStack.pop(), () -> {
+                        throw new RuntimeException("Miss matched closing tag " + htmlTag.getName());
+                    });
+            templateClass.appendHtmlTag(htmlTag);
+        } else {
+            templateClass.appendHtmlTag(htmlTag);
+            tagsStack.push(htmlTag);
+        }
+
+
     }
 
 
@@ -87,9 +124,6 @@ public class HtmlTemplate implements AutoCloseable {
     public void close() {
         try {
             reader.close();
-            if (Objects.nonNull(stringReader)) {
-                stringReader.close();
-            }
         } catch (Exception e) {
             e.printStackTrace();
         }

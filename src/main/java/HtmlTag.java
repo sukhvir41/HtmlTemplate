@@ -1,18 +1,23 @@
+import java.util.Optional;
+
 public class HtmlTag {
 
     private String tag;
     private char[] tagCharacters;
-    private String content;
 
-    public HtmlTag(String tagString) {
-        if (isHtmlTag(tagString)) {
-            this.content = tagString.substring(0, tagString.lastIndexOf('<'));
-            this.tag = tagString.substring(tagString.lastIndexOf('<'));
+
+    public static Optional<HtmlTag> parse(String html) {
+        if (HtmlUtils.containsHtmlTag(html)) {
+            var tagString = html.substring(html.lastIndexOf('<'));
+            return Optional.of(new HtmlTag(tagString));
         } else {
-            this.content = tagString;
-            this.tag = "";
+            return Optional.empty();
         }
+    }
 
+
+    private HtmlTag(String tagString) {
+        this.tag = tagString;
         this.tagCharacters = this.tag.toCharArray();
     }
 
@@ -81,12 +86,11 @@ public class HtmlTag {
     @Override
     public String toString() {
 
-        if (tagCharacters.length == 0) {
-            return content;
-        } else if (tagCharacters[tagCharacters.length - 1] == '>') {
-            return content + tag;
+        if (tagCharacters[tagCharacters.length - 1] == '>') {
+            return HtmlUtils.escapeQuotes(tag);
+
         } else {
-            return content + tag + ">";
+            return HtmlUtils.escapeQuotes(tag) + ">";
         }
     }
 
