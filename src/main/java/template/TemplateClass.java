@@ -1,3 +1,5 @@
+package template;
+
 public class TemplateClass {
 
     private StringBuilder classString = new StringBuilder();

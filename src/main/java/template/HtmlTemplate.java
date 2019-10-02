@@ -1,3 +1,8 @@
+package template;
+
+import processors.HtmlProcessors;
+import processors.Processor;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -12,7 +17,7 @@ public class HtmlTemplate implements AutoCloseable {
     private BufferedReader reader;
     private Deque<HtmlTag> tagsStack = new ArrayDeque<>();
     private TemplateClass templateClass;
-    protected HtmlBreaks htmlBeingProcessed;
+    protected HtmlProcessors htmlProcessor;
 
     public Deque<HtmlTag> getTagsStack() {
         return tagsStack;
@@ -21,19 +26,29 @@ public class HtmlTemplate implements AutoCloseable {
     public HtmlTemplate setTemplate(File template) {
         try {
             reader = Files.newBufferedReader(template.toPath());
-            templateClass = new TemplateClass("Test", this);
-            htmlBeingProcessed = HtmlBreaks.REGULAR;
+            templateClass = new TemplateClass("template.Test", this);
+            htmlProcessor = HtmlProcessors.REGULAR;
             return this;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
+
+    private TemplateClass getTemplateClass() {
+        return this.templateClass;
+    }
+
+    private void setHtmlProcessor(HtmlProcessors htmlProcessor) {
+        this.htmlProcessor = htmlProcessor;
+    }
+
+
     public HtmlTemplate setTemplate(String template, String name) {
         var stringReader = new StringReader(template);
         reader = new BufferedReader(stringReader);
         templateClass = new TemplateClass(name, this);
-        htmlBeingProcessed = HtmlBreaks.REGULAR;
+        htmlProcessor = HtmlProcessors.REGULAR;
         return this;
     }
 
@@ -41,7 +56,7 @@ public class HtmlTemplate implements AutoCloseable {
     public String render() {
         try {
             read();
-            return templateClass.generateClass();
+            return getTemplateClass().generateClass();
         } catch (Exception e) {
             e.printStackTrace();
             return "";
@@ -58,11 +73,14 @@ public class HtmlTemplate implements AutoCloseable {
         String line;
 
         while ((line = reader.readLine()) != null) {
-            if (HtmlUtils.containsHtmlComment(line)) {
-                htmlBeingProcessed = HtmlBreaks.COMMENT;
-            } else {
-                processRegularTag(line);
-            }
+
+            this.htmlProcessor.process(line, getTemplateClass());
+
+            //if (HtmlUtils.containsHtmlComment(line)) {
+            //   htmlBeingProcessed = HtmlProcessors.COMMENT;
+            //} else {
+            //   processRegularTag(line);
+            //}
 
         }
 
@@ -87,13 +105,16 @@ public class HtmlTemplate implements AutoCloseable {
     private void processHtmlTag(String tagString) {
         if (!tagString.isBlank()) {
 
-            if (HtmlUtils.isDocTypeTag(tagString)) {
-                templateClass.appendString(tagString + ">");
+            var isDocTypeTag = HtmlTag.parse(tagString)
+                    .map(HtmlUtils::isDocTypeTag)
+                    .orElse(false);
+            if (isDocTypeTag) {
+                getTemplateClass().appendString(tagString + ">");
                 return;
             }
 
             Content.parseContent(tagString)
-                    .ifPresent(content -> templateClass.appendContent(content));
+                    .ifPresent(content -> getTemplateClass().appendContent(content));
 
             HtmlTag.parse(tagString)
                     .ifPresent(this::addOrRemoveHtmlTagFromStack);
@@ -103,19 +124,17 @@ public class HtmlTemplate implements AutoCloseable {
 
     private void addOrRemoveHtmlTagFromStack(HtmlTag htmlTag) {
 
-
         if (htmlTag.isClosingTag()) {
             Optional.ofNullable(tagsStack.peek())
                     .filter(tag -> tag.isClosingTag(htmlTag))
                     .ifPresentOrElse(tag -> tagsStack.pop(), () -> {
                         throw new RuntimeException("Miss matched closing tag " + htmlTag.getName());
                     });
-            templateClass.appendHtmlTag(htmlTag);
+            getTemplateClass().appendHtmlTag(htmlTag);
         } else {
-            templateClass.appendHtmlTag(htmlTag);
+            getTemplateClass().appendHtmlTag(htmlTag);
             tagsStack.push(htmlTag);
         }
-
 
     }
 

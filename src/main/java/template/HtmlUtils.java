@@ -1,3 +1,5 @@
+package template;
+
 public class HtmlUtils {
 
 
@@ -31,10 +33,8 @@ public class HtmlUtils {
         return builder.toString();
     }
 
-    public static boolean isDocTypeTag(String html) {
-        return html.trim()
-                .startsWith("<!DOCTYPE") || html.trim()
-                .startsWith("<!doctype");
+    public static boolean isDocTypeTag(HtmlTag htmlTag) {
+        return htmlTag.getName().equalsIgnoreCase("!DOCTYPE");
     }
 
     public static boolean containsHtmlComment(String html) {

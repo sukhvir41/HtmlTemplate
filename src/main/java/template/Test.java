@@ -1,3 +1,5 @@
+package template;
+
 public class Test {
     public static String render() {
         StringBuilder builder = new StringBuilder();

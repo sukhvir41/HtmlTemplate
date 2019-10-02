@@ -1,3 +1,5 @@
+package template;
+
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 
@@ -22,7 +24,7 @@ public class Testing {
 
 /*
 
-        var t = new Testing();
+        var t = new template.Testing();
 
         var m = t.getClass().getMethod("test", (Class<?>[]) null);
 
@@ -31,7 +33,7 @@ public class Testing {
         System.out.println(r);
 */
 
-        //System.out.println(new TemplateClass("test").generateClass());
+        //System.out.println(new template.TemplateClass("test").generateClass());
 
         System.out.println(new HtmlTemplate()
                 .setTemplate(new File("test.html"))
