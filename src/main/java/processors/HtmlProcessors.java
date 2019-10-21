@@ -1,5 +1,6 @@
 package processors;
 
+import template.HtmlTemplate;
 import template.TemplateClass;
 
 public enum HtmlProcessors {
@@ -14,8 +15,7 @@ public enum HtmlProcessors {
         this.processor = processor;
     }
 
-    public void process(String html, TemplateClass templateClass) {
-        processor.process(html, templateClass);
+    public void process(String html, TemplateClass templateClass, HtmlTemplate template) {
+        processor.process(html, templateClass, template);
     }
-
 }

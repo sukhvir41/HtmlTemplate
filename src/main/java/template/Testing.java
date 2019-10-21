@@ -40,9 +40,8 @@ public class Testing {
                 .render()
         );
 
-       /* var test = "hello a<dsdfsdf";
-        System.out.println(test.substring(0,test.indexOf('<')));
-*/
+       /* var test = "|hello |<!-- ehff -->|";
+        System.out.println(test.substring(test.indexOf("<!--"),test.indexOf("-->")+2));*/
     }
 
 

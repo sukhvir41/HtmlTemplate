@@ -30,7 +30,7 @@ public class Content {
     }
 
     public String getContent() {
-        return content;
+        return HtmlUtils.escapeQuotes(content);
     }
 
 }

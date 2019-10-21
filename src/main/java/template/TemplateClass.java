@@ -37,13 +37,23 @@ public class TemplateClass {
                 .append("\\n\");");
     }
 
+    public void appendComment(String comment) {
+
+        System.out.println("comment processed -> " + comment);
+
+        classString.append("\n builder.append(\"")
+                .append(getIndentation())
+                .append(HtmlUtils.escapeQuotes(comment))
+                .append("\\n\");");
+    }
+
     public String generateClass() {
         classString.append("\n return builder.toString(); \n }\n}");
         return classString.toString();
     }
 
     private String getIndentation() {
-        return HtmlUtils.getIndentations(template.getTagsStack().size());
+        return HtmlUtils.getIndentations(template.getTagsStackSize());
     }
 
 
