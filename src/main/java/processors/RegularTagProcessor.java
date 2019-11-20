@@ -39,9 +39,6 @@ class RegularTagProcessor implements Processor {
 
             HtmlTag.parse(tagString)
                     .ifPresent(template::addOrRemoveHtmlTagFromStack);
-
         }
     }
-
-
 }

@@ -14,8 +14,12 @@ import java.util.Optional;
 public final class HtmlTemplate implements AutoCloseable {
 
     private BufferedReader reader;
+
     private Deque<HtmlTag> tagsStack = new ArrayDeque<>();
+
+    // template class being generated
     private TemplateClass templateClass;
+
     private HtmlProcessors processor;
 
     public HtmlTemplate() {
@@ -71,6 +75,10 @@ public final class HtmlTemplate implements AutoCloseable {
     }
 
 
+    /**
+     * starts reading the file and uses the specified processor to process the line.
+     * @throws IOException
+     */
     private void read() throws IOException {
         String line;
 

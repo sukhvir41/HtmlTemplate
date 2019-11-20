@@ -12,7 +12,6 @@ class CommentTagProcessor implements Processor {
     public void process(String html, TemplateClass templateClass, HtmlTemplate template) {
 
         if (HtmlUtils.containsHtmlComment(html)) {
-            System.out.println("processing comment");
             processHtml(html, templateClass, template);
         } else if (template.getProcessor().equals(HtmlProcessors.COMMENT)) {// multi-line comment
             processMultiLineComment(html, templateClass, template);
