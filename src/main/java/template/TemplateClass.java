@@ -38,12 +38,16 @@ public class TemplateClass {
     }
 
     public void appendComment(String comment) {
-
-        System.out.println("comment processed -> " + comment);
-
         classString.append("\n builder.append(\"")
                 .append(getIndentation())
                 .append(HtmlUtils.escapeQuotes(comment))
+                .append("\\n\");");
+    }
+
+    public void appendStyle(String style){
+        classString.append("\n builder.append(\"")
+                .append(getIndentation())
+                .append(HtmlUtils.escapeQuotes(style))
                 .append("\\n\");");
     }
 

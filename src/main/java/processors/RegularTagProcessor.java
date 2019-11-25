@@ -11,6 +11,8 @@ class RegularTagProcessor implements Processor {
 
         if (HtmlUtils.containsHtmlComment(html)) {
             HtmlProcessors.COMMENT.process(html, templateClass, template);
+        } else if (StyleTagProcessor.containsStyleTag(html)) {
+            HtmlProcessors.STYLE.process(html, templateClass, template);
         } else {
             processRegularTag(html, templateClass, template);
         }

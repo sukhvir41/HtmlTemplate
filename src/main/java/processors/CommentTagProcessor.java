@@ -42,6 +42,7 @@ class CommentTagProcessor implements Processor {
                     .ifPresent(templateClass::appendComment);
 
             template.setProcessor(HtmlProcessors.REGULAR);
+
             getRightOfComment(html)
                     .ifPresent(regularHtml -> processNonCommentHtml(html, templateClass, template));
 

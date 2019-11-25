@@ -2,6 +2,8 @@ package template;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Testing {
 
@@ -42,6 +44,23 @@ public class Testing {
 
        /* var test = "|hello |<!-- ehff -->|";
         System.out.println(test.substring(test.indexOf("<!--"),test.indexOf("-->")+2));*/
+
+
+      /*  var pattern = Pattern.compile("(</script\\s*>)|(</SCRIPT\\s*>)");
+
+        var s = "123457</script  >| efsdf";
+
+        var m = pattern.matcher(s);
+        System.out.println(m.find());
+        System.out.println(s.substring(0,m.start()));*/
+
+
+        //System.out.println(m.regionEnd());
+        //System.out.println(m.find());
+        //System.out.println(m.end());
+        //System.out.println(m.start());
+
+
     }
 
 
