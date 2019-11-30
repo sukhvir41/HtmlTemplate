@@ -33,7 +33,7 @@ class ScriptTagProcessor implements Processor {
                 .ifPresent(regularHtml -> processRegularHtml(regularHtml, templateClass, template));
 
         getScriptHtml(html)
-                .ifPresent(templateClass::appendComment);
+                .ifPresent(templateClass::appendScript);
 
         if (containsClosingScriptTag(html)) {
             getRightOfScriptTag(html)
@@ -44,10 +44,27 @@ class ScriptTagProcessor implements Processor {
     }
 
     private void processMultiLineScriptTag(String html, TemplateClass templateClass, HtmlTemplate template) {
-        if (containsClosingScriptTag(html)){
+        if (containsClosingScriptTag(html)) {
+            getEndOfMultiLineScripTag(html)
+                    .ifPresent(templateClass::appendScript);
 
-        }else{
+            template.setProcessor(HtmlProcessors.REGULAR);
 
+            getRightOfScriptTag(html)
+                    .ifPresent(regularHtml -> processRegularHtml(regularHtml, templateClass, template));
+        } else {
+            templateClass.appendScript(html);
+        }
+    }
+
+    private Optional<String> getEndOfMultiLineScripTag(String html) {
+        try {
+
+            var style = html.substring(0, getEndingIndexOfClosingTag(html));
+            return Optional.of(style);
+
+        } catch (Exception e) {
+            return Optional.empty();
         }
     }
 
@@ -96,9 +113,6 @@ class ScriptTagProcessor implements Processor {
             return Optional.empty();
         }
     }
-
-    private Optional<String> getEndOfMultiLine
-
 
     private int getStartingIndexOfScriptTag(String html) {
         var matcher = startingTagPattern.matcher(html);

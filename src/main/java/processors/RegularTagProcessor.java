@@ -13,6 +13,8 @@ class RegularTagProcessor implements Processor {
             HtmlProcessors.COMMENT.process(html, templateClass, template);
         } else if (StyleTagProcessor.containsStyleTag(html)) {
             HtmlProcessors.STYLE.process(html, templateClass, template);
+        } else if (ScriptTagProcessor.containsScriptTag(html)) {
+            HtmlProcessors.SCRIPT.process(html, templateClass, template);
         } else {
             processRegularTag(html, templateClass, template);
         }
@@ -31,6 +33,7 @@ class RegularTagProcessor implements Processor {
             var isDocTypeTag = HtmlTag.parse(tagString)
                     .map(HtmlUtils::isDocTypeTag)
                     .orElse(false);
+
             if (isDocTypeTag) {
                 templateClass.appendString(tagString + ">");
                 return;

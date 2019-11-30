@@ -41,7 +41,7 @@ public final class HtmlTemplate implements AutoCloseable {
     public HtmlTemplate setTemplate(File template) {
         try {
             reader = Files.newBufferedReader(template.toPath());
-            templateClass = new TemplateClass("template.Test", this);
+            templateClass = new TemplateClass("Test", this);
             return this;
         } catch (IOException e) {
             throw new RuntimeException(e);

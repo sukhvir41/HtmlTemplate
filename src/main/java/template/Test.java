@@ -1,7 +1,7 @@
 package template;
 
 public class Test {
-    public static String render() {
+public static String render() {
         StringBuilder builder = new StringBuilder();
         builder.append("<!DOCTYPE html>\n");
         builder.append("<html lang=\"en\">\n");
@@ -12,17 +12,15 @@ public class Test {
         builder.append("	</head>\n");
         builder.append("	<body>\n");
         builder.append("		<style>\n");
-        builder.append("			    jnjgjdfgndfjg\n");
-        builder.append("			    dkfgkdf\n");
+        builder.append("		    jnjgjdfgndfjg<h1>dfgdfg</h1>\n");
+        builder.append("		    dkfgkdf\n");
         builder.append("		</style>\n");
         builder.append("		<h1>\n");
         builder.append("			<b>\n");
         builder.append("				this is test\n");
         builder.append("			</b>\n");
         builder.append("		</h1>\n");
-        builder.append("		<style>\n");
-        builder.append("			gjbfdjgjfdgdfgfgjfhg\n");
-        builder.append("		</style>\n");
+        builder.append("		<style>gjbfdjgjfdgdfgfgjfhg</style>\n");
         builder.append("		<!-- this is a comment test  1-->\n");
         builder.append("		<a href=\"www.google.com\">\n");
         builder.append("			this ia a test link a edge case\n");
@@ -31,7 +29,7 @@ public class Test {
         builder.append("		<a>\n");
         builder.append("			<h2>\n");
         builder.append("				this is a\n");
-        builder.append("				<b>\n");
+        builder.append("				<b ht:if = {{bhdfkhg}}>\n");
         builder.append("					test\n");
         builder.append("				</b>\n");
         builder.append("				sdfasdf\n");
@@ -52,5 +50,5 @@ public class Test {
         builder.append("	</body>\n");
         builder.append("</html>\n");
         return builder.toString();
-    }
-}
+        }
+        }

@@ -44,7 +44,14 @@ public class TemplateClass {
                 .append("\\n\");");
     }
 
-    public void appendStyle(String style){
+    public void appendStyle(String style) {
+        classString.append("\n builder.append(\"")
+                .append(getIndentation())
+                .append(HtmlUtils.escapeQuotes(style))
+                .append("\\n\");");
+    }
+
+    public void appendScript(String style) {
         classString.append("\n builder.append(\"")
                 .append(getIndentation())
                 .append(HtmlUtils.escapeQuotes(style))
