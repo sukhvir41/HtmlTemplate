@@ -1,20 +1,25 @@
 package processors;
 
 import template.HtmlTemplate;
-import template.HtmlUtils;
 import template.TemplateClass;
 
 import java.util.Optional;
 
 class CommentTagProcessor implements Processor {
 
+    public static boolean containsHtmlComment(String html) {
+        return html.contains("<!--");
+    }
+
     @Override
     public void process(String html, TemplateClass templateClass, HtmlTemplate template) {
 
-        if (HtmlUtils.containsHtmlComment(html)) {
-            processHtml(html, templateClass, template);
-        } else if (template.getProcessor().equals(HtmlProcessors.COMMENT)) {// multi-line comment
+        if (template.getProcessor().equals(HtmlProcessors.COMMENT)) {
+            System.out.println("COMMENT -> " + html);
             processMultiLineComment(html, templateClass, template);
+        } else if (containsHtmlComment(html)) {
+            System.out.println("COMMENT -> " + html);
+            processHtml(html, templateClass, template);
         } else {
             processNonCommentHtml(html, templateClass, template);
         }
@@ -27,7 +32,7 @@ class CommentTagProcessor implements Processor {
         getComment(html)
                 .ifPresent(templateClass::appendComment);
 
-        if (HtmlUtils.containsClosingHtmlComment(html)) {
+        if (containsClosingHtmlComment(html)) {
             getRightOfComment(html)
                     .ifPresent(regularHtml -> processNonCommentHtml(regularHtml, templateClass, template));
         } else {
@@ -35,9 +40,13 @@ class CommentTagProcessor implements Processor {
         }
     }
 
+    private boolean containsClosingHtmlComment(String html) {
+        return html.contains("-->");
+    }
+
     private void processMultiLineComment(String html, TemplateClass templateClass, HtmlTemplate template) {
 
-        if (HtmlUtils.containsClosingHtmlComment(html)) {
+        if (containsClosingHtmlComment(html)) {
             getEndOfMultiLineComment(html)
                     .ifPresent(templateClass::appendComment);
 
@@ -61,7 +70,7 @@ class CommentTagProcessor implements Processor {
                 return Optional.of(leftOfComment);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             return Optional.empty();
         }
     }
@@ -69,7 +78,7 @@ class CommentTagProcessor implements Processor {
     private Optional<String> getComment(String html) {
         try {
             String commentHtml;
-            if (HtmlUtils.containsClosingHtmlComment(html)) {
+            if (containsClosingHtmlComment(html)) {
                 commentHtml = html.substring(html.indexOf("<!--"), html.indexOf("-->") + 3);
             } else {
                 commentHtml = html.substring(html.indexOf("<!--"));

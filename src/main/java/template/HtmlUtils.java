@@ -1,48 +1,24 @@
 package template;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class HtmlUtils {
 
+    private static final Set<String> selfClosingTags = new HashSet<>();
 
-    public static boolean containsHtmlTag(String html) {
-        return html.indexOf('<') > -1;
+    static {
+        selfClosingTags.add("meta");
+        selfClosingTags.add("link");
+        selfClosingTags.add("br");
+        selfClosingTags.add("hr");
+        selfClosingTags.add("area");
     }
 
-    public static boolean containsContent(String html) {
-        if (!containsHtmlTag(html)) {
-            return true;
-        } else {
-            var contentLength = html.substring(0, html.indexOf('<'))
-                    .trim()
-                    .length();
-            return contentLength > 0;
-        }
+
+    public static boolean isSelfClosingTag(String tagName) {
+        return selfClosingTags.contains(tagName);
     }
 
-    public static String escapeQuotes(String string) {
-        return string.replace("\"", "\\\"");
-    }
-
-    public static String getIndentations(int count) {
-
-        var builder = new StringBuilder();
-
-        for (int i = 0; i < count; i++) {
-            builder.append("\t");
-        }
-
-        return builder.toString();
-    }
-
-    public static boolean isDocTypeTag(HtmlTag htmlTag) {
-        return htmlTag.getName().equalsIgnoreCase("!DOCTYPE");
-    }
-
-    public static boolean containsHtmlComment(String html) {
-        return html.contains("<!--");
-    }
-
-    public static boolean containsClosingHtmlComment(String html) {
-        return html.contains("-->");
-    }
 
 }

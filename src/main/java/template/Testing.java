@@ -1,14 +1,18 @@
 package template;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
+import java.nio.file.OpenOption;
+import java.nio.file.StandardOpenOption;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Testing {
 
 
-    public static void main(String[] args) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public static void main(String[] args) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, IOException {
        /* var a = "<html>" +
                 "   <a>" +
                 "       <h1> this is a test </h1><br/>" +
@@ -37,10 +41,17 @@ public class Testing {
 
         //System.out.println(new template.TemplateClass("test").generateClass());
 
-        System.out.println(new HtmlTemplate()
+        var string = new HtmlTemplate()
                 .setTemplate(new File("test.html"))
-                .render()
-        );
+                .render();
+
+        var file = new File("test.java");
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+        Files.writeString(file.toPath(), string, StandardOpenOption.TRUNCATE_EXISTING);
+
+
 
        /* var test = "|hello |<!-- ehff -->|";
         System.out.println(test.substring(test.indexOf("<!--"),test.indexOf("-->")+2));*/

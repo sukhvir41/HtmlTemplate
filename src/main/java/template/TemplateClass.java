@@ -20,41 +20,41 @@ public class TemplateClass {
     public void appendHtmlTag(HtmlTag htmlTag) {
         classString.append("\n builder.append(\"")
                 .append(getIndentation())
-                .append(htmlTag.toString())
+                .append(escapeQuotes(htmlTag.toString()))
                 .append("\\n\");");
     }
 
     public void appendContent(Content content) {
         classString.append("\n builder.append(\"")
                 .append(getIndentation())
-                .append(content.getContent())
+                .append(escapeQuotes(content.getContent()))
                 .append("\\n\");");
     }
 
     public void appendString(String string) {
         classString.append("\n builder.append(\"")
-                .append(HtmlUtils.escapeQuotes(string))
+                .append(escapeQuotes(string))
                 .append("\\n\");");
     }
 
     public void appendComment(String comment) {
         classString.append("\n builder.append(\"")
                 .append(getIndentation())
-                .append(HtmlUtils.escapeQuotes(comment))
+                .append(escapeQuotes(comment))
                 .append("\\n\");");
     }
 
     public void appendStyle(String style) {
         classString.append("\n builder.append(\"")
                 .append(getIndentation())
-                .append(HtmlUtils.escapeQuotes(style))
+                .append(escapeQuotes(style))
                 .append("\\n\");");
     }
 
     public void appendScript(String style) {
         classString.append("\n builder.append(\"")
                 .append(getIndentation())
-                .append(HtmlUtils.escapeQuotes(style))
+                .append(escapeQuotes(style))
                 .append("\\n\");");
     }
 
@@ -64,8 +64,23 @@ public class TemplateClass {
     }
 
     private String getIndentation() {
-        return HtmlUtils.getIndentations(template.getTagsStackSize());
+        return getIndentations(template.getTagsStackSize());
     }
 
+    private String getIndentations(int count) {
+
+        var builder = new StringBuilder();
+
+        for (int i = 0; i < count; i++) {
+            builder.append("\t");
+        }
+
+        return builder.toString();
+    }
+
+
+    public static String escapeQuotes(String string) {
+        return string.replace("\"", "\\\"");
+    }
 
 }

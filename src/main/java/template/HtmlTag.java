@@ -7,9 +7,12 @@ public class HtmlTag {
     private String tag;
     private char[] tagCharacters;
 
+    public static boolean containsHtmlTag(String html) {
+        return html.contains("<");
+    }
 
     public static Optional<HtmlTag> parse(String html) {
-        if (HtmlUtils.containsHtmlTag(html)) {
+        if (containsHtmlTag(html)) {
             var tagString = html.substring(html.lastIndexOf('<'));
             return Optional.of(new HtmlTag(tagString));
         } else {
@@ -58,13 +61,14 @@ public class HtmlTag {
     }
 
     /**
-     * checks the htmltag passed as argument is the closing tag of this tag
+     * checks the htmlTag passed as argument is the closing tag of this tag
      *
      * @param htmlTag
      * @return
      */
     public boolean isClosingTag(HtmlTag htmlTag) {
-        if (!this.getName().equals(htmlTag.getName())) {
+
+        if (!this.getName().equalsIgnoreCase(htmlTag.getName())) {
             return false;
         } else {
             return htmlTag.isClosingTag();
@@ -78,9 +82,9 @@ public class HtmlTag {
 
     public boolean isSelfClosing() {
         if (tagCharacters[tagCharacters.length - 1] == '>') {
-            return tagCharacters[tagCharacters.length - 2] == '/';
+            return tagCharacters[tagCharacters.length - 2] == '/' || HtmlUtils.isSelfClosingTag(getName().toLowerCase());
         } else {
-            return tagCharacters[tagCharacters.length - 1] == '/';
+            return tagCharacters[tagCharacters.length - 1] == '/' || HtmlUtils.isSelfClosingTag(getName().toLowerCase());
         }
     }
 
@@ -89,12 +93,11 @@ public class HtmlTag {
     public String toString() {
 
         if (tagCharacters[tagCharacters.length - 1] == '>') {
-            return HtmlUtils.escapeQuotes(tag);
+            return tag;
 
         } else {
-            return HtmlUtils.escapeQuotes(tag) + ">";
+            return tag + ">";
         }
     }
-
 
 }

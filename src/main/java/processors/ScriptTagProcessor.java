@@ -19,8 +19,10 @@ class ScriptTagProcessor implements Processor {
     @Override
     public void process(String html, TemplateClass templateClass, HtmlTemplate template) {
         if (template.getProcessor() == HtmlProcessors.SCRIPT) {
+            System.out.println("SCRIPT -> " + html);
             processMultiLineScriptTag(html, templateClass, template);
         } else if (containsScriptTag(html)) {
+            System.out.println("SCRIPT -> " + html);
             processHtml(html, templateClass, template);
         } else {
             processRegularHtml(html, templateClass, template);

@@ -20,8 +20,10 @@ class StyleTagProcessor implements Processor {
     public void process(String html, TemplateClass templateClass, HtmlTemplate template) {
 
         if (template.getProcessor() == HtmlProcessors.STYLE) {
+            System.out.println("STYLE -> " + html);
             processMultiLineStyleTag(html, templateClass, template);
         } else if (containsStyleTag(html)) {
+            System.out.println("STYLE -> " + html);
             processHtml(html, templateClass, template);
         } else {
             processNonStyleHtml(html, templateClass, template);

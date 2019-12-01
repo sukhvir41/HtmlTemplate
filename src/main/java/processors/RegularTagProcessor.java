@@ -1,6 +1,9 @@
 package processors;
 
-import template.*;
+import template.Content;
+import template.HtmlTag;
+import template.HtmlTemplate;
+import template.TemplateClass;
 
 class RegularTagProcessor implements Processor {
 
@@ -9,13 +12,14 @@ class RegularTagProcessor implements Processor {
 
         template.setProcessor(HtmlProcessors.REGULAR);
 
-        if (HtmlUtils.containsHtmlComment(html)) {
+        if (CommentTagProcessor.containsHtmlComment(html)) {
             HtmlProcessors.COMMENT.process(html, templateClass, template);
         } else if (StyleTagProcessor.containsStyleTag(html)) {
             HtmlProcessors.STYLE.process(html, templateClass, template);
         } else if (ScriptTagProcessor.containsScriptTag(html)) {
             HtmlProcessors.SCRIPT.process(html, templateClass, template);
         } else {
+            System.out.println("REGULAR HTML -> " + html);
             processRegularTag(html, templateClass, template);
         }
     }
@@ -23,27 +27,56 @@ class RegularTagProcessor implements Processor {
     private void processRegularTag(String html, TemplateClass templateClass, HtmlTemplate template) {
         String[] lineParts = html.split(">");
         for (var tagString : lineParts) {
-            processHtmlTag(tagString, templateClass, template);
+            processHtml(tagString, templateClass, template);
         }
     }
 
-    private void processHtmlTag(String tagString, TemplateClass templateClass, HtmlTemplate template) {
-        if (!tagString.isBlank()) {
+    private void processHtml(String tagString, TemplateClass templateClass, HtmlTemplate template) {
+        var isDocTypeTag = HtmlTag.parse(tagString)
+                .map(this::isDocTypeTag)
+                .orElse(false);
 
-            var isDocTypeTag = HtmlTag.parse(tagString)
-                    .map(HtmlUtils::isDocTypeTag)
-                    .orElse(false);
+        if (isDocTypeTag) {
+            templateClass.appendString(tagString + ">");
+            return;
+        }
 
-            if (isDocTypeTag) {
-                templateClass.appendString(tagString + ">");
-                return;
-            }
+        Content.parseContent(tagString)
+                .ifPresent(templateClass::appendContent);
 
-            Content.parseContent(tagString)
-                    .ifPresent(templateClass::appendContent);
 
-            HtmlTag.parse(tagString)
-                    .ifPresent(template::addOrRemoveHtmlTagFromStack);
+        HtmlTag.parse(tagString)
+                .ifPresent(htmlTag -> processHtmlTag(htmlTag, templateClass, template));
+
+    }
+
+    private boolean isDocTypeTag(HtmlTag htmlTag) {
+        return htmlTag.getName()
+                .equalsIgnoreCase("!DOCTYPE");
+    }
+
+
+    public void processHtmlTag(HtmlTag htmlTag, TemplateClass templateClass, HtmlTemplate template) {
+
+        //System.out.println("PROCESSED HTML TAG -> " + htmlTag.toString());
+
+        if (htmlTag.isSelfClosing()) {
+            // System.out.println("IS SELF CLOSING ");
+            templateClass.appendHtmlTag(htmlTag);
+        } else if (htmlTag.isClosingTag()) {
+
+            template.peekTagStack()
+                    .filter(tag -> tag.isClosingTag(htmlTag))
+                    .ifPresentOrElse(tag -> template.removeFromTagStack(),
+                            () -> {
+                                throw new RuntimeException("Miss matched closing tag " + htmlTag.getName() + " compared with " + template.peekTagStack().get());
+                            });
+
+            templateClass.appendHtmlTag(htmlTag);
+
+        } else {
+            templateClass.appendHtmlTag(htmlTag);
+            template.addToTagStack(htmlTag);
         }
     }
 }

@@ -5,13 +5,25 @@ import java.util.Optional;
 public class Content {
     private String content;
 
+    public static boolean containsContent(String html) {
+        if (!HtmlTag.containsHtmlTag(html)) {
+            return true;
+        } else {
+            var contentLength = html.substring(0, html.indexOf('<'))
+                    .trim()
+                    .length();
+
+            return contentLength > 0;
+        }
+    }
+
     public static Optional<Content> parseContent(String html) {
 
-        if (HtmlUtils.containsContent(html)) {
+        if (containsContent(html)) {
 
             Content content;
 
-            if (HtmlUtils.containsHtmlTag(html)) {
+            if (HtmlTag.containsHtmlTag(html)) {
                 var contentString = html.substring(0, html.indexOf('<'))
                         .trim();
                 content = new Content(contentString);
@@ -30,7 +42,7 @@ public class Content {
     }
 
     public String getContent() {
-        return HtmlUtils.escapeQuotes(content);
+        return content;
     }
 
 }

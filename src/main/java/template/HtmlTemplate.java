@@ -22,6 +22,7 @@ public final class HtmlTemplate implements AutoCloseable {
 
     private HtmlProcessors processor;
 
+
     public HtmlTemplate() {
         this.processor = HtmlProcessors.REGULAR;
     }
@@ -77,6 +78,7 @@ public final class HtmlTemplate implements AutoCloseable {
 
     /**
      * starts reading the file and uses the specified processor to process the line.
+     *
      * @throws IOException
      */
     private void read() throws IOException {
@@ -92,22 +94,29 @@ public final class HtmlTemplate implements AutoCloseable {
         }
     }
 
-    public void addOrRemoveHtmlTagFromStack(HtmlTag htmlTag) {
 
-        if (htmlTag.isClosingTag()) {
-            Optional.ofNullable(tagsStack.peek())
-                    .filter(tag -> tag.isClosingTag(htmlTag))
-                    .ifPresentOrElse(tag -> tagsStack.pop(), () -> {
-                        throw new RuntimeException("Miss matched closing tag " + htmlTag.getName());
-                    });
-            getTemplateClass().appendHtmlTag(htmlTag);
-        } else {
-            getTemplateClass().appendHtmlTag(htmlTag);
-            tagsStack.push(htmlTag);
-        }
-
+    public HtmlTag removeFromTagStack() {
+        return this.tagsStack.removeLast();
     }
 
+    public void addToTagStack(HtmlTag htmlTag) {
+
+        this.tagsStack.add(htmlTag);
+    }
+
+    public void printStack() {
+        this.tagsStack
+                .forEach(System.out::println);
+    }
+
+    public Optional<HtmlTag> peekTagStack() {
+
+        try {
+            return Optional.ofNullable(this.tagsStack.peekLast());
+        } catch (Exception e) {
+            return Optional.empty();
+        }
+    }
 
     @Override
     public void close() {
