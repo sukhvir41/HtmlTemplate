@@ -4,10 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
-import java.nio.file.OpenOption;
 import java.nio.file.StandardOpenOption;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Testing {
 
@@ -45,7 +42,7 @@ public class Testing {
                 .setTemplate(new File("test.html"))
                 .render();
 
-        var file = new File("test.java");
+        var file = new File("src/main/java/Test.java");
         if (!file.exists()) {
             file.createNewFile();
         }

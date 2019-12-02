@@ -34,11 +34,13 @@ class StyleTagProcessor implements Processor {
 
         if (containsClosingStyleTag(html)) {
             getEndOfMultiLineStyleTag(html)
+                    .filter(s -> !s.isBlank())
                     .ifPresent(templateClass::appendStyle);
 
             template.setProcessor(HtmlProcessors.REGULAR);
 
             getRightOfStyleTag(html)
+                    .filter(s -> !s.isBlank())
                     .ifPresent(regularHtml -> processNonStyleHtml(regularHtml, templateClass, template));
 
         } else {
@@ -49,13 +51,16 @@ class StyleTagProcessor implements Processor {
     private void processHtml(String html, TemplateClass templateClass, HtmlTemplate template) {
 
         getLeftOfStyleTag(html)
+                .filter(s -> !s.isBlank())
                 .ifPresent(regularHtml -> processNonStyleHtml(regularHtml, templateClass, template));
 
         getStyleTag(html)
+                .filter(s -> !s.isBlank())
                 .ifPresent(templateClass::appendStyle);
 
         if (containsClosingStyleTag(html)) {
             getRightOfStyleTag(html)
+                    .filter(s -> !s.isBlank())
                     .ifPresent(regularHtml -> processNonStyleHtml(regularHtml, templateClass, template));
         } else {
             template.setProcessor(HtmlProcessors.STYLE);

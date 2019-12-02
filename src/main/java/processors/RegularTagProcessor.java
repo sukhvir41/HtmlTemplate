@@ -27,7 +27,9 @@ class RegularTagProcessor implements Processor {
     private void processRegularTag(String html, TemplateClass templateClass, HtmlTemplate template) {
         String[] lineParts = html.split(">");
         for (var tagString : lineParts) {
-            processHtml(tagString, templateClass, template);
+            if (!tagString.isBlank()) {
+                processHtml(tagString, templateClass, template);
+            }
         }
     }
 

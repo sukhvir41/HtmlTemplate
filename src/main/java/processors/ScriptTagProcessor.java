@@ -32,13 +32,16 @@ class ScriptTagProcessor implements Processor {
 
     private void processHtml(String html, TemplateClass templateClass, HtmlTemplate template) {
         getLeftOfScriptTag(html)
+                .filter(s -> !s.isBlank())
                 .ifPresent(regularHtml -> processRegularHtml(regularHtml, templateClass, template));
 
         getScriptHtml(html)
+                .filter(s -> !s.isBlank())
                 .ifPresent(templateClass::appendScript);
 
         if (containsClosingScriptTag(html)) {
             getRightOfScriptTag(html)
+                    .filter(s -> !s.isBlank())
                     .ifPresent(regularHtml -> processRegularHtml(regularHtml, templateClass, template));
         } else {
             template.setProcessor(HtmlProcessors.SCRIPT);
@@ -48,11 +51,13 @@ class ScriptTagProcessor implements Processor {
     private void processMultiLineScriptTag(String html, TemplateClass templateClass, HtmlTemplate template) {
         if (containsClosingScriptTag(html)) {
             getEndOfMultiLineScripTag(html)
+                    .filter(s -> !s.isBlank())
                     .ifPresent(templateClass::appendScript);
 
             template.setProcessor(HtmlProcessors.REGULAR);
 
             getRightOfScriptTag(html)
+                    .filter(s -> !s.isBlank())
                     .ifPresent(regularHtml -> processRegularHtml(regularHtml, templateClass, template));
         } else {
             templateClass.appendScript(html);

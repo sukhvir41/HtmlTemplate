@@ -5,7 +5,6 @@ import processors.HtmlProcessors;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.StringReader;
 import java.nio.file.Files;
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -21,6 +20,8 @@ public final class HtmlTemplate implements AutoCloseable {
     private TemplateClass templateClass;
 
     private HtmlProcessors processor;
+
+    private File file;
 
 
     public HtmlTemplate() {
@@ -40,13 +41,9 @@ public final class HtmlTemplate implements AutoCloseable {
     }
 
     public HtmlTemplate setTemplate(File template) {
-        try {
-            reader = Files.newBufferedReader(template.toPath());
-            templateClass = new TemplateClass("Test", this);
-            return this;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        this.file = template;
+        templateClass = new TemplateClass("Test", this);
+        return this;
     }
 
 
@@ -55,16 +52,9 @@ public final class HtmlTemplate implements AutoCloseable {
     }
 
 
-    public HtmlTemplate setTemplate(String template, String name) {
-        var stringReader = new StringReader(template);
-        reader = new BufferedReader(stringReader);
-        templateClass = new TemplateClass(name, this);
-        return this;
-    }
-
-
     public String render() {
         try {
+            reader = Files.newBufferedReader(file.toPath());
             read();
             return getTemplateClass().generateClass();
         } catch (Exception e) {

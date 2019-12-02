@@ -1,8 +1,14 @@
 package template;
 
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 public class HtmlTag {
+
+    private static final Pattern DYNAMIC_HTML_TAG = Pattern.compile("<[\\s,\\S]* ht-[a-z]+\\s*=\"[\\s,\\S]");
+
+    private static final Pattern IMPORT_META_TAG_FINDER_PATTERN = Pattern.compile("<meta[\\s,\\S]* ht-import=\"[\\s,A-Z,a-z,0-9,\\.,_]*\"", Pattern.CASE_INSENSITIVE);
+    private static final Pattern IMPORT_META_TAG_PATTERN = Pattern.compile("ht-import=\"[\\s,A-Z,a-z,0-9,\\.,_]*\"", Pattern.CASE_INSENSITIVE);
 
     private String tag;
     private char[] tagCharacters;

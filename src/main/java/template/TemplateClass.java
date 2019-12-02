@@ -1,20 +1,19 @@
 package template;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class TemplateClass {
 
     private StringBuilder classString = new StringBuilder();
     private HtmlTemplate template;
+    private String className;
+    private Set<String> imports;
 
     public TemplateClass(String name, HtmlTemplate template) {
+        this.className = name;
         this.template = template;
-
-        classString.append("public class ")
-                .append(name)
-                .append(" {")
-                .append("\n")
-                .append("public static String render() {")
-                .append("\n")
-                .append("StringBuilder builder = new StringBuilder();");
+        this.imports = new HashSet<>();
     }
 
     public void appendHtmlTag(HtmlTag htmlTag) {
@@ -59,6 +58,22 @@ public class TemplateClass {
     }
 
     public String generateClass() {
+
+        var head = new StringBuilder();
+
+        imports.forEach(head::append);
+
+        head.append("\n")
+                .append("public class ")
+                .append(this.className)
+                .append(" {")
+                .append("\n")
+                .append("public static String render() {")
+                .append("\n")
+                .append("StringBuilder builder = new StringBuilder();");
+
+        classString.insert(0, head.toString());
+
         classString.append("\n return builder.toString(); \n }\n}");
         return classString.toString();
     }
