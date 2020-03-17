@@ -1,11 +1,13 @@
-package template;
+package OldImpl;
+
+import tags.HtmlUtils;
 
 import java.util.Optional;
 import java.util.regex.Pattern;
 
 public class HtmlTag {
 
-    private static final Pattern DYNAMIC_HTML_TAG = Pattern.compile("<[\\s,\\S]* ht-[a-z]+\\s*=\"[\\s,\\S]");
+    private static final Pattern DYNAMIC_HTML_TAG = Pattern.compile("<[\\s,\\S]* ht-[a-z]+\\s*=\"[\\s,\\S]", Pattern.CASE_INSENSITIVE);
 
     private static final Pattern IMPORT_META_TAG_FINDER_PATTERN = Pattern.compile("<meta[\\s,\\S]* ht-import=\"[\\s,A-Z,a-z,0-9,\\.,_]*\"", Pattern.CASE_INSENSITIVE);
     private static final Pattern IMPORT_META_TAG_PATTERN = Pattern.compile("ht-import=\"[\\s,A-Z,a-z,0-9,\\.,_]*\"", Pattern.CASE_INSENSITIVE);
@@ -45,10 +47,10 @@ public class HtmlTag {
         boolean characterHit = false;
 
         if (this.isClosingTag()) {
-            //starting form 2 ad teh first chars are '</' to ignore it.
+            //starting form 2 and the first chars are '</' to ignore it.
             startPosition = 2;
         } else {
-            //starting form 1 ad teh first char is '<' to ignore it.
+            //starting form 1 ad the first char is '<' to ignore it.
             startPosition = 1;
         }
 
@@ -88,9 +90,9 @@ public class HtmlTag {
 
     public boolean isSelfClosing() {
         if (tagCharacters[tagCharacters.length - 1] == '>') {
-            return tagCharacters[tagCharacters.length - 2] == '/' || HtmlUtils.isSelfClosingTag(getName().toLowerCase());
+            return tagCharacters[tagCharacters.length - 2] == '/' || HtmlUtils.isVoidTag(getName().toLowerCase());
         } else {
-            return tagCharacters[tagCharacters.length - 1] == '/' || HtmlUtils.isSelfClosingTag(getName().toLowerCase());
+            return tagCharacters[tagCharacters.length - 1] == '/' || HtmlUtils.isVoidTag(getName().toLowerCase());
         }
     }
 

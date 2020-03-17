@@ -1,5 +1,6 @@
-package processors;
+package OldImpl;
 
+import processors.HtmlProcessors;
 import template.HtmlTemplate;
 import template.TemplateClass;
 
@@ -15,10 +16,8 @@ class CommentTagProcessor implements Processor {
     public void process(String html, TemplateClass templateClass, HtmlTemplate template) {
 
         if (template.getProcessor().equals(HtmlProcessors.COMMENT)) {
-            System.out.println("COMMENT -> " + html);
             processMultiLineComment(html, templateClass, template);
         } else if (containsHtmlComment(html)) {
-            System.out.println("COMMENT -> " + html);
             processHtml(html, templateClass, template);
         } else {
             processNonCommentHtml(html, templateClass, template);

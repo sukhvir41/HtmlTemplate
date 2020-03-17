@@ -1,6 +1,9 @@
 package template;
 
+import processors.HtmlLineProcessor;
+import processors.HtmlProcessorData;
 import processors.HtmlProcessors;
+import tags.HtmlTag;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -14,19 +17,19 @@ public final class HtmlTemplate implements AutoCloseable {
 
     private BufferedReader reader;
 
-    private Deque<HtmlTag> tagsStack = new ArrayDeque<>();
+    private final Deque<HtmlTag> tagsStack = new ArrayDeque<>();
 
     // template class being generated
     private TemplateClass templateClass;
+
+    private final HtmlLineProcessor lineProcessor = new HtmlLineProcessor();
 
     private HtmlProcessors processor;
 
     private File file;
 
+    private boolean tagIncomplete;
 
-    public HtmlTemplate() {
-        this.processor = HtmlProcessors.REGULAR;
-    }
 
     public void setProcessor(HtmlProcessors processor) {
         this.processor = processor;
@@ -36,14 +39,24 @@ public final class HtmlTemplate implements AutoCloseable {
         return processor;
     }
 
+
     int getTagsStackSize() {
         return tagsStack.size();
     }
 
+
     public HtmlTemplate setTemplate(File template) {
         this.file = template;
-        templateClass = new TemplateClass("Test", this);
+        var className = getClassNameFromFile(file.getName());
+        templateClass = new TemplateClass(className, this);
         return this;
+    }
+
+    private String getClassNameFromFile(String fileName) {
+        var nameParts = fileName.split("\\.");
+        return nameParts[0].replace(" ", "")
+                .replace(".", "")
+                .replace("-", "_");
     }
 
 
@@ -72,10 +85,29 @@ public final class HtmlTemplate implements AutoCloseable {
      * @throws IOException
      */
     private void read() throws IOException {
-        String line;
 
+        String line;
         while ((line = reader.readLine()) != null) {
-            this.processor.process(line, templateClass, this);
+
+            lineProcessor.setLine(line);
+
+            while (lineProcessor.hasNextSection()) {
+
+                var section = lineProcessor.getNextSection()
+                        .trim();
+
+                processor.process(
+                        HtmlProcessorData.builder()
+                                .setHtml(section)
+                                .setTemplateClass(this.templateClass)
+                                .setHtmlTemplate(this)
+                                .build()
+                );
+
+            }
+
+            lineProcessor.carryForwardUnprocessedString();
+
         }
 
         if (tagsStack.size() > 0) {
@@ -92,11 +124,6 @@ public final class HtmlTemplate implements AutoCloseable {
     public void addToTagStack(HtmlTag htmlTag) {
 
         this.tagsStack.add(htmlTag);
-    }
-
-    public void printStack() {
-        this.tagsStack
-                .forEach(System.out::println);
     }
 
     public Optional<HtmlTag> peekTagStack() {
@@ -116,4 +143,6 @@ public final class HtmlTemplate implements AutoCloseable {
             e.printStackTrace();
         }
     }
+
+
 }

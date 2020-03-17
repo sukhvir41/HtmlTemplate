@@ -1,5 +1,7 @@
-package processors;
+package OldImpl;
 
+import OldImpl.Processor;
+import processors.HtmlProcessors;
 import template.HtmlTemplate;
 import template.TemplateClass;
 
@@ -8,8 +10,8 @@ import java.util.regex.Pattern;
 
 class ScriptTagProcessor implements Processor {
 
-    private static Pattern closingTagPattern = Pattern.compile("(</script\\s*>)|(</SCRIPT\\s*>)");
-    private static Pattern startingTagPattern = Pattern.compile("(<script\\s*>)|(<SCRIPT\\s*>)");
+    private static Pattern closingTagPattern = Pattern.compile("(</script\\s*)|(</SCRIPT\\s*)");
+    private static Pattern startingTagPattern = Pattern.compile("(<script\\s*)|(<SCRIPT\\s*)");
 
     public static boolean containsScriptTag(String html) {
         var matcher = startingTagPattern.matcher(html);
@@ -19,10 +21,8 @@ class ScriptTagProcessor implements Processor {
     @Override
     public void process(String html, TemplateClass templateClass, HtmlTemplate template) {
         if (template.getProcessor() == HtmlProcessors.SCRIPT) {
-            System.out.println("SCRIPT -> " + html);
             processMultiLineScriptTag(html, templateClass, template);
         } else if (containsScriptTag(html)) {
-            System.out.println("SCRIPT -> " + html);
             processHtml(html, templateClass, template);
         } else {
             processRegularHtml(html, templateClass, template);

@@ -1,12 +1,14 @@
 package template;
 
+import tags.HtmlTags;
+
 import java.util.Optional;
 
 public class Content {
     private String content;
 
     public static boolean containsContent(String html) {
-        if (!HtmlTag.containsHtmlTag(html)) {
+        if (!HtmlTags.containsHtmlTag(html)) {
             return true;
         } else {
             var contentLength = html.substring(0, html.indexOf('<'))
@@ -23,7 +25,7 @@ public class Content {
 
             Content content;
 
-            if (HtmlTag.containsHtmlTag(html)) {
+            if (HtmlTags.containsHtmlTag(html)) {
                 var contentString = html.substring(0, html.indexOf('<'))
                         .trim();
                 content = new Content(contentString);

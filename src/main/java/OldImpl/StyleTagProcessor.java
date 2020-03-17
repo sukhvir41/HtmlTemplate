@@ -1,5 +1,7 @@
-package processors;
+package OldImpl;
 
+import OldImpl.Processor;
+import processors.HtmlProcessors;
 import template.HtmlTemplate;
 import template.TemplateClass;
 
@@ -8,8 +10,8 @@ import java.util.regex.Pattern;
 
 class StyleTagProcessor implements Processor {
 
-    private static Pattern closingTagPattern = Pattern.compile("(</style\\s*>)|(</STYLE\\s*>)");
-    private static Pattern startingTagPattern = Pattern.compile("(<style\\s*>)|(<STYLE\\s*>)");
+    private static Pattern closingTagPattern = Pattern.compile("(</style\\s*)|(</STYLE\\s*)");
+    private static Pattern startingTagPattern = Pattern.compile("(<style\\s*)|(<STYLE\\s*)");
 
     public static boolean containsStyleTag(String html) {
         var matcher = startingTagPattern.matcher(html);
@@ -20,10 +22,8 @@ class StyleTagProcessor implements Processor {
     public void process(String html, TemplateClass templateClass, HtmlTemplate template) {
 
         if (template.getProcessor() == HtmlProcessors.STYLE) {
-            System.out.println("STYLE -> " + html);
             processMultiLineStyleTag(html, templateClass, template);
         } else if (containsStyleTag(html)) {
-            System.out.println("STYLE -> " + html);
             processHtml(html, templateClass, template);
         } else {
             processNonStyleHtml(html, templateClass, template);

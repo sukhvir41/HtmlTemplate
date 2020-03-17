@@ -1,5 +1,7 @@
 package template;
 
+import tags.HtmlTag;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,47 +16,62 @@ public class TemplateClass {
         this.className = name;
         this.template = template;
         this.imports = new HashSet<>();
+        this.addImportStatement("java.io.Writer");
     }
 
     public void appendHtmlTag(HtmlTag htmlTag) {
-        classString.append("\n builder.append(\"")
+
+        String html = htmlTag.getHtml();
+
+        if (html.replace("\\n", "").isBlank()) {
+            html = "";
+        }
+
+        classString.append("\n writer.append(\"")
                 .append(getIndentation())
-                .append(escapeQuotes(htmlTag.toString()))
+                .append(escapeQuotes(html))
                 .append("\\n\");");
     }
 
     public void appendContent(Content content) {
-        classString.append("\n builder.append(\"")
+        classString.append("\n writer.append(\"")
                 .append(getIndentation())
                 .append(escapeQuotes(content.getContent()))
                 .append("\\n\");");
     }
 
     public void appendString(String string) {
-        classString.append("\n builder.append(\"")
+        classString.append("\n writer.append(\"")
                 .append(escapeQuotes(string))
                 .append("\\n\");");
     }
 
     public void appendComment(String comment) {
-        classString.append("\n builder.append(\"")
+        classString.append("\n writer.append(\"")
                 .append(getIndentation())
                 .append(escapeQuotes(comment))
                 .append("\\n\");");
     }
 
     public void appendStyle(String style) {
-        classString.append("\n builder.append(\"")
+        classString.append("\n writer.append(\"")
                 .append(getIndentation())
                 .append(escapeQuotes(style))
                 .append("\\n\");");
     }
 
-    public void appendScript(String style) {
-        classString.append("\n builder.append(\"")
+    public void appendScript(String script) {
+        classString.append("\n writer.append(\"")
                 .append(getIndentation())
-                .append(escapeQuotes(style))
+                .append(escapeQuotes(script))
                 .append("\\n\");");
+    }
+
+    public void appendCode(String code) {
+        classString.append("\n")
+                .append(getIndentation())
+                .append(code);
+
     }
 
     public String generateClass() {
@@ -68,14 +85,21 @@ public class TemplateClass {
                 .append(this.className)
                 .append(" {")
                 .append("\n")
-                .append("public static String render() {")
+                .append("public static void render(Writer writer) {")
                 .append("\n")
-                .append("StringBuilder builder = new StringBuilder();");
+                .append(" try{");
 
         classString.insert(0, head.toString());
 
-        classString.append("\n return builder.toString(); \n }\n}");
+        classString.append("\n }catch(Exception e){")
+                .append("\n  throw new RuntimeException(e);")
+                .append("\n }")
+                .append("\n }\n}");
         return classString.toString();
+    }
+
+    public void addImportStatement(String importString) {
+        imports.add("import " + importString + ";");
     }
 
     private String getIndentation() {
