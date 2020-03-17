@@ -86,7 +86,7 @@ public class StyleProcessingMode implements ProcessingMode, HtmlProcessor {
         var matcher = STYLE_CLOSING_TAG_PATTERN.matcher(html);
 
         if (matcher.find()) {
-            return html.substring(0, matcher.end());
+            return html.substring(0, matcher.start());
         } else {
             return "";
         }

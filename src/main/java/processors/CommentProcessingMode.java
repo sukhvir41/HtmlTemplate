@@ -46,5 +46,46 @@ public class CommentProcessingMode implements ProcessingMode, HtmlProcessor {
     @Override
     public void process(HtmlProcessorData data) {
 
+        if (containsClosingPart(data.getHtml())) {
+
+            var comment = getComment(data.getHtml());
+
+            data.getTemplateClass()
+                    .appendComment(comment);
+
+            var remainingHtml = StringUtils.removeStart(data.getHtml(), comment);
+
+            data.getHtmlTemplate()
+                    .setProcessor(HtmlProcessors.REGULAR);
+
+            var newData = HtmlProcessorData.builder()
+                    .setHtml(remainingHtml)
+                    .setHtmlTemplate(data.getHtmlTemplate())
+                    .setTemplateClass(data.getTemplateClass())
+                    .build();
+
+            HtmlProcessors.REGULAR.process(newData);
+
+        } else {
+            data.getTemplateClass()
+                    .appendComment(data.getHtml());
+
+            data.getHtmlTemplate()
+                    .setProcessor(HtmlProcessors.COMMENT);
+        }
+
+
+    }
+
+    private String getComment(String html) {
+        if (containsClosingPart(html)) {
+            return html.substring(0, html.indexOf("-->") + 3);
+        } else {
+            return "";
+        }
+    }
+
+    private boolean containsClosingPart(String html) {
+        return html.contains("-->");
     }
 }

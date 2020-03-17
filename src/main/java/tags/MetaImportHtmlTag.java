@@ -69,8 +69,8 @@ public final class MetaImportHtmlTag implements HtmlTag {
     }
 
     @Override
-    public void appendHtml(String stringHtml) {
-        this.htmlString += stringHtml;
+    public boolean isDocTypeTag() {
+        return false;
     }
 
 

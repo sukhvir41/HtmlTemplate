@@ -14,7 +14,18 @@ public final class HtmlTags {
      * @return HtmlTag
      */
     public static Optional<HtmlTag> parse(String htmlString) {
-        if (containsHtmlTag(htmlString)) {
+
+
+        if (HtmlUtils.isHtmlTagAtStart(htmlString)) {
+            return Optional.of(new RegularHtmlTag(htmlString));
+        } else {
+            return Optional.empty();
+        }
+
+
+
+
+      /*  if (containsHtmlTag(htmlString)) {
             var tagString = htmlString.substring(htmlString.lastIndexOf('<'));
 
             var matcher = DYNAMIC_HTML_TAG.matcher(tagString);
@@ -26,7 +37,7 @@ public final class HtmlTags {
             }
         } else {
             return Optional.empty();
-        }
+        }*/
     }
 
     private static Optional<HtmlTag> parseDynamicHtml(String tagString) {

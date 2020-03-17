@@ -53,6 +53,7 @@ public final class ScriptProcessingMode implements ProcessingMode, HtmlProcessor
     @Override
     public void process(HtmlProcessorData data) {
 
+
         if (containsClosingTag(data.getHtml())) {
             var script = getLeftOfScriptTag(data.getHtml());
 
@@ -94,7 +95,7 @@ public final class ScriptProcessingMode implements ProcessingMode, HtmlProcessor
     private String getLeftOfScriptTag(String html) {
         var matcher = SCRIPT_CLOSING_TAG_PATTERN.matcher(html);
         if (matcher.find()) {
-            return html.substring(0, matcher.end());
+            return html.substring(0, matcher.start());
         } else {
             return "";
         }

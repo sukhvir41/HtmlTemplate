@@ -24,7 +24,7 @@ public final class HtmlTemplate implements AutoCloseable {
 
     private final HtmlLineProcessor lineProcessor = new HtmlLineProcessor();
 
-    private HtmlProcessors processor;
+    private HtmlProcessors processor = HtmlProcessors.REGULAR;
 
     private File file;
 
@@ -118,10 +118,16 @@ public final class HtmlTemplate implements AutoCloseable {
 
 
     public HtmlTag removeFromTagStack() {
-        return this.tagsStack.removeLast();
+        var last = this.tagsStack.removeLast();
+
+        System.out.println("removed from stack " + last.getName());
+
+        return last;
     }
 
     public void addToTagStack(HtmlTag htmlTag) {
+
+        System.out.println("added to stack " + htmlTag.getName() + "  " + htmlTag.getHtml());
 
         this.tagsStack.add(htmlTag);
     }

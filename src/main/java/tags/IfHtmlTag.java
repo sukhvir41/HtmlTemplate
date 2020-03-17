@@ -45,7 +45,7 @@ public class IfHtmlTag extends RegularHtmlTag {
         var matcher = IF_ATTRIBUTE_PATTERN.matcher(this.htmlString);
         if (matcher.find()) {
             var html = htmlString.substring(0, matcher.start())
-                       + htmlString.substring(matcher.end());
+                    + htmlString.substring(matcher.end());
 
             if (html.charAt(html.length() - 1) == '>') {
                 return html;
@@ -64,9 +64,4 @@ public class IfHtmlTag extends RegularHtmlTag {
         templateClass.appendCode("}");
     }
 
-    @Override
-    public void appendHtml(String stringHtml) {
-        super.appendHtml(stringHtml);
-        this.htmlString += stringHtml;
-    }
 }

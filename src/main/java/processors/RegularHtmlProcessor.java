@@ -15,7 +15,7 @@ public class RegularHtmlProcessor implements HtmlProcessor {
             return;
         }
 
-        if (StringUtils.startsWith(data.getHtml(), "<--")) {
+        if (StringUtils.startsWith(data.getHtml(), "<!--")) {
             HtmlProcessors.COMMENT.process(data);
         } else {
             processRegularHtmlTag(data);
@@ -77,7 +77,7 @@ public class RegularHtmlProcessor implements HtmlProcessor {
 
 
         } else {
-            throw new IllegalStateException("Miss matched closing tag. Tags may not be closed in the right order");
+            throw new IllegalStateException("Miss matched closing tag. Tags may not be closed in the right order " + htmlTag.getName());
         }
 
 

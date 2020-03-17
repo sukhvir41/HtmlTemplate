@@ -68,7 +68,6 @@ public class RegularProcessingMode implements ProcessingMode {
 
     private ProcessingModes getProcessingModeBasedOnTag(String tag) {
         var name = HtmlUtils.getStartingHtmlTagName(tag);
-        System.out.println(" tag name ->" + name);
         var isClosing = HtmlUtils.isStartingTagClosingTag(tag);
 
         if (name.equalsIgnoreCase("script")) {

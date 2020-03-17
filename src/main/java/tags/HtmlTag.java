@@ -70,5 +70,7 @@ public interface HtmlTag {
         return HtmlUtils.isVoidTag(getName());
     }
 
+    boolean isDocTypeTag();
+
 
 }

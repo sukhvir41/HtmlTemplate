@@ -3,6 +3,7 @@ package FullTest;
 import org.joor.Reflect;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.theories.suppliers.TestedOn;
 import template.HtmlTemplate;
 
 import java.io.File;
@@ -13,11 +14,11 @@ import java.net.URISyntaxException;
 public class SimpleTest1 {
 
     private final String expectedOutput = "" +
-                                          "<html>\n" +
-                                          "<head>\n" +
-                                          "    <title>SimpleTest1</title>\n" +
-                                          "</head>\n" +
-                                          "</html>";
+            "<html>\n" +
+            "<head>\n" +
+            "    <title>SimpleTest1</title>\n" +
+            "</head>\n" +
+            "</html>";
 
 
     @Test

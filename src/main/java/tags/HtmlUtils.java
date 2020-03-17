@@ -33,9 +33,11 @@ public class HtmlUtils {
     }
 
     public static String getStartingHtmlTagName(String line) {
+
         if (isHtmlTagAtStart(line)) {
             return getHtmlTagName(line);
         } else {
+            System.out.println(line);
             throw new IllegalArgumentException("the line passed does not start with an html tag");
         }
     }
