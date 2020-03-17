@@ -1,6 +1,7 @@
 package processors;
 
 import org.apache.commons.lang3.StringUtils;
+import tags.Content;
 import tags.HtmlTag;
 import tags.HtmlTags;
 import template.HtmlTemplate;
@@ -68,12 +69,12 @@ public class RegularHtmlProcessor implements HtmlProcessor {
 
         if (openingHtmlTag.isClosingTag(htmlTag)) {
 
+            template.removeFromTagStack();
+
             data.getTemplateClass()
                     .appendHtmlTag(htmlTag);
 
             openingHtmlTag.processClosingTag(data.getTemplateClass());
-
-            template.removeFromTagStack();
 
 
         } else {
@@ -93,6 +94,7 @@ public class RegularHtmlProcessor implements HtmlProcessor {
 
 
     private void processHtmlContent(HtmlProcessorData data) {
-
+        data.getTemplateClass()
+                .appendContent(new Content(data.getHtml()));
     }
 }

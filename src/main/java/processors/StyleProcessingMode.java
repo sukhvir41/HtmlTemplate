@@ -4,9 +4,10 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.regex.Pattern;
 
+import static tags.HtmlUtils.STYLE_CLOSING_TAG_PATTERN;
+
 public class StyleProcessingMode implements ProcessingMode, HtmlProcessor {
 
-    private final Pattern STYLE_CLOSING_TAG_PATTERN = Pattern.compile("</\\s*style", Pattern.CASE_INSENSITIVE);
 
     @Override
     public boolean isClosingTagAtStart(String line) {

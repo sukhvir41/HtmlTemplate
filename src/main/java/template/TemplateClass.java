@@ -1,5 +1,6 @@
 package template;
 
+import tags.Content;
 import tags.HtmlTag;
 
 import java.util.HashSet;
@@ -30,14 +31,15 @@ public class TemplateClass {
         classString.append("\n writer.append(\"")
                 .append(getIndentation())
                 .append(escapeQuotes(html))
-                .append("\\n\");");
+                .append("\\n\"); // REGULAR");
     }
 
     public void appendContent(Content content) {
         classString.append("\n writer.append(\"")
                 .append(getIndentation())
                 .append(escapeQuotes(content.getContent()))
-                .append("\\n\");");
+                .append("\\n\"); // CONTENT");
+
     }
 
     public void appendString(String string) {
@@ -50,21 +52,21 @@ public class TemplateClass {
         classString.append("\n writer.append(\"")
                 .append(getIndentation())
                 .append(escapeQuotes(comment))
-                .append("\\n\");");
+                .append("\\n\"); // COMMENT");
     }
 
     public void appendStyle(String style) {
         classString.append("\n writer.append(\"")
                 .append(getIndentation())
                 .append(escapeQuotes(style))
-                .append("\\n\");");
+                .append("\\n\"); // STYLE");
     }
 
     public void appendScript(String script) {
         classString.append("\n writer.append(\"")
                 .append(getIndentation())
                 .append(escapeQuotes(script))
-                .append("\\n\");");
+                .append("\\n\"); // SCRIPT");
     }
 
     public void appendCode(String code) {

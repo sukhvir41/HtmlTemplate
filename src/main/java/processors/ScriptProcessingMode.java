@@ -1,17 +1,16 @@
 package processors;
 
 import org.apache.commons.lang3.StringUtils;
-
-import java.util.regex.Pattern;
+import tags.HtmlUtils;
 
 public final class ScriptProcessingMode implements ProcessingMode, HtmlProcessor {
 
-    private final Pattern SCRIPT_CLOSING_TAG_PATTERN = Pattern.compile("</\\s*script", Pattern.CASE_INSENSITIVE);
+
 
 
     @Override
     public boolean isClosingTagAtStart(String line) {
-        var matcher = SCRIPT_CLOSING_TAG_PATTERN.matcher(line);
+        var matcher = HtmlUtils.SCRIPT_CLOSING_TAG_PATTERN.matcher(line);
 
         if (matcher.find()) {
             var endString = line.substring(matcher.start(), matcher.end());
@@ -25,7 +24,7 @@ public final class ScriptProcessingMode implements ProcessingMode, HtmlProcessor
 
     @Override
     public ProcessingOutput getNextSectionOutput(String section) {
-        var matcher = SCRIPT_CLOSING_TAG_PATTERN.matcher(section);
+        var matcher = HtmlUtils.SCRIPT_CLOSING_TAG_PATTERN.matcher(section);
 
         if (matcher.find()) {
             var theSection = section.substring(0, matcher.start());
@@ -86,14 +85,14 @@ public final class ScriptProcessingMode implements ProcessingMode, HtmlProcessor
 
     private boolean containsClosingTag(String html) {
 
-        var matcher = SCRIPT_CLOSING_TAG_PATTERN.matcher(html);
+        var matcher = HtmlUtils.SCRIPT_CLOSING_TAG_PATTERN.matcher(html);
         return matcher.find();
 
     }
 
 
     private String getLeftOfScriptTag(String html) {
-        var matcher = SCRIPT_CLOSING_TAG_PATTERN.matcher(html);
+        var matcher = HtmlUtils.SCRIPT_CLOSING_TAG_PATTERN.matcher(html);
         if (matcher.find()) {
             return html.substring(0, matcher.start());
         } else {

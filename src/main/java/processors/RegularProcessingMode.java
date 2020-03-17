@@ -3,6 +3,8 @@ package processors;
 import org.apache.commons.lang3.StringUtils;
 import tags.HtmlUtils;
 
+import java.util.regex.Pattern;
+
 import static processors.ProcessingModes.*;
 
 public class RegularProcessingMode implements ProcessingMode {
@@ -100,7 +102,7 @@ public class RegularProcessingMode implements ProcessingMode {
 
     private String getHtmlTag(String section) {
         if (hasHtmlTagEnd(section)) {
-            int endIndex = section.indexOf('>') + 1;
+            int endIndex = getHtmlTagEndIndex(section) + 1;
             return section.substring(0, endIndex);
         } else {
             return "";
@@ -108,12 +110,74 @@ public class RegularProcessingMode implements ProcessingMode {
     }
 
     private boolean hasHtmlTagEnd(String section) {
-        return section.indexOf('>') > -1;
+        return getHtmlTagEndIndex(section) > -1;
     }
+
+    private int getHtmlTagEndIndex(String section) {
+        int start = 0;
+
+        int index = section.indexOf('>');
+
+        if (index > -1) {
+
+            while (true) {
+                if (isIndexWithinAttribute(index, start, section)) {
+                    start = getEndOfAttribute(start, section);
+                    index = StringUtils.indexOf(section, '>', start);
+                } else {
+                    break;
+                }
+            }
+
+            return index;
+
+        } else {
+            return -1;
+        }
+
+
+    }
+
+
+    private boolean isIndexWithinAttribute(int index, int start, String section) {
+        var matcher = HtmlUtils.ATTRIBUTE_MATCHER_PATTERN.matcher(section);
+
+        int searchStart = 0;
+
+        while (true) {
+
+            if (matcher.find(searchStart)) {
+                if (index > matcher.end()) {
+                    searchStart = matcher.end();
+                } else {
+
+                    return index > matcher.start() && index < matcher.end();
+                }
+
+            } else {
+                break;
+            }
+
+        }
+
+        return false;
+
+
+    }
+
+    private int getEndOfAttribute(int start, String section) {
+        var matcher = HtmlUtils.ATTRIBUTE_MATCHER_PATTERN.matcher(section);
+
+        matcher.find(start);
+
+        return matcher.end();
+
+    }
+
 
     private ProcessingOutput getContent(String line) {
         var output = ProcessingOutput.builder();
-
+        // todo: have to check if < is actual start of a tag or inside "{{ }}"
         var section = line.substring(0, line.indexOf('<'));
         var remainingLine = StringUtils.removeStart(line, section);
 

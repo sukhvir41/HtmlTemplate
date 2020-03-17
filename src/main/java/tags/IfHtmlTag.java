@@ -3,13 +3,17 @@ package tags;
 import template.TemplateClass;
 
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import static tags.HtmlUtils.IF_ATTRIBUTE_PATTERN;
 
 public class IfHtmlTag extends RegularHtmlTag {
 
-    private static final Pattern IF_ATTRIBUTE_PATTERN = Pattern.compile("ht-if=\"[\\s,\\S]*\"", Pattern.CASE_INSENSITIVE);
 
-    protected String htmlString;
+
+    private String htmlString;
+
+    private String ifCondition;
+
 
     public static boolean matches(String string) {
         return IF_ATTRIBUTE_PATTERN.matcher(string)
@@ -32,7 +36,8 @@ public class IfHtmlTag extends RegularHtmlTag {
     }
 
     private String getIfCondition(Matcher matcher) {
-        var ifCondition = this.htmlString.substring(matcher.start(), this.htmlString.indexOf('"', matcher.start() + 7) + 1)
+        var ifCondition = this.htmlString
+                .substring(matcher.start(), this.htmlString.indexOf('"', matcher.start() + 7) + 1)
                 .substring(7);
 
         return ifCondition.substring(0, ifCondition.length() - 1)

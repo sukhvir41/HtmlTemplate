@@ -96,6 +96,8 @@ public final class HtmlTemplate implements AutoCloseable {
                 var section = lineProcessor.getNextSection()
                         .trim();
 
+                System.out.println(section + " | section");
+
                 processor.process(
                         HtmlProcessorData.builder()
                                 .setHtml(section)
