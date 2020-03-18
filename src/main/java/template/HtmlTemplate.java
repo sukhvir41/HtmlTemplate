@@ -78,6 +78,19 @@ public final class HtmlTemplate implements AutoCloseable {
         }
     }
 
+    public String renderReflection() {
+        try {
+            reader = Files.newBufferedReader(file.toPath());
+            read();
+            return getTemplateClass().generateReflectionClass();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        } finally {
+            close();
+        }
+    }
+
 
     /**
      * starts reading the file and uses the specified processor to process the line.
@@ -95,8 +108,6 @@ public final class HtmlTemplate implements AutoCloseable {
 
                 var section = lineProcessor.getNextSection()
                         .trim();
-
-                System.out.println(section + " | section");
 
                 processor.process(
                         HtmlProcessorData.builder()
@@ -122,15 +133,10 @@ public final class HtmlTemplate implements AutoCloseable {
     public HtmlTag removeFromTagStack() {
         var last = this.tagsStack.removeLast();
 
-        System.out.println("removed from stack " + last.getName());
-
         return last;
     }
 
     public void addToTagStack(HtmlTag htmlTag) {
-
-        System.out.println("added to stack " + htmlTag.getName() + "  " + htmlTag.getHtml());
-
         this.tagsStack.add(htmlTag);
     }
 

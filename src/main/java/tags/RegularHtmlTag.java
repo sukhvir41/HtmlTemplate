@@ -43,7 +43,7 @@ class RegularHtmlTag implements HtmlTag {
 
     @Override
     public boolean isDocTypeTag() {
-        return false;
+        return HtmlUtils.isStartingTagDocType(htmlString);
     }
 
     @Override

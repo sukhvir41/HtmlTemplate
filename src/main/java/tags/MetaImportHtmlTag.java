@@ -56,7 +56,7 @@ public final class MetaImportHtmlTag implements HtmlTag {
 
     @Override
     public boolean isClosingTag() {
-        return true;
+        return false;
     }
 
     @Override

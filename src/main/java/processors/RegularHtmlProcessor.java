@@ -29,7 +29,7 @@ public class RegularHtmlProcessor implements HtmlProcessor {
     }
 
     private void processHtmlTag(HtmlTag htmlTag, HtmlProcessorData data) {
-        if (htmlTag.isSelfClosing() || htmlTag.isVoidTag()) {
+        if (htmlTag.isSelfClosing() || htmlTag.isVoidTag() || htmlTag.isDocTypeTag()) {
             processSelfClosingTag(htmlTag, data);
         } else if (htmlTag.isClosingTag()) {
             processClosingTag(htmlTag, data);

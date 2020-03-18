@@ -3,8 +3,6 @@ package processors;
 import org.apache.commons.lang3.StringUtils;
 import tags.HtmlUtils;
 
-import java.util.regex.Pattern;
-
 import static processors.ProcessingModes.*;
 
 public class RegularProcessingMode implements ProcessingMode {
@@ -30,7 +28,7 @@ public class RegularProcessingMode implements ProcessingMode {
         if (HtmlUtils.isHtmlTagAtStart(line)) {
             return getHtmlTagOutput(line);
         } else {
-            return getContent(line);
+            return getContentOutput(line);
         }
     }
 
@@ -102,7 +100,7 @@ public class RegularProcessingMode implements ProcessingMode {
 
     private String getHtmlTag(String section) {
         if (hasHtmlTagEnd(section)) {
-            int endIndex = getHtmlTagEndIndex(section) + 1;
+            int endIndex = getHtmlTagEndIndex(section) + 1; // +1 as we '>' needs to be included in substring
             return section.substring(0, endIndex);
         } else {
             return "";
@@ -142,27 +140,20 @@ public class RegularProcessingMode implements ProcessingMode {
     private boolean isIndexWithinAttribute(int index, int start, String section) {
         var matcher = HtmlUtils.ATTRIBUTE_MATCHER_PATTERN.matcher(section);
 
-        int searchStart = 0;
+        int searchStart = start;
 
         while (true) {
-
             if (matcher.find(searchStart)) {
                 if (index > matcher.end()) {
                     searchStart = matcher.end();
                 } else {
-
                     return index > matcher.start() && index < matcher.end();
                 }
-
             } else {
                 break;
             }
-
         }
-
         return false;
-
-
     }
 
     private int getEndOfAttribute(int start, String section) {
@@ -175,16 +166,88 @@ public class RegularProcessingMode implements ProcessingMode {
     }
 
 
-    private ProcessingOutput getContent(String line) {
-        var output = ProcessingOutput.builder();
-        // todo: have to check if < is actual start of a tag or inside "{{ }}"
-        var section = line.substring(0, line.indexOf('<'));
-        var remainingLine = StringUtils.removeStart(line, section);
+    private ProcessingOutput getContentOutput(String line) {
 
-        return output.setRemainingLine(remainingLine)
-                .setSection(section)
-                .setNextMode(REGULAR)
-                .build();
+        if (StringUtils.isBlank(line)) {
+            return ProcessingOutput.builder()
+                    .setNextMode(REGULAR)
+                    .setSection("")
+                    .setRemainingLine("")
+                    .build();
+        } else {
+            var content = getContent(line);
+            var remainingLine = StringUtils.removeStart(line, content);
+
+            return ProcessingOutput.builder()
+                    .setSection(content)
+                    .setRemainingLine(remainingLine)
+                    .setNextMode(REGULAR)
+                    .build();
+
+        }
+
     }
+
+    private String getContent(String line) {
+
+        if (hasHtmlTagStart(line)) {
+            int index = getHtmlTagStartIndex(line);
+            return line.substring(0, index);
+        } else {
+            return line;
+        }
+
+    }
+
+    private boolean hasHtmlTagStart(String line) {
+        return getHtmlTagStartIndex(line) > -1;
+    }
+
+    private int getHtmlTagStartIndex(String line) {
+        int start = 0;
+        int index = line.indexOf('<');
+
+        if (index > -1) {
+            while (true) {
+                if (isIndexWithinContent(index, start, line)) {
+                    start = getContentEndIndex(start, line);
+                    index = StringUtils.indexOf(line, '<', start);
+                } else {
+                    break;
+                }
+            }
+            return index;
+        } else {
+            return -1;
+        }
+    }
+
+    private boolean isIndexWithinContent(int index, int start, String section) {
+        var matcher = HtmlUtils.ESCAPED_CONTENT_PATTERN.matcher(section);
+
+        int searchStart = start;
+
+        while (true) {
+            if (matcher.find(searchStart)) {
+                if (index > matcher.end()) {
+                    searchStart = matcher.end();
+                } else {
+                    return index > matcher.start() && index < matcher.end();
+                }
+            } else {
+                break;
+            }
+        }
+        return false;
+    }
+
+    private int getContentEndIndex(int start, String line) {
+        var matcher = HtmlUtils.ESCAPED_CONTENT_PATTERN.matcher(line);
+
+        matcher.find(start);
+
+        return matcher.end();
+    }
+
 
 }

@@ -100,6 +100,31 @@ public class TemplateClass {
         return classString.toString();
     }
 
+    public String generateReflectionClass() {
+
+        var head = new StringBuilder();
+
+        imports.forEach(head::append);
+
+        head.append("\n")
+                .append("class ")
+                .append(this.className)
+                .append(" {")
+                .append("\n")
+                .append("public static void render(Writer writer) {")
+                .append("\n")
+                .append(" try{");
+
+        classString.insert(0, head.toString());
+
+        classString.append("\n }catch(Exception e){")
+                .append("\n  throw new RuntimeException(e);")
+                .append("\n }")
+                .append("\n }\n}");
+        return classString.toString();
+    }
+
+
     public void addImportStatement(String importString) {
         imports.add("import " + importString + ";");
     }

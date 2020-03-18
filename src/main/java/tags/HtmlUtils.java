@@ -70,8 +70,7 @@ public class HtmlUtils {
         if (isHtmlTagAtStart(line)) {
             return getHtmlTagName(line);
         } else {
-            System.out.println(line);
-            throw new IllegalArgumentException("the line passed does not start with an html tag");
+            throw new IllegalArgumentException("the line passed does not start with an html tag. line -> " + line);
         }
     }
 
@@ -86,6 +85,8 @@ public class HtmlUtils {
         if (isStartingTagClosingTag(trimmedLine)) {
             //starting form 2 and the first chars are '</' to ignore it.
             startPosition = 2;
+        } else if (isStartingTagDocType(line)) {
+            startPosition = getEndOfDocTypeTest(line);
         } else {
             //starting form 1 ad the first char is '<' to ignore it.
             startPosition = 1;
@@ -104,6 +105,57 @@ public class HtmlUtils {
 
         return name.toString();
     }
+
+    private static int getEndOfDocTypeTest(String line) {
+        var trimmedLine = line.trim();
+
+        int index = 1;
+        boolean characterHit = false;
+
+
+        for (int i = 1; i < trimmedLine.length(); i++) {
+            if (trimmedLine.charAt(i) == ' ' || trimmedLine.charAt(i) == '>') {
+                if (characterHit) {
+                    break;
+                }
+            } else {
+                characterHit = true;
+                ++index;
+            }
+        }
+
+        return index;
+
+    }
+
+    public static boolean isStartingTagDocType(String line) {
+        var trimmedLine = line.trim();
+
+        if (isStartingTagClosingTag(line)) {
+            return false;
+        } else {
+
+            var name = new StringBuilder();
+            boolean characterHit = false;
+
+
+            for (int i = 1; i < trimmedLine.length(); i++) {
+                if (trimmedLine.charAt(i) == ' ' || trimmedLine.charAt(i) == '>') {
+                    if (characterHit) {
+                        break;
+                    }
+                } else {
+                    characterHit = true;
+                    name.append(trimmedLine.charAt(i));
+                }
+            }
+
+            return name.toString()
+                    .equalsIgnoreCase("!DOCTYPE");
+        }
+
+    }
+
 
     public static boolean isStartingTagClosingTag(String line) {
         if (isHtmlTagAtStart(line)) {
