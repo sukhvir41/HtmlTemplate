@@ -1,7 +1,7 @@
-package processors;
+package org.ht.processors;
 
 import org.apache.commons.lang3.StringUtils;
-import tags.HtmlUtils;
+import org.ht.tags.HtmlUtils;
 
 public final class ScriptProcessingMode implements ProcessingMode, HtmlProcessor {
 

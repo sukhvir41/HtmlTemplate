@@ -1,10 +1,14 @@
-package tags;
+package org.ht.tags;
 
-import template.TemplateClass;
+import org.ht.template.TemplateClass;
 
 class RegularHtmlTag implements HtmlTag {
 
-    private String htmlString;
+    protected String htmlString;
+
+    public static boolean matches(String html) {
+        return true;
+    }
 
     protected RegularHtmlTag(String htmlString) {
         this.htmlString = htmlString.trim();
@@ -27,14 +31,6 @@ class RegularHtmlTag implements HtmlTag {
         return htmlString.charAt(1) == '/';
     }
 
-    @Override
-    public boolean isClosingTag(HtmlTag htmlTag) {
-        if (!this.getName().equalsIgnoreCase(htmlTag.getName())) {
-            return false;
-        } else {
-            return htmlTag.isClosingTag();
-        }
-    }
 
     @Override
     public boolean isSelfClosing() {

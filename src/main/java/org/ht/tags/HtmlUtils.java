@@ -1,4 +1,4 @@
-package tags;
+package org.ht.tags;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -15,7 +15,7 @@ public class HtmlUtils {
                     "^\\uFFFF, ^\\u1FFFE, ^\\u1FFFF, ^\\u2FFFE, ^\\u2FFFF, ^\\u3FFFE, ^\\u3FFFF, ^\\u4FFFE, ^\\u4FFFF, " +
                     "^\\u5FFFE, ^\\u5FFFF, ^\\u6FFFE, ^\\u6FFFF, ^\\u7FFFE, ^\\u7FFFF, ^\\u8FFFE, ^\\u8FFFF, ^\\u9FFFE, " +
                     "^\\u9FFFF, ^\\uAFFFE, ^\\uAFFFF, ^\\uBFFFE, ^\\uBFFFF, ^\\uCFFFE, ^\\uCFFFF, ^\\uDFFFE, ^\\uDFFFF, " +
-                    "^\\uEFFFE, ^\\uEFFFF, ^\\uFFFFE, ^\\uFFFFF, ^\\u10FFFE,  ^\\u10FFFF]*\\s*=\\s*\"[^/\"]*\""
+                    "^\\uEFFFE, ^\\uEFFFF, ^\\uFFFFE, ^\\uFFFFF, ^\\u10FFFE, ^\\u10FFFF]*\\s*=\\s*\"[^/\"]*\""
             , Pattern.CASE_INSENSITIVE);
 
     public static final Pattern SCRIPT_CLOSING_TAG_PATTERN =
@@ -24,21 +24,28 @@ public class HtmlUtils {
     public static final Pattern STYLE_CLOSING_TAG_PATTERN =
             Pattern.compile("</\\s*style", Pattern.CASE_INSENSITIVE);
 
-    public static final Pattern DYNAMIC_HTML_TAG =
-            Pattern.compile("<[\\s,\\S]* ht-[a-z]+\\s*=\"[\\s,\\S]", Pattern.CASE_INSENSITIVE);
+    public static final Pattern DYNAMIC_ATTRIBUTE =
+            Pattern.compile("ht-[a-z]+", Pattern.CASE_INSENSITIVE);
 
     public static final Pattern IF_ATTRIBUTE_PATTERN =
             Pattern.compile("ht-if\\s*=\\s*\"[^\"]*\"", Pattern.CASE_INSENSITIVE);
 
-    public static final Pattern IMPORT_META_TAG_FINDER_PATTERN =
-            Pattern.compile("<meta[\\s,\\S]* ht-import=\"[\\s,A-Z,a-z,0-9,\\.,_]*\"", Pattern.CASE_INSENSITIVE);
-
     public static final Pattern IMPORT_META_TAG_PATTERN =
-            Pattern.compile("ht-import=\"[\\s,A-Z,a-z,0-9,\\.,_]*\"", Pattern.CASE_INSENSITIVE);
+            Pattern.compile("<\\s*meta[\\s,\\S]* ht-import\\s*=\\s*\"[^\"]*\"", Pattern.CASE_INSENSITIVE);
+
+    public static final Pattern IMPORT_ATTRIBUTE_PATTERN =
+            Pattern.compile("ht-import\\s*=\\s*\"[^\"]*\"", Pattern.CASE_INSENSITIVE);
 
     public static final Pattern ESCAPED_CONTENT_PATTERN =
-            Pattern.compile("\\{\\{\\s*[^}}]*\\}\\}"); //this will match unescaped content pattern as well
+            Pattern.compile("\\{\\{\\s*[^}}]*\\}\\}"); //this will match unescasped content pattern as well
 
+    public static final Pattern META_TYPE_TAG_PATTERN =
+            Pattern.compile("<\\s*meta\\s+ht-type\\s*=\\s*\"[^\"]*\"", Pattern.CASE_INSENSITIVE);
+
+    public static final Pattern TYPE_ATTRIBUTE_PATTERN =
+            Pattern.compile("ht-type\\s*=\\s*\"[^\"]*\"", Pattern.CASE_INSENSITIVE);
+
+    //params match [^a-z,0-9,\.]+params.get\("[^"]*"\)
 
     static {
         voidTags.add("meta");

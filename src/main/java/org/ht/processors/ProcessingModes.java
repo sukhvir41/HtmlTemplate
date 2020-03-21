@@ -1,4 +1,4 @@
-package processors;
+package org.ht.processors;
 
 public enum ProcessingModes implements ProcessingMode {
     REGULAR(new RegularProcessingMode()),

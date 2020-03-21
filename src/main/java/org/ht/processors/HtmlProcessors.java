@@ -1,4 +1,4 @@
-package processors;
+package org.ht.processors;
 
 public enum HtmlProcessors implements HtmlProcessor {
     REGULAR(new RegularHtmlProcessor()),

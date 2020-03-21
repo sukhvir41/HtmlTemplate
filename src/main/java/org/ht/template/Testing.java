@@ -1,6 +1,6 @@
-package template;
+package org.ht.template;
 
-import processors.HtmlLineProcessor;
+import org.ht.processors.HtmlLineProcessor;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -15,9 +15,14 @@ public class Testing {
 
     public static void main(String[] args) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, IOException {
 
-        createClass();
+        //createClass();
         //printLine();
 
+    }
+
+
+    static void test(Object o) {
+        System.out.println(o.getClass().getName());
     }
 
     static void createClass() throws IOException {

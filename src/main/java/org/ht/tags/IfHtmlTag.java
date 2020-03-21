@@ -1,19 +1,14 @@
-package tags;
+package org.ht.tags;
 
-import template.TemplateClass;
+import org.ht.template.TemplateClass;
 
 import java.util.regex.Matcher;
 
-import static tags.HtmlUtils.IF_ATTRIBUTE_PATTERN;
+import static org.ht.tags.HtmlUtils.IF_ATTRIBUTE_PATTERN;
 
 public class IfHtmlTag extends RegularHtmlTag {
 
-
-
-    private String htmlString;
-
     private String ifCondition;
-
 
     public static boolean matches(String string) {
         return IF_ATTRIBUTE_PATTERN.matcher(string)
@@ -60,7 +55,7 @@ public class IfHtmlTag extends RegularHtmlTag {
             }
 
         } else {
-            return this.htmlString;
+            return super.htmlString;
         }
     }
 

@@ -1,4 +1,4 @@
-package processors;
+package org.ht.processors;
 
 public final class ProcessingOutput {
 

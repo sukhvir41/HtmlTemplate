@@ -1,9 +1,9 @@
-package processors;
+package org.ht.processors;
 
 import org.apache.commons.lang3.StringUtils;
-import tags.HtmlUtils;
+import org.ht.tags.HtmlUtils;
 
-import static processors.ProcessingModes.*;
+import static org.ht.processors.ProcessingModes.*;
 
 public class RegularProcessingMode implements ProcessingMode {
 

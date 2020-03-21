@@ -1,13 +1,18 @@
-package tags;
+package org.ht.tags;
 
-import template.TemplateClass;
+import org.ht.template.TemplateClass;
 
 public interface HtmlTag {
 
+    public static boolean matches(String html) {
+        throw new UnsupportedOperationException("Sub class implementation missing");
+    }
+
+
     /**
-     * this gets called before the html tag gets appended to the template
+     * this gets called before the html tag gets appended to the org.ht.template
      *
-     * @param templateClass the template
+     * @param templateClass the org.ht.template
      */
     void processOpeningTag(TemplateClass templateClass);
 
@@ -21,7 +26,7 @@ public interface HtmlTag {
     /**
      * When a respective closing tag is found, This function gets called.
      *
-     * @param templateClass template class
+     * @param templateClass org.ht.template class
      */
     void processClosingTag(TemplateClass templateClass);
 
@@ -50,7 +55,9 @@ public interface HtmlTag {
      * @param htmlTag potential closing tag
      * @return is the parsed html tag closing tag for this HTML tag
      */
-    boolean isClosingTag(HtmlTag htmlTag);
+    default boolean isClosingTag(HtmlTag htmlTag) {
+        return htmlTag.isClosingTag() && getName().equalsIgnoreCase(htmlTag.getName());
+    }
 
     /**
      * returns true of the HTML tag is self-closing.

@@ -1,7 +1,7 @@
-package template;
+package org.ht.template;
 
-import tags.Content;
-import tags.HtmlTag;
+import org.ht.tags.Content;
+import org.ht.tags.HtmlTag;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -18,6 +18,7 @@ public class TemplateClass {
         this.template = template;
         this.imports = new HashSet<>();
         this.addImportStatement("java.io.Writer");
+        this.addImportStatement("org.ht.template.Parameters");
     }
 
     public void appendHtmlTag(HtmlTag htmlTag) {
@@ -78,40 +79,31 @@ public class TemplateClass {
 
     public String generateClass() {
 
-        var head = new StringBuilder();
-
-        imports.forEach(head::append);
-
-        head.append("\n")
-                .append("public class ")
-                .append(this.className)
-                .append(" {")
-                .append("\n")
-                .append("public static void render(Writer writer) {")
-                .append("\n")
-                .append(" try{");
-
-        classString.insert(0, head.toString());
-
-        classString.append("\n }catch(Exception e){")
-                .append("\n  throw new RuntimeException(e);")
-                .append("\n }")
-                .append("\n }\n}");
-        return classString.toString();
+        return getClassNameImpl(false);
     }
 
     public String generateReflectionClass() {
 
+        return getClassNameImpl(true);
+    }
+
+    private String getClassNameImpl(boolean runtime) {
         var head = new StringBuilder();
 
-        imports.forEach(head::append);
+        imports.forEach(theImport -> head.append(theImport).append("\n"));
 
-        head.append("\n")
-                .append("class ")
-                .append(this.className)
+        if (runtime) {
+            head.append("\n")
+                    .append("class ");
+        } else {
+            head.append("\n")
+                    .append("public class ");
+        }
+
+        head.append(this.className)
                 .append(" {")
                 .append("\n")
-                .append("public static void render(Writer writer) {")
+                .append("public static void render(Writer writer,Parameters params) {")
                 .append("\n")
                 .append(" try{");
 

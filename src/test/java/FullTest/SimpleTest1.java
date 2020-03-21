@@ -1,10 +1,10 @@
 package FullTest;
 
+import org.ht.template.Parameters;
 import org.joor.Reflect;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.experimental.theories.suppliers.TestedOn;
-import template.HtmlTemplate;
+import org.ht.template.HtmlTemplate;
 
 import java.io.File;
 import java.io.StringWriter;
@@ -32,7 +32,8 @@ public class SimpleTest1 {
                 .render());
 
         Writer writer = new StringWriter();
-        theClass.call("render", writer);
+        Parameters p = new Parameters();
+        theClass.call("render", writer, p);
 
         var output = strip(writer.toString());
 

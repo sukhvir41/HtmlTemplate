@@ -1,12 +1,14 @@
 package FullTest;
 
+import org.ht.template.Parameters;
 import org.joor.Reflect;
 import org.junit.Assert;
-import template.HtmlTemplate;
+import org.ht.template.HtmlTemplate;
 
 import java.io.File;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.net.URISyntaxException;
 
 public abstract class Test {
 
@@ -16,7 +18,7 @@ public abstract class Test {
     /**
      * this should only call test
      */
-    abstract public void testMethod();
+    abstract public void testMethod() throws URISyntaxException;
 
     abstract String getExpectedOutput();
 
@@ -36,7 +38,8 @@ public abstract class Test {
 
 
             Writer writer = new StringWriter();
-            theClass.call("render", writer);
+            Parameters parameters = new Parameters();
+            theClass.call("render", writer, parameters);
 
             var output = strip(writer.toString());
 
@@ -46,7 +49,7 @@ public abstract class Test {
         }
     }
 
-    private String strip(String s) {
+    public String strip(String s) {
         return s.replace(" ", "")
                 .replace("\n", "")
                 .replace("\t", "");

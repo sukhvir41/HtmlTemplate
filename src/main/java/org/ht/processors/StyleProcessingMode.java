@@ -1,10 +1,8 @@
-package processors;
+package org.ht.processors;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.regex.Pattern;
-
-import static tags.HtmlUtils.STYLE_CLOSING_TAG_PATTERN;
+import static org.ht.tags.HtmlUtils.STYLE_CLOSING_TAG_PATTERN;
 
 public class StyleProcessingMode implements ProcessingMode, HtmlProcessor {
 

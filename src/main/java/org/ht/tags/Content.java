@@ -1,4 +1,4 @@
-package tags;
+package org.ht.tags;
 
 public class Content {
 

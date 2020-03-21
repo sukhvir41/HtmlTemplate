@@ -1,7 +1,7 @@
-package processors;
+package org.ht.processors;
 
-import template.HtmlTemplate;
-import template.TemplateClass;
+import org.ht.template.HtmlTemplate;
+import org.ht.template.TemplateClass;
 
 public final class HtmlProcessorData {
 

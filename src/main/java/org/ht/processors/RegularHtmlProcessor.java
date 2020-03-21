@@ -1,10 +1,10 @@
-package processors;
+package org.ht.processors;
 
 import org.apache.commons.lang3.StringUtils;
-import tags.Content;
-import tags.HtmlTag;
-import tags.HtmlTags;
-import template.HtmlTemplate;
+import org.ht.tags.Content;
+import org.ht.tags.HtmlTag;
+import org.ht.tags.HtmlTags;
+import org.ht.template.HtmlTemplate;
 
 public class RegularHtmlProcessor implements HtmlProcessor {
 
@@ -24,7 +24,7 @@ public class RegularHtmlProcessor implements HtmlProcessor {
     }
 
     private void processRegularHtmlTag(HtmlProcessorData data) {
-        HtmlTags.parse(data.getHtml())
+        HtmlTags.parse(data.getHtml(), data.getHtmlTemplate())
                 .ifPresentOrElse(htmlTag -> processHtmlTag(htmlTag, data), () -> processHtmlContent(data));
     }
 

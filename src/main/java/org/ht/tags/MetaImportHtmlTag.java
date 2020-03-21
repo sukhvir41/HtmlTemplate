@@ -1,11 +1,8 @@
-package tags;
+package org.ht.tags;
 
-import template.TemplateClass;
+import org.ht.template.TemplateClass;
 
-import java.util.regex.Pattern;
-
-import static tags.HtmlUtils.IMPORT_META_TAG_FINDER_PATTERN;
-import static tags.HtmlUtils.IMPORT_META_TAG_PATTERN;
+import static org.ht.tags.HtmlUtils.*;
 
 public final class MetaImportHtmlTag implements HtmlTag {
 
@@ -13,7 +10,7 @@ public final class MetaImportHtmlTag implements HtmlTag {
     private String htmlString;
 
     public static boolean matches(String string) {
-        return IMPORT_META_TAG_FINDER_PATTERN.matcher(string)
+        return IMPORT_META_TAG_PATTERN.matcher(string)
                 .find();
     }
 
@@ -23,7 +20,7 @@ public final class MetaImportHtmlTag implements HtmlTag {
 
     @Override
     public void processOpeningTag(TemplateClass templateClass) {
-        var matcher = IMPORT_META_TAG_PATTERN.matcher(htmlString);
+        var matcher = IMPORT_ATTRIBUTE_PATTERN.matcher(htmlString);
         try {
             if (matcher.find()) {
                 var importString = htmlString.substring(matcher.start(), matcher.end())
@@ -57,11 +54,6 @@ public final class MetaImportHtmlTag implements HtmlTag {
     @Override
     public boolean isClosingTag() {
         return false;
-    }
-
-    @Override
-    public boolean isClosingTag(HtmlTag htmlTag) {
-        return htmlTag.isClosingTag() && getName() == htmlTag.getName();
     }
 
     @Override
