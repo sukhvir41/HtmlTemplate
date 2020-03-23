@@ -1,9 +1,11 @@
 import java.nio.Buffer;
 import java.nio.BufferOverflowException;
 import java.io.Writer;
+import org.owasp.encoder.Encode;;
+import org.ht.template.Parameters;
 
 public class test {
-public static void render(Writer writer) {
+public static void render(Writer writer,Parameters params) {
  try{
  writer.append("<html>\n"); // REGULAR
  writer.append("	<head>\n"); // REGULAR
@@ -65,9 +67,9 @@ public static void render(Writer writer) {
  writer.append("						<div class=\"col-md-12\">\n"); // REGULAR
  writer.append("							<hr class=\"tall\">\n"); // REGULAR
  writer.append("							mndmndsmsd\n"); // CONTENT
- writer.append("							dfndsnsdfn {{ hjdsfhdfshd < hbdshds}} nmdssd\n"); // CONTENT
+ writer.append("							|dfndsnsdfn |").append(Encode.forHtmlContent(String.valueOf( 4>5 ))).append("|nmdssd|\n"); // CONTENT
  writer.append("							ndsfmndsfmndsfmdfs\n"); // CONTENT
- writer.append("							dsfndsfmdsfm,{{{fdfsdfsf < fdsfsd}}}\n"); // CONTENT
+ writer.append("							|dsfndsfmdsfm,|").append(Encode.forHtmlContent(String.valueOf(7 < 10 ))).append(" |vhcgch|\n"); // CONTENT
  writer.append("							<br>\n"); // REGULAR
  writer.append("						</div>\n"); // REGULAR
  writer.append("					</div>\n"); // REGULAR
@@ -206,14 +208,14 @@ public static void render(Writer writer) {
  writer.append("		<script src=\"/OAS/js/theme.init.js\">\n"); // REGULAR
  writer.append("			\n"); // SCRIPT
  writer.append("		</script>\n"); // REGULAR
- writer.append("		<!-- Google Analytics: Change UA-XXXXX-X to be your site's ID. Go to http://www.google.com/analytics/ for more information.<script type=\"text/javascript\">\n"); // COMMENT
+ writer.append("		<!-- Google Analytics: Change UA-XXXXX-X to be your site\'s ID. Go to http://www.google.com/analytics/ for more information.<script type=\"text/javascript\">\n"); // COMMENT
  writer.append("		var _gaq = _gaq || [];\n"); // COMMENT
- writer.append("		_gaq.push(['_setAccount', 'UA-12345678-1']);\n"); // COMMENT
- writer.append("		_gaq.push(['_trackPageview']);\n"); // COMMENT
+ writer.append("		_gaq.push([\'_setAccount\', \'UA-12345678-1\']);\n"); // COMMENT
+ writer.append("		_gaq.push([\'_trackPageview\']);\n"); // COMMENT
  writer.append("		(function() {\n"); // COMMENT
- writer.append("		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;\n"); // COMMENT
- writer.append("		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';\n"); // COMMENT
- writer.append("		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);\n"); // COMMENT
+ writer.append("		var ga = document.createElement(\'script\'); ga.type = \'text/javascript\'; ga.async = true;\n"); // COMMENT
+ writer.append("		ga.src = (\'https:\' == document.location.protocol ? \'https://ssl\' : \'http://www\') + \'.google-analytics.com/ga.js\';\n"); // COMMENT
+ writer.append("		var s = document.getElementsByTagName(\'script\')[0]; s.parentNode.insertBefore(ga, s);\n"); // COMMENT
  writer.append("		})();\n"); // COMMENT
  writer.append("		</script>\n"); // COMMENT
  writer.append("		-->\n"); // COMMENT

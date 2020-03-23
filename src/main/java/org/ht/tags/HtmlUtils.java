@@ -39,11 +39,17 @@ public class HtmlUtils {
     public static final Pattern ESCAPED_CONTENT_PATTERN =
             Pattern.compile("\\{\\{\\s*[^}}]*\\}\\}"); //this will match unescasped content pattern as well
 
+    public static final Pattern UNESCAPED_CONTENT_PATTERN =
+            Pattern.compile("\\{\\{\\{\\s*[^}}]*\\}\\}\\}");
+
     public static final Pattern META_TYPE_TAG_PATTERN =
             Pattern.compile("<\\s*meta\\s+ht-type\\s*=\\s*\"[^\"]*\"", Pattern.CASE_INSENSITIVE);
 
     public static final Pattern TYPE_ATTRIBUTE_PATTERN =
             Pattern.compile("ht-type\\s*=\\s*\"[^\"]*\"", Pattern.CASE_INSENSITIVE);
+
+    public static final Pattern PARAMS_PATTERN =
+            Pattern.compile("[^a-z,0-9,\\.]+params.get\\(\"[^\"]*\"\\)", Pattern.CASE_INSENSITIVE);
 
     //params match [^a-z,0-9,\.]+params.get\("[^"]*"\)
 

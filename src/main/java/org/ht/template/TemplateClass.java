@@ -2,6 +2,7 @@ package org.ht.template;
 
 import org.ht.tags.Content;
 import org.ht.tags.HtmlTag;
+import org.owasp.encoder.Encode;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -19,6 +20,7 @@ public class TemplateClass {
         this.imports = new HashSet<>();
         this.addImportStatement("java.io.Writer");
         this.addImportStatement("org.ht.template.Parameters");
+        this.addImportStatement("org.owasp.encoder.Encode;");
     }
 
     public void appendHtmlTag(HtmlTag htmlTag) {
@@ -31,42 +33,37 @@ public class TemplateClass {
 
         classString.append("\n writer.append(\"")
                 .append(getIndentation())
-                .append(escapeQuotes(html))
+                .append(encodeForJava(html))
                 .append("\\n\"); // REGULAR");
     }
 
     public void appendContent(Content content) {
         classString.append("\n writer.append(\"")
                 .append(getIndentation())
-                .append(escapeQuotes(content.getContent()))
+                .append(content.getContent())
+                //.append(encodeForJava(content.getContent()))
                 .append("\\n\"); // CONTENT");
 
-    }
-
-    public void appendString(String string) {
-        classString.append("\n writer.append(\"")
-                .append(escapeQuotes(string))
-                .append("\\n\");");
     }
 
     public void appendComment(String comment) {
         classString.append("\n writer.append(\"")
                 .append(getIndentation())
-                .append(escapeQuotes(comment))
+                .append(encodeForJava(comment))
                 .append("\\n\"); // COMMENT");
     }
 
     public void appendStyle(String style) {
         classString.append("\n writer.append(\"")
                 .append(getIndentation())
-                .append(escapeQuotes(style))
+                .append(encodeForJava(style))
                 .append("\\n\"); // STYLE");
     }
 
     public void appendScript(String script) {
         classString.append("\n writer.append(\"")
                 .append(getIndentation())
-                .append(escapeQuotes(script))
+                .append(encodeForJava(script))
                 .append("\\n\"); // SCRIPT");
     }
 
@@ -137,8 +134,8 @@ public class TemplateClass {
     }
 
 
-    public static String escapeQuotes(String string) {
-        return string.replace("\"", "\\\"");
+    public static String encodeForJava(String string) {
+        return Encode.forJava(string);
     }
 
 }

@@ -26,6 +26,7 @@ dependencies {
     compile 'org.apache.commons:commons-lang3:3.9'
     compile 'org.apache.commons:commons-text:1.8'
     compile 'org.jooq:joor:0.9.12'
+    compile 'org.owasp.encoder:encoder:1.2.2'
 }
 
 test {

@@ -95,6 +95,6 @@ public class RegularHtmlProcessor implements HtmlProcessor {
 
     private void processHtmlContent(HtmlProcessorData data) {
         data.getTemplateClass()
-                .appendContent(new Content(data.getHtml()));
+                .appendContent(new Content(data.getHtml(), data.getHtmlTemplate()));
     }
 }
