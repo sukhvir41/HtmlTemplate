@@ -9,7 +9,7 @@ public class HtmlLineProcessor {
     private String previousLine = ""; // this contains the previous lines part that got unprocessed.
     private String nextSection;
     private boolean isNextSectionCalculated = false;
-    protected ProcessingModes mode = ProcessingModes.REGULAR;
+    LineProcessingModes mode = LineProcessingModes.REGULAR;
 
     public void setLine(String line) {
         this.line = previousLine + line;

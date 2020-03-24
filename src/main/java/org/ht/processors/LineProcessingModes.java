@@ -1,15 +1,15 @@
 package org.ht.processors;
 
-public enum ProcessingModes implements ProcessingMode {
-    REGULAR(new RegularProcessingMode()),
-    SCRIPT(new ScriptProcessingMode()),
-    STYLE(new StyleProcessingMode()),
-    COMMENT(new CommentProcessingMode());
+public enum LineProcessingModes implements LineProcessingMode {
+    REGULAR(new RegularLineProcessingMode()),
+    SCRIPT(new ScriptLineProcessingMode()),
+    STYLE(new StyleLineProcessingMode()),
+    COMMENT(new CommentLineProcessingMode());
 
 
-    ProcessingMode mode;
+    LineProcessingMode mode;
 
-    ProcessingModes(ProcessingMode mode) {
+    LineProcessingModes(LineProcessingMode mode) {
         this.mode = mode;
     }
 

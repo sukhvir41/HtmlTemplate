@@ -4,7 +4,9 @@ import org.ht.tags.Content;
 import org.ht.tags.HtmlTag;
 import org.owasp.encoder.Encode;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class TemplateClass {
@@ -12,16 +14,43 @@ public class TemplateClass {
     private StringBuilder classString = new StringBuilder();
     private HtmlTemplate template;
     private String className;
-    private Set<String> imports;
+    private String packageName;
 
-    public TemplateClass(String name, HtmlTemplate template) {
-        this.className = name;
+    // classes to be imported
+    private Set<String> imports = new HashSet<>();
+    // plainHTML variables name, value
+    private Map<String, StringBuilder> plainHtmlVariables = new HashMap<>();
+    // variables name, type
+    private Map<String, String> variablesTypes = new HashMap<>();
+
+
+    private int variableCount = 0;
+
+    public TemplateClass(String packageName, String className, HtmlTemplate template) {
+        this.className = className;
+        this.packageName = packageName;
         this.template = template;
-        this.imports = new HashSet<>();
         this.addImportStatement("java.io.Writer");
         this.addImportStatement("org.ht.template.Parameters");
         this.addImportStatement("org.owasp.encoder.Encode;");
     }
+
+    public void appendPlainHtml(String html) {
+        getVariableValueBuilder()
+                .append(getIndentation())
+                .append(encodeForJava(html))
+                .append("\\n");
+    }
+
+    //returns the current variable value builder
+    private StringBuilder getVariableValueBuilder() {
+        return plainHtmlVariables.computeIfAbsent(getCurrentVariable(), k -> new StringBuilder());
+    }
+
+    private String getCurrentVariable() {
+        return "PLAIN_HTML_" + variableCount;
+    }
+
 
     public void appendHtmlTag(HtmlTag htmlTag) {
 

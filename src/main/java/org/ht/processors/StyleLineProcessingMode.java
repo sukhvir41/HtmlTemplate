@@ -1,16 +1,15 @@
 package org.ht.processors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.ht.tags.HtmlUtils;
 
-public final class ScriptProcessingMode implements ProcessingMode, HtmlProcessor {
+import static org.ht.tags.HtmlUtils.STYLE_CLOSING_TAG_PATTERN;
 
-
+public class StyleLineProcessingMode implements LineProcessingMode, HtmlProcessor {
 
 
     @Override
     public boolean isClosingTagAtStart(String line) {
-        var matcher = HtmlUtils.SCRIPT_CLOSING_TAG_PATTERN.matcher(line);
+        var matcher = STYLE_CLOSING_TAG_PATTERN.matcher(line);
 
         if (matcher.find()) {
             var endString = line.substring(matcher.start(), matcher.end());
@@ -23,16 +22,16 @@ public final class ScriptProcessingMode implements ProcessingMode, HtmlProcessor
     }
 
     @Override
-    public ProcessingOutput getNextSectionOutput(String section) {
-        var matcher = HtmlUtils.SCRIPT_CLOSING_TAG_PATTERN.matcher(section);
+    public ProcessingOutput getNextSectionOutput(String line) {
+        var matcher = STYLE_CLOSING_TAG_PATTERN.matcher(line);
 
         if (matcher.find()) {
-            var theSection = section.substring(0, matcher.start());
+            var theSection = line.substring(0, matcher.start());
 
-            var remainingPart = StringUtils.removeStart(section, theSection);
+            var remainingPart = StringUtils.removeStart(line, theSection);
 
             return new ProcessingOutput.Builder()
-                    .setNextMode(ProcessingModes.REGULAR)
+                    .setNextMode(LineProcessingModes.REGULAR)
                     .setSection(theSection)
                     .setRemainingLine(remainingPart)
                     .build();
@@ -40,26 +39,23 @@ public final class ScriptProcessingMode implements ProcessingMode, HtmlProcessor
         } else {
 
             return new ProcessingOutput.Builder()
-                    .setNextMode(ProcessingModes.SCRIPT)
-                    .setSection(section)
+                    .setNextMode(LineProcessingModes.STYLE)
+                    .setSection(line)
                     .setRemainingLine("")
                     .build();
         }
-
     }
-
 
     @Override
     public void process(HtmlProcessorData data) {
 
-
         if (containsClosingTag(data.getHtml())) {
-            var script = getLeftOfScriptTag(data.getHtml());
+            var style = getLeftOfClosingTag(data.getHtml());
 
             data.getTemplateClass()
-                    .appendScript(script);
+                    .appendStyle(style);
 
-            var remainingHtml = StringUtils.removeStart(data.getHtml(), script);
+            var remainingHtml = StringUtils.removeStart(data.getHtml(), style);
 
             data.getHtmlTemplate()
                     .setProcessor(HtmlProcessors.REGULAR);
@@ -72,31 +68,34 @@ public final class ScriptProcessingMode implements ProcessingMode, HtmlProcessor
 
             HtmlProcessors.REGULAR.process(newData);
 
-
         } else {
+
             data.getTemplateClass()
-                    .appendScript(data.getHtml());
+                    .appendStyle(data.getHtml());
 
             data.getHtmlTemplate()
-                    .setProcessor(HtmlProcessors.SCRIPT);
+                    .setProcessor(HtmlProcessors.STYLE);
+
         }
 
-    }
-
-    private boolean containsClosingTag(String html) {
-
-        var matcher = HtmlUtils.SCRIPT_CLOSING_TAG_PATTERN.matcher(html);
-        return matcher.find();
 
     }
 
+    private String getLeftOfClosingTag(String html) {
+        var matcher = STYLE_CLOSING_TAG_PATTERN.matcher(html);
 
-    private String getLeftOfScriptTag(String html) {
-        var matcher = HtmlUtils.SCRIPT_CLOSING_TAG_PATTERN.matcher(html);
         if (matcher.find()) {
             return html.substring(0, matcher.start());
         } else {
             return "";
         }
+
+
+    }
+
+    private boolean containsClosingTag(String html) {
+        var matcher = STYLE_CLOSING_TAG_PATTERN.matcher(html);
+        return matcher.find();
+
     }
 }

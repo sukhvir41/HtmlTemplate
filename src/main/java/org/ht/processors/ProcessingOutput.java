@@ -4,10 +4,10 @@ public final class ProcessingOutput {
 
     private String section;
     private String remainingLine;
-    private ProcessingModes nextMode;
+    private LineProcessingModes nextMode;
 
 
-    private ProcessingOutput(String section, String remainingLine, ProcessingModes nextMode) {
+    private ProcessingOutput(String section, String remainingLine, LineProcessingModes nextMode) {
         this.section = section;
         this.remainingLine = remainingLine;
         this.nextMode = nextMode;
@@ -17,7 +17,7 @@ public final class ProcessingOutput {
         return section;
     }
 
-    public ProcessingModes getNextMode() {
+    public LineProcessingModes getNextMode() {
         return nextMode;
     }
 
@@ -33,14 +33,14 @@ public final class ProcessingOutput {
     public static final class Builder {
         private String section = "";
         private String remainingLine;
-        private ProcessingModes nextMode = ProcessingModes.REGULAR;
+        private LineProcessingModes nextMode = LineProcessingModes.REGULAR;
 
         public Builder setSection(String section) {
             this.section = section;
             return this;
         }
 
-        public Builder setNextMode(ProcessingModes nextMode) {
+        public Builder setNextMode(LineProcessingModes nextMode) {
             this.nextMode = nextMode;
             return this;
         }

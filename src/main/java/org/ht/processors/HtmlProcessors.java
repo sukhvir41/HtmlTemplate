@@ -2,9 +2,9 @@ package org.ht.processors;
 
 public enum HtmlProcessors implements HtmlProcessor {
     REGULAR(new RegularHtmlProcessor()),
-    SCRIPT(new ScriptProcessingMode()),
-    COMMENT(new CommentProcessingMode()),
-    STYLE(new StyleProcessingMode());
+    SCRIPT(new ScriptLineProcessingMode()),
+    COMMENT(new CommentLineProcessingMode()),
+    STYLE(new StyleLineProcessingMode());
 
     private HtmlProcessor processor;
 

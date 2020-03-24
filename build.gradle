@@ -6,6 +6,7 @@ buildscript {
 
 plugins {
     id 'java'
+    id "com.fizzed.rocker" version "1.2.3"
 }
 
 apply plugin: 'testing.greeting.plugin'
@@ -21,12 +22,22 @@ repositories {
     mavenCentral()
 }
 
+sourceSets {
+    main {
+        rocker {
+            srcDir('src/main/java')
+        }
+    }
+}
+
+
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
     compile 'org.apache.commons:commons-lang3:3.9'
     compile 'org.apache.commons:commons-text:1.8'
     compile 'org.jooq:joor:0.9.12'
     compile 'org.owasp.encoder:encoder:1.2.2'
+    compile group: 'com.fizzed', name: 'rocker-runtime', version: '1.2.3'
 }
 
 test {

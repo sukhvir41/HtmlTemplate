@@ -2,7 +2,7 @@ package org.ht.processors;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class CommentProcessingMode implements ProcessingMode, HtmlProcessor {
+public class CommentLineProcessingMode implements LineProcessingMode, HtmlProcessor {
 
     @Override
     public boolean isClosingTagAtStart(String line) {
@@ -19,7 +19,7 @@ public class CommentProcessingMode implements ProcessingMode, HtmlProcessor {
             return ProcessingOutput.builder()
                     .setSection(section)
                     .setRemainingLine(remainingLine)
-                    .setNextMode(ProcessingModes.REGULAR)
+                    .setNextMode(LineProcessingModes.REGULAR)
                     .build();
 
         } else if (line.contains("-->")) {
@@ -29,7 +29,7 @@ public class CommentProcessingMode implements ProcessingMode, HtmlProcessor {
             return ProcessingOutput.builder()
                     .setSection(section)
                     .setRemainingLine(remainingLine)
-                    .setNextMode(ProcessingModes.COMMENT)
+                    .setNextMode(LineProcessingModes.COMMENT)
                     .build();
 
         } else {
@@ -37,7 +37,7 @@ public class CommentProcessingMode implements ProcessingMode, HtmlProcessor {
             return ProcessingOutput.builder()
                     .setSection(line)
                     .setRemainingLine("")
-                    .setNextMode(ProcessingModes.COMMENT)
+                    .setNextMode(LineProcessingModes.COMMENT)
                     .build();
 
         }

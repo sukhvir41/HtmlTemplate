@@ -3,9 +3,9 @@ package org.ht.processors;
 import org.apache.commons.lang3.StringUtils;
 import org.ht.tags.HtmlUtils;
 
-import static org.ht.processors.ProcessingModes.*;
+import static org.ht.processors.LineProcessingModes.*;
 
-public class RegularProcessingMode implements ProcessingMode {
+public class RegularLineProcessingMode implements LineProcessingMode {
 
 
     @Override
@@ -66,7 +66,7 @@ public class RegularProcessingMode implements ProcessingMode {
         }
     }
 
-    private ProcessingModes getProcessingModeBasedOnTag(String tag) {
+    private LineProcessingModes getProcessingModeBasedOnTag(String tag) {
         var name = HtmlUtils.getStartingHtmlTagName(tag);
         var isClosing = HtmlUtils.isStartingTagClosingTag(tag);
 

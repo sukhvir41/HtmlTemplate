@@ -1,6 +1,6 @@
 package org.ht.processors;
 
-public interface ProcessingMode {
+public interface LineProcessingMode {
 
     boolean isClosingTagAtStart(String line);
 

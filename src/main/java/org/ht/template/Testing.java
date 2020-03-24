@@ -15,9 +15,9 @@ public class Testing {
 
     public static void main(String[] args) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, IOException {
 
-        createClass();
+        //createClass();
+        //
         //printLine();
-
 
     }
 

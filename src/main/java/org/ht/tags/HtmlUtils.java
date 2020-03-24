@@ -36,6 +36,12 @@ public class HtmlUtils {
     public static final Pattern IMPORT_ATTRIBUTE_PATTERN =
             Pattern.compile("ht-import\\s*=\\s*\"[^\"]*\"", Pattern.CASE_INSENSITIVE);
 
+    public static final Pattern TEMPLATE_META_TAG_PATTERN =
+            Pattern.compile("<\\s*meta[\\s,\\S]* ht-template\\s*=\\s*\"[^\"]*\"", Pattern.CASE_INSENSITIVE);
+
+    public static final Pattern TEMPLATE_ATTRIBUTE_PATTERN =
+            Pattern.compile("ht-template\\s*=\\s*\"[^\"]*\"", Pattern.CASE_INSENSITIVE);
+
     public static final Pattern ESCAPED_CONTENT_PATTERN =
             Pattern.compile("\\{\\{\\s*[^}}]*\\}\\}"); //this will match unescasped content pattern as well
 
@@ -178,4 +184,10 @@ public class HtmlUtils {
             throw new IllegalArgumentException("the line passed does not start with an html tag");
         }
     }
+
+    public static boolean isTemplateMetaTag(String tags) {
+        return TEMPLATE_META_TAG_PATTERN.matcher(tags)
+                .find();
+    }
+
 }
