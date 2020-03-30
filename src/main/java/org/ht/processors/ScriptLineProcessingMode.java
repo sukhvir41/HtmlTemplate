@@ -5,9 +5,6 @@ import org.ht.tags.HtmlUtils;
 
 public final class ScriptLineProcessingMode implements LineProcessingMode, HtmlProcessor {
 
-
-
-
     @Override
     public boolean isClosingTagAtStart(String line) {
         var matcher = HtmlUtils.SCRIPT_CLOSING_TAG_PATTERN.matcher(line);
@@ -49,6 +46,8 @@ public final class ScriptLineProcessingMode implements LineProcessingMode, HtmlP
     }
 
 
+    // --------------- HtmlProcessor -----------------
+
     @Override
     public void process(HtmlProcessorData data) {
 
@@ -57,7 +56,7 @@ public final class ScriptLineProcessingMode implements LineProcessingMode, HtmlP
             var script = getLeftOfScriptTag(data.getHtml());
 
             data.getTemplateClass()
-                    .appendScript(script);
+                    .appendPlainHtml(script);
 
             var remainingHtml = StringUtils.removeStart(data.getHtml(), script);
 
@@ -75,7 +74,7 @@ public final class ScriptLineProcessingMode implements LineProcessingMode, HtmlP
 
         } else {
             data.getTemplateClass()
-                    .appendScript(data.getHtml());
+                    .appendPlainHtml(data.getHtml());
 
             data.getHtmlTemplate()
                     .setProcessor(HtmlProcessors.SCRIPT);

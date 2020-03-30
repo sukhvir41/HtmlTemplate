@@ -41,7 +41,7 @@ public class MetaTypeTag extends RegularHtmlTag {
     }
 
     private void addType() {
-        this.htmlTemplate.addType(this.variable, this.theClass);
+        this.htmlTemplate.addVariableType(this.variable, this.theClass);
     }
 
 

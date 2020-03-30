@@ -24,7 +24,7 @@ public final class HtmlTemplate {
 
     private HtmlProcessors processor = HtmlProcessors.REGULAR;
     private File file;
-    protected Map<String, String> types = new HashMap<>();
+
 
     public void setProcessor(HtmlProcessors processor) {
         this.processor = processor;
@@ -41,7 +41,7 @@ public final class HtmlTemplate {
     public HtmlTemplate setTemplate(File template) {
         this.file = template;
         var className = getClassNameFromFile(file.getName());
-        //templateClass = new TemplateClass(className, this);
+        templateClass = new TemplateClass(className, this);
         return this;
     }
 
@@ -59,6 +59,7 @@ public final class HtmlTemplate {
     public String render() {
         try {
             readFile(file);
+            printIncompleteTags();
             return getTemplateClass().generateClass();
         } catch (IOException e) {
             return "";
@@ -68,6 +69,7 @@ public final class HtmlTemplate {
     public String renderReflection() {
         try {
             readFile(file);
+            printIncompleteTags();
             return getTemplateClass().generateReflectionClass();
         } catch (IOException e) {
             return "";
@@ -81,6 +83,14 @@ public final class HtmlTemplate {
     }
 
 
+    private void printIncompleteTags() {
+        if (tagsStack.size() > 0) {
+            var htmlTag = tagsStack.pop();
+            System.err.println("the tag " + htmlTag.getName() + " is left open");
+        }
+    }
+
+
     /**
      * starts reading the file and uses the specified processor to process the line.
      *
@@ -89,17 +99,13 @@ public final class HtmlTemplate {
     private void read(BufferedReader reader) throws IOException {
 
         HtmlLineProcessor lineProcessor = new HtmlLineProcessor();
-
         String line;
+
         while ((line = reader.readLine()) != null) {
-
             lineProcessor.setLine(line);
-
             while (lineProcessor.hasNextSection()) {
-
                 String section = lineProcessor.getNextSection()
                         .trim();
-
                 if (processor == HtmlProcessors.REGULAR) {
                     if (HtmlUtils.isTemplateMetaTag(section)) {
                         readTemplate(section);
@@ -110,14 +116,7 @@ public final class HtmlTemplate {
                     processSection(section);
                 }
             }
-
             lineProcessor.carryForwardUnprocessedString();
-
-        }
-
-        if (tagsStack.size() > 0) {
-            var htmlTag = tagsStack.pop();
-            System.out.println("the tag " + htmlTag.getName() + " is left open");
         }
     }
 
@@ -126,13 +125,25 @@ public final class HtmlTemplate {
         try {
             readFile(new File(filePath));
         } catch (IOException e) {
-            System.err.println("Problem in reading file " + filePath);
+            System.err.println("Problem in reading file \"" + filePath + "\" tag \"" + section + "\"");
+            e.printStackTrace();
         }
     }
 
-    //todo : implement this
+
     private String getFilePathFromTemplateMetaTag(String section) {
-        return "";
+        try {
+            var matcher = HtmlUtils.TEMPLATE_ATTRIBUTE_PATTERN.matcher(section);
+            if (matcher.find()) {
+                var htTemplateAttribute = section.substring(matcher.start(), matcher.end());
+                return htTemplateAttribute.substring(htTemplateAttribute.indexOf("\"") + 1, htTemplateAttribute.length() - 1);
+            } else return "";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+
+
     }
 
     private void processSection(String section) {
@@ -147,9 +158,7 @@ public final class HtmlTemplate {
 
 
     public HtmlTag removeFromTagStack() {
-        var last = this.tagsStack.removeLast();
-
-        return last;
+        return this.tagsStack.removeLast();
     }
 
     public void addToTagStack(HtmlTag htmlTag) {
@@ -164,14 +173,8 @@ public final class HtmlTemplate {
         }
     }
 
-    public void addType(String name, String theClass) {
-        if (StringUtils.isNoneBlank(name, theClass)) {
-            this.types.put(name, theClass);
-        }
-    }
-
-    public String getType(String name) {
-        return this.types.getOrDefault(name, "");
+    public void addVariableType(String name, String theClass) {
+        this.templateClass.addVariable(name, theClass);
     }
 
 

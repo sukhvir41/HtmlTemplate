@@ -1,7 +1,6 @@
 package org.ht.processors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.ht.tags.Content;
 import org.ht.tags.HtmlTag;
 import org.ht.tags.HtmlTags;
 import org.ht.template.HtmlTemplate;
@@ -43,7 +42,7 @@ public class RegularHtmlProcessor implements HtmlProcessor {
         htmlTag.processOpeningTag(data.getTemplateClass());
 
         data.getTemplateClass()
-                .appendHtmlTag(htmlTag);
+                .appendPlainHtml(htmlTag.getHtml());
 
         data.getHtmlTemplate()
                 .addToTagStack(htmlTag);
@@ -72,7 +71,7 @@ public class RegularHtmlProcessor implements HtmlProcessor {
             template.removeFromTagStack();
 
             data.getTemplateClass()
-                    .appendHtmlTag(htmlTag);
+                    .appendPlainHtml(htmlTag.getHtml());
 
             openingHtmlTag.processClosingTag(data.getTemplateClass());
 
@@ -88,13 +87,14 @@ public class RegularHtmlProcessor implements HtmlProcessor {
         var templateClass = data.getTemplateClass();
 
         htmlTag.processOpeningTag(templateClass);
-        templateClass.appendHtmlTag(htmlTag);
+        templateClass.appendPlainHtml(htmlTag.getHtml());
         htmlTag.processClosingTag(templateClass);
     }
 
 
+    //todo : re-implement this part
     private void processHtmlContent(HtmlProcessorData data) {
-        data.getTemplateClass()
-                .appendContent(new Content(data.getHtml(), data.getHtmlTemplate()));
+        //  data.getTemplateClass()
+        //          .appendContent(new Content(data.getHtml(), data.getHtmlTemplate()));
     }
 }

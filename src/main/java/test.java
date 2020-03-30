@@ -21,6 +21,20 @@ public static void render(Writer writer,Parameters params) {
  writer.append("		<meta ht-impoort=\"java.io.Bits\">\n"); // CONTENT
  writer.append("		\n"); // REGULAR
  writer.append("		\n"); // REGULAR
+ writer.append("		<!DOCTYPE html>\n"); // REGULAR
+ writer.append("		<html lang=\"en\">\n"); // REGULAR
+ writer.append("			<head>\n"); // REGULAR
+ writer.append("				<meta charset=\"UTF-8\">\n"); // REGULAR
+ writer.append("				<title>\n"); // REGULAR
+ writer.append("					Title\n"); // CONTENT
+ writer.append("				</title>\n"); // REGULAR
+ writer.append("			</head>\n"); // REGULAR
+ writer.append("			<body>\n"); // REGULAR
+ writer.append("				<h1>\n"); // REGULAR
+ writer.append("					THIS IS IN TEST 2 FILE\n"); // CONTENT
+ writer.append("				</h1>\n"); // REGULAR
+ writer.append("			</body>\n"); // REGULAR
+ writer.append("		</html>\n"); // REGULAR
  writer.append("		<!-- Web Fonts  -->\n"); // COMMENT
  writer.append("		<!-- Vendor CSS -->\n"); // COMMENT
  writer.append("		<link rel=\"stylesheet\" href=\"/OAS/vendor/bootstrap/css/bootstrap.css\">\n"); // REGULAR

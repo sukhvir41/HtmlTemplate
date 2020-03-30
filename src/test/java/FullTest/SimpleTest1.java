@@ -32,8 +32,8 @@ public class SimpleTest1 {
                 .render());
 
         Writer writer = new StringWriter();
-        Parameters p = new Parameters();
-        theClass.call("render", writer, p);
+        var instance = theClass.call("getInstance");
+        instance.call("render", writer);
 
         var output = strip(writer.toString());
 

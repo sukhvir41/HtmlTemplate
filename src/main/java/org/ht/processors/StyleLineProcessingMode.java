@@ -46,6 +46,8 @@ public class StyleLineProcessingMode implements LineProcessingMode, HtmlProcesso
         }
     }
 
+    // --------------- HtmlProcessor --------------------------
+
     @Override
     public void process(HtmlProcessorData data) {
 
@@ -53,7 +55,7 @@ public class StyleLineProcessingMode implements LineProcessingMode, HtmlProcesso
             var style = getLeftOfClosingTag(data.getHtml());
 
             data.getTemplateClass()
-                    .appendStyle(style);
+                    .appendPlainHtml(style);
 
             var remainingHtml = StringUtils.removeStart(data.getHtml(), style);
 
@@ -71,7 +73,7 @@ public class StyleLineProcessingMode implements LineProcessingMode, HtmlProcesso
         } else {
 
             data.getTemplateClass()
-                    .appendStyle(data.getHtml());
+                    .appendPlainHtml(data.getHtml());
 
             data.getHtmlTemplate()
                     .setProcessor(HtmlProcessors.STYLE);

@@ -26,7 +26,7 @@ public class IfHtmlTag extends RegularHtmlTag {
         var matcher = IF_ATTRIBUTE_PATTERN.matcher(this.htmlString);
         if (matcher.find()) {
             String ifCondition = getIfCondition(matcher);
-            templateClass.appendCode("if(" + ifCondition + "){");
+            templateClass.addCode("if(" + ifCondition + "){");
         }
     }
 
@@ -61,7 +61,7 @@ public class IfHtmlTag extends RegularHtmlTag {
 
     @Override
     public void processClosingTag(TemplateClass templateClass) {
-        templateClass.appendCode("}");
+        templateClass.addCode("}");
     }
 
 }

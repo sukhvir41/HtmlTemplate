@@ -43,6 +43,8 @@ public class CommentLineProcessingMode implements LineProcessingMode, HtmlProces
         }
     }
 
+    // -------------- HtmlProcessor ----------------------
+
     @Override
     public void process(HtmlProcessorData data) {
 
@@ -51,7 +53,7 @@ public class CommentLineProcessingMode implements LineProcessingMode, HtmlProces
             var comment = getComment(data.getHtml());
 
             data.getTemplateClass()
-                    .appendComment(comment);
+                    .appendPlainHtml(comment);
 
             var remainingHtml = StringUtils.removeStart(data.getHtml(), comment);
 
@@ -68,7 +70,7 @@ public class CommentLineProcessingMode implements LineProcessingMode, HtmlProces
 
         } else {
             data.getTemplateClass()
-                    .appendComment(data.getHtml());
+                    .appendPlainHtml(data.getHtml());
 
             data.getHtmlTemplate()
                     .setProcessor(HtmlProcessors.COMMENT);

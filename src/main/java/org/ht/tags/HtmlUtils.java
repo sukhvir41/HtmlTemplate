@@ -16,7 +16,7 @@ public class HtmlUtils {
                     "^\\u5FFFE, ^\\u5FFFF, ^\\u6FFFE, ^\\u6FFFF, ^\\u7FFFE, ^\\u7FFFF, ^\\u8FFFE, ^\\u8FFFF, ^\\u9FFFE, " +
                     "^\\u9FFFF, ^\\uAFFFE, ^\\uAFFFF, ^\\uBFFFE, ^\\uBFFFF, ^\\uCFFFE, ^\\uCFFFF, ^\\uDFFFE, ^\\uDFFFF, " +
                     "^\\uEFFFE, ^\\uEFFFF, ^\\uFFFFE, ^\\uFFFFF, ^\\u10FFFE, ^\\u10FFFF]*\\s*=\\s*\"[^/\"]*\""
-            , Pattern.CASE_INSENSITIVE);
+            , Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
     public static final Pattern SCRIPT_CLOSING_TAG_PATTERN =
             Pattern.compile("</\\s*script", Pattern.CASE_INSENSITIVE);

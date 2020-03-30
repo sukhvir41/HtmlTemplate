@@ -38,8 +38,8 @@ public abstract class Test {
 
 
             Writer writer = new StringWriter();
-            Parameters parameters = new Parameters();
-            theClass.call("render", writer, parameters);
+            var instance = theClass.call("getInstance");
+            instance.call("render", writer);
 
             var output = strip(writer.toString());
 

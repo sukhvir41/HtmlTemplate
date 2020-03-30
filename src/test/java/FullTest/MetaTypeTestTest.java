@@ -31,13 +31,12 @@ public class MetaTypeTestTest extends FullTest.Test {
 
 
         Writer writer = new StringWriter();
-        Parameters parameters = new Parameters();
-        theClass.call("render", writer, parameters);
+        var instance = theClass.call("getInstance");
+        instance.call("render", writer);
 
         var output = strip(writer.toString());
 
         Assert.assertEquals(getTestName(), output, strip(getExpectedOutput()));
-        Assert.assertEquals(getTestName() + " checking type", "org.ht.tags.Content", htmlTemplate.getType("content"));
 
     }
 

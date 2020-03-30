@@ -15,9 +15,30 @@ public class Testing {
 
     public static void main(String[] args) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, IOException {
 
-        //createClass();
+        createClass();
         //
-        //printLine();
+        // printLine();
+
+        printNewClass();
+
+    }
+
+    private static void printNewClass() {
+        var theClass = new TemplateClass("test", "test", new HtmlTemplate());
+
+        theClass.addVariable("theClassName", "String");
+
+        theClass.appendPlainHtml("<html>");
+        theClass.addCode("if (true) {");
+        theClass.incrementFunctionIndentation();
+        theClass.appendPlainHtml("<head>");
+        theClass.appendPlainHtml("</head>");
+        theClass.decrementFunctionIndentation();
+        theClass.addCode("}");
+        theClass.appendPlainHtml("</html>");
+
+        System.out.println(theClass.generateReflectionClass());
+
 
     }
 
