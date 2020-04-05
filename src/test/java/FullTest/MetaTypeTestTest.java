@@ -1,29 +1,29 @@
 package FullTest;
 
 import org.ht.template.HtmlTemplate;
-import org.ht.template.Parameters;
 import org.joor.Reflect;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.io.File;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URISyntaxException;
 
-public class MetaTypeTestTest extends FullTest.Test {
+import static FullTest.TestUtils.getFile;
+import static FullTest.TestUtils.strip;
+
+public class MetaTypeTestTest {
 
 
-    @Override
     String getFilePath() {
         return "MetaTypeTest.html";
     }
 
     @Test
-    @Override
+
     public void testMethod() throws URISyntaxException {
 
-        var file = new File(getClass().getClassLoader().getResource(getFilePath()).toURI());
+        var file = TestUtils.getFile(getFilePath());
         var htmlTemplate = new HtmlTemplate();
 
         var theClass = Reflect.compile(getClassName(), htmlTemplate.setTemplate(file)
@@ -40,7 +40,27 @@ public class MetaTypeTestTest extends FullTest.Test {
 
     }
 
-    @Override
+    @Test
+    public void testType() throws URISyntaxException {
+
+        var file = getFile(getFilePath());
+        var htmlTemplate = new HtmlTemplate();
+
+        var theClass = Reflect.compile(getClassName(), htmlTemplate.setTemplate(file)
+                .renderReflection());
+
+
+        Writer writer = new StringWriter();
+        var instance = theClass.call("getInstance");
+        instance.call("render", writer);
+
+        instance.call("name", "world");
+
+        Assert.assertEquals("type test", "world", instance.call("name").get());
+
+    }
+
+
     String getExpectedOutput() {
         return "<!DOCTYPE html>\n" +
                 "<html lang=\"en\">\n" +
@@ -57,12 +77,11 @@ public class MetaTypeTestTest extends FullTest.Test {
                 "</html>";
     }
 
-    @Override
+
     String getTestName() {
         return "MetaTypeTest";
     }
 
-    @Override
     String getClassName() {
         return "MetaTypeTest";
     }

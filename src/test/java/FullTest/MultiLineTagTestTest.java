@@ -1,20 +1,41 @@
 package FullTest;
 
-public class MultiLineTagTestTest extends Test {
+import org.ht.template.HtmlTemplate;
+import org.joor.Reflect;
+import org.junit.Assert;
+
+import java.io.StringWriter;
+import java.io.Writer;
+import java.net.URISyntaxException;
+
+public class MultiLineTagTestTest extends TestUtils {
 
 
-    @Override
     String getFilePath() {
         return "MultiLineTest.html";
     }
 
-    @Override
+
     @org.junit.Test
-    public void testMethod() {
-        test();
+    public void testMethod() throws URISyntaxException {
+
+        var file = TestUtils.getFile(getFilePath());
+        var htmlTemplate = new HtmlTemplate();
+
+        var theClass = Reflect.compile(getClassName(), htmlTemplate.setTemplate(file)
+                .renderReflection());
+
+
+        Writer writer = new StringWriter();
+        var instance = theClass.call("getInstance");
+        instance.call("render", writer);
+
+        var output = strip(writer.toString());
+
+        Assert.assertEquals(getTestName(), output, strip(getExpectedOutput()));
     }
 
-    @Override
+
     String getExpectedOutput() {
         return "<!DOCTYPE html>\n" +
                 "<html lang=\"en\">\n" +
@@ -30,16 +51,18 @@ public class MultiLineTagTestTest extends Test {
                 "    this is a test\n" +
                 "</div>\n" +
                 "\n" +
+                "<div test =\"  dfsdf > fdfsd \">\n" +
+                "</div>" +
                 "</body>\n" +
                 "</html>";
     }
 
-    @Override
+
     String getTestName() {
         return "MultiLineTagTest";
     }
 
-    @Override
+
     String getClassName() {
         return "MultiLineTest";
     }

@@ -32,7 +32,6 @@ public class TemplateClass {
         this.packageName = packageName;
         this.template = template;
         this.addImportStatement("java.io.Writer");
-        this.addImportStatement("org.ht.template.Parameters");
         this.addImportStatement("java.io.IOException");
     }
 
@@ -41,12 +40,34 @@ public class TemplateClass {
     }
 
     public void appendPlainHtml(String html) {
+        appendPlainHtml(html, true, true);
+    }
+
+    public void appendPlainHtml(String html, boolean appendIndentation, boolean appendNewLine) {
         if (StringUtils.isNotBlank(html)) {
+            if (appendIndentation) {
+                getPlainHtmlValueBuilder()
+                        .append(getIndentation());
+            }
+
             getPlainHtmlValueBuilder()
-                    .append(getIndentation())
-                    .append(encodeForJava(html))
-                    .append("\\n");
+                    .append(encodeForJava(html));
+
+            if (appendNewLine) {
+                getPlainHtmlValueBuilder()
+                        .append("\\n");
+            }
         }
+    }
+
+    public void appendPlainHtmlNewLine() {
+        getPlainHtmlValueBuilder()
+                .append("\\n");
+    }
+
+    public void appendPlainHtmlIndentation(){
+        getPlainHtmlValueBuilder()
+                .append(getIndentation());
     }
 
     //returns the current variable value builder

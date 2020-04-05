@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta ht-type="name,String">
+<head>
+    <meta charset="UTF-8">
+    <title>Dynamic Content test</title>
+</head>
+<body>
+<h1>This is a dynamic content test</h1>
+<div>
+    <h1> hello {{@name}} </h1>
+    <h1> blank value test "{{ null }}"</h1>
+    <h1> multi content test 1 {{ @name.toUpperCase() }} and test 2 {{ "this is a test 2" }} and name in lowerCase
+        {{ @name.toLowerCase() }}
+        and now having nested variable {{ @name.substring(@name.length() -1)}}
+        and just a plain line in middle <br>
+        and some html to escaped here {{ "<h1> this h1 tag escaped </h1>"}}
+    </h1>
+</div>
+</body>
+</html>

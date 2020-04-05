@@ -12,12 +12,19 @@ public class HtmlLineProcessor {
     LineProcessingModes mode = LineProcessingModes.REGULAR;
 
     public void setLine(String line) {
-        this.line = previousLine + line;
-        this.previousLine = "";
+
+        if (StringUtils.isNotBlank(previousLine)) {
+            this.line = previousLine + " " + StringUtils.stripStart(line, " ");
+        } else {
+            this.line = line;
+        }
+
+        //this.line = previousLine + line;
+        // this.previousLine = "";
     }
 
     public void carryForwardUnprocessedString() {
-        if (!line.isBlank()) {
+        if (StringUtils.isNotBlank(line)) {
             previousLine = line;
         } else {
             previousLine = "";

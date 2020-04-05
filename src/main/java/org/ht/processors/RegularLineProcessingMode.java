@@ -139,7 +139,7 @@ public class RegularLineProcessingMode implements LineProcessingMode {
 
     private boolean isIndexWithinAttribute(int index, int start, String section) {
         var matcher = HtmlUtils.ATTRIBUTE_MATCHER_PATTERN.matcher(section);
-
+        var incompleteMatcher = HtmlUtils.INCOMPLETE_ATTRIBUTE_MATCHER_PATTERN.matcher(section);
         int searchStart = start;
 
         while (true) {
@@ -149,6 +149,8 @@ public class RegularLineProcessingMode implements LineProcessingMode {
                 } else {
                     return index > matcher.start() && index < matcher.end();
                 }
+            } else if (incompleteMatcher.find(searchStart)) {
+                return index > incompleteMatcher.end();
             } else {
                 break;
             }
@@ -158,10 +160,11 @@ public class RegularLineProcessingMode implements LineProcessingMode {
 
     private int getEndOfAttribute(int start, String section) {
         var matcher = HtmlUtils.ATTRIBUTE_MATCHER_PATTERN.matcher(section);
-
-        matcher.find(start);
-
-        return matcher.end();
+        if (matcher.find(start)) {
+            return matcher.end();
+        } else {
+            return section.length() - 1;
+        }
 
     }
 

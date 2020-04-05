@@ -17,9 +17,10 @@ public class Testing {
 
         createClass();
         //
-        // printLine();
+        //printLine();
 
-        printNewClass();
+        //printNewClass();''
+
 
     }
 
@@ -50,10 +51,10 @@ public class Testing {
     static void createClass() throws IOException {
 
         var string = new HtmlTemplate()
-                .setTemplate(new File("test.html"))
+                .setTemplate(new File("Test2.html"))
                 .render();
 
-        var file = new File("src/main/java/test.java");
+        var file = new File("src/main/java/Test2.java");
         if (!file.exists()) {
             file.createNewFile();
         }

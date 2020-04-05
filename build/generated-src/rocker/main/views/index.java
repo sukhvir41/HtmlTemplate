@@ -19,7 +19,7 @@ public class index extends com.fizzed.rocker.runtime.DefaultRockerModel {
     static public String getTemplateName() { return "index.rocker.html"; }
     static public String getTemplatePackageName() { return "views"; }
     static public String getHeaderHash() { return "973482035"; }
-    static public long getModifiedAt() { return 1585039411884L; }
+    static public long getModifiedAt() { return 1585875244497L; }
     static public String[] getArgumentNames() { return new String[] { "message" }; }
 
     // argument @ [1:2]

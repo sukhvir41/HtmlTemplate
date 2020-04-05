@@ -1,18 +1,41 @@
 package FullTest;
 
-public class TagClosingInAttributeTestTest extends Test {
-    @Override
+import org.ht.template.HtmlTemplate;
+import org.joor.Reflect;
+import org.junit.Assert;
+
+import java.io.StringWriter;
+import java.io.Writer;
+import java.net.URISyntaxException;
+
+public class TagClosingInAttributeTestTest extends TestUtils {
+
+
     String getFilePath() {
         return "TagClosingInAttributeTest.html";
     }
 
-    @Override
+
     @org.junit.Test
-    public void testMethod() {
-        test();
+    public void testMethod() throws URISyntaxException {
+
+        var file = TestUtils.getFile(getFilePath());
+        var htmlTemplate = new HtmlTemplate();
+
+        var theClass = Reflect.compile(getClassName(), htmlTemplate.setTemplate(file)
+                .renderReflection());
+
+
+        Writer writer = new StringWriter();
+        var instance = theClass.call("getInstance");
+        instance.call("render", writer);
+
+        var output = strip(writer.toString());
+
+        Assert.assertEquals(getTestName(), output, strip(getExpectedOutput()));
     }
 
-    @Override
+
     String getExpectedOutput() {
         return "<!DOCTYPE html>\n" +
                 "<html lang=\"en\">\n" +
@@ -30,12 +53,12 @@ public class TagClosingInAttributeTestTest extends Test {
                 "</html>";
     }
 
-    @Override
+
     String getTestName() {
         return "TagClosingInAttributeTest";
     }
 
-    @Override
+
     String getClassName() {
         return "TagClosingInAttributeTest";
     }

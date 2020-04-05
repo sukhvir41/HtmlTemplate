@@ -1,15 +1,16 @@
 package FullTest;
 
-import org.ht.template.Parameters;
+import org.ht.template.HtmlTemplate;
 import org.joor.Reflect;
 import org.junit.Assert;
 import org.junit.Test;
-import org.ht.template.HtmlTemplate;
 
-import java.io.File;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URISyntaxException;
+
+import static FullTest.TestUtils.getFile;
+import static FullTest.TestUtils.strip;
 
 public class SimpleTest1 {
 
@@ -24,7 +25,7 @@ public class SimpleTest1 {
     @Test
     public void test() throws URISyntaxException {
 
-        var file = new File(getClass().getClassLoader().getResource("SimpleTest1.html").toURI());
+        var file = getFile("SimpleTest1.html");
 
         var htmlTemplate = new HtmlTemplate();
 
@@ -38,12 +39,6 @@ public class SimpleTest1 {
         var output = strip(writer.toString());
 
         Assert.assertEquals("Simple test 1 ", output, strip(expectedOutput));
-    }
-
-    private String strip(String s) {
-        return s.replace(" ", "")
-                .replace("\n", "")
-                .replace("\t", "");
     }
 
 }

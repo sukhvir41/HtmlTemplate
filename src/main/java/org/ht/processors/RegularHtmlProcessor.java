@@ -1,6 +1,7 @@
 package org.ht.processors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.ht.tags.Content;
 import org.ht.tags.HtmlTag;
 import org.ht.tags.HtmlTags;
 import org.ht.template.HtmlTemplate;
@@ -14,7 +15,6 @@ public class RegularHtmlProcessor implements HtmlProcessor {
         if (StringUtils.isBlank(data.getHtml())) {
             return;
         }
-
         if (StringUtils.startsWith(data.getHtml(), "<!--")) {
             HtmlProcessors.COMMENT.process(data);
         } else {
@@ -94,6 +94,11 @@ public class RegularHtmlProcessor implements HtmlProcessor {
 
     //todo : re-implement this part
     private void processHtmlContent(HtmlProcessorData data) {
+
+        var content = new Content(data.getHtml(), data.getTemplateClass());
+        content.process();
+
+
         //  data.getTemplateClass()
         //          .appendContent(new Content(data.getHtml(), data.getHtmlTemplate()));
     }
