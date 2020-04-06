@@ -1,4 +1,4 @@
-package FullTest;
+package IntegrationTest;
 
 import org.ht.template.HtmlTemplate;
 import org.joor.Reflect;
@@ -9,8 +9,8 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URISyntaxException;
 
-import static FullTest.TestUtils.getFile;
-import static FullTest.TestUtils.strip;
+import static IntegrationTest.TestUtils.getFile;
+import static IntegrationTest.TestUtils.strip;
 
 public class SimpleTest1 {
 

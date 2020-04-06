@@ -1,11 +1,13 @@
 package org.ht.template;
 
 import org.apache.commons.lang3.StringUtils;
-import org.owasp.encoder.Encode;
+import org.apache.commons.text.StringEscapeUtils;
 
 import java.util.*;
 
 public class TemplateClass {
+
+    private static final String PLAIN_HTML_VARIABLE_PREFIX = "PLAIN_HTML_";
 
     private StringBuilder classString = new StringBuilder();
     private HtmlTemplate template;
@@ -15,7 +17,7 @@ public class TemplateClass {
     // classes to be imported
     private Set<String> imports = new HashSet<>();
     // plainHTML variables name, value
-    private Map<String, StringBuilder> plainHtmlVariables = new TreeMap<>();
+    private Map<Integer, StringBuilder> plainHtmlVariables = new TreeMap<>();
     // variables name, type
     private Map<String, String> variablesTypes = new HashMap<>();
 
@@ -65,7 +67,7 @@ public class TemplateClass {
                 .append("\\n");
     }
 
-    public void appendPlainHtmlIndentation(){
+    public void appendPlainHtmlIndentation() {
         getPlainHtmlValueBuilder()
                 .append(getIndentation());
     }
@@ -75,11 +77,11 @@ public class TemplateClass {
         return plainHtmlVariables.computeIfAbsent(getCurrentVariable(), this::computeAbsentPlainHtmlVariable);
     }
 
-    private StringBuilder computeAbsentPlainHtmlVariable(String variableName) {
+    private StringBuilder computeAbsentPlainHtmlVariable(int variableName) {
 
         this.renderFunctionBody
                 .append(getIndentations(renderFunctionIndentation))
-                .append("writer.append(").append(variableName).append(");")
+                .append("writer.append(").append(PLAIN_HTML_VARIABLE_PREFIX).append(variableName).append(");")
                 .append(BREAK_LINE);
 
         return new StringBuilder();
@@ -95,8 +97,8 @@ public class TemplateClass {
         ++this.variableCount;
     }
 
-    private String getCurrentVariable() {
-        return "PLAIN_HTML_" + variableCount;
+    private int getCurrentVariable() {
+        return variableCount;
     }
 
 
@@ -177,8 +179,8 @@ public class TemplateClass {
         classString.append(BREAK_LINE);
     }
 
-    private String createPublicFinalString(String name, StringBuilder value) {
-        return "private static final String " + name + " = \"" + value.toString() + "\";";
+    private String createPublicFinalString(int name, StringBuilder value) {
+        return "private static final String " + PLAIN_HTML_VARIABLE_PREFIX + name + " = \"" + value.toString() + "\";";
     }
 
     private void addVariablesToClass(StringBuilder theClass) {
@@ -321,7 +323,7 @@ public class TemplateClass {
 
 
     public static String encodeForJava(String string) {
-        return Encode.forJava(string);
+        return StringEscapeUtils.escapeJava(string);
     }
 
 }

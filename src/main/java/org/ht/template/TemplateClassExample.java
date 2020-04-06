@@ -2,6 +2,9 @@ package org.ht.template;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TemplateClassExample extends Template {
 
@@ -19,8 +22,6 @@ public class TemplateClassExample extends Template {
     @Override
     public void render(Writer writer) throws IOException {
         writer.append(PLAINT_HTML_0);
-        if (true) {
-            writer.append(PLAINT_HTML_1);
-        }
+
     }
 }

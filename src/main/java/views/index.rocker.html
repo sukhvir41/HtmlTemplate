@@ -1,5 +1,10 @@
-@args (String message)
+@args (String message,int[] items)
 
 @views.main.template("Home") -> {
 <h1>Hello @message!</h1>
+
+@for ((i, item) : items) {
+@i.index(): @item
+}
+
 }

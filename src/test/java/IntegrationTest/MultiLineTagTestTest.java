@@ -1,26 +1,22 @@
-package FullTest;
+package IntegrationTest;
 
 import org.ht.template.HtmlTemplate;
 import org.joor.Reflect;
 import org.junit.Assert;
-import org.junit.Test;
 
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URISyntaxException;
 
-import static FullTest.TestUtils.getFile;
-import static FullTest.TestUtils.strip;
-
-public class MetaTypeTestTest {
+public class MultiLineTagTestTest extends TestUtils {
 
 
     String getFilePath() {
-        return "MetaTypeTest.html";
+        return "MultiLineTest.html";
     }
 
-    @Test
 
+    @org.junit.Test
     public void testMethod() throws URISyntaxException {
 
         var file = TestUtils.getFile(getFilePath());
@@ -37,27 +33,6 @@ public class MetaTypeTestTest {
         var output = strip(writer.toString());
 
         Assert.assertEquals(getTestName(), output, strip(getExpectedOutput()));
-
-    }
-
-    @Test
-    public void testType() throws URISyntaxException {
-
-        var file = getFile(getFilePath());
-        var htmlTemplate = new HtmlTemplate();
-
-        var theClass = Reflect.compile(getClassName(), htmlTemplate.setTemplate(file)
-                .renderReflection());
-
-
-        Writer writer = new StringWriter();
-        var instance = theClass.call("getInstance");
-        instance.call("render", writer);
-
-        instance.call("name", "world");
-
-        Assert.assertEquals("type test", "world", instance.call("name").get());
-
     }
 
 
@@ -66,25 +41,29 @@ public class MetaTypeTestTest {
                 "<html lang=\"en\">\n" +
                 "<head>\n" +
                 "    <meta charset=\"UTF-8\">\n" +
-                "    <title>Title</title>\n" +
+                "    <title>InCompleteTest</title>\n" +
                 "</head>\n" +
                 "<body>\n" +
                 "\n" +
-                "<h1>\n" +
-                "    checking content </h1>\n" +
+                "<a href=\"www.google.com \"></a>\n" +
                 "\n" +
+                "<div>\n" +
+                "    this is a test\n" +
+                "</div>\n" +
+                "\n" +
+                "<div test =\"  dfsdf > fdfsd \">\n" +
+                "</div>" +
                 "</body>\n" +
                 "</html>";
     }
 
 
     String getTestName() {
-        return "MetaTypeTest";
+        return "MultiLineTagTest";
     }
+
 
     String getClassName() {
-        return "MetaTypeTest";
+        return "MultiLineTest";
     }
-
-
 }

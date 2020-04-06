@@ -1,7 +1,6 @@
-package FullTest;
+package IntegrationTest;
 
 import org.ht.template.HtmlTemplate;
-import org.ht.template.Testing;
 import org.joor.Reflect;
 import org.junit.Assert;
 import org.junit.Test;
@@ -10,7 +9,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URISyntaxException;
 
-import static FullTest.TestUtils.strip;
+import static IntegrationTest.TestUtils.strip;
 
 public class HtTemplateTestTest {
 

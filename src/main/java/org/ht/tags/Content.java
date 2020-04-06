@@ -1,8 +1,8 @@
 package org.ht.tags;
 
 import org.apache.commons.lang3.StringUtils;
+import org.ht.processors.Code;
 import org.ht.template.TemplateClass;
-import org.owasp.encoder.Encode;
 
 import java.util.regex.Matcher;
 
@@ -34,11 +34,13 @@ public class Content {
     }
 
     private void processDynamicContent() {
-        var matcher = HtmlUtils.ESCAPED_CONTENT_PATTERN.matcher(content);
+        var escapedMatcher = HtmlUtils.ESCAPED_CONTENT_PATTERN.matcher(content);
+        var unescapedMatcher = HtmlUtils.UNESCAPED_CONTENT_PATTERN.matcher(content);
 
-        // todo add unescaped dynamic content
-        if (matcher.find()) {
-            processEscapedDynamicContent(matcher);
+        if (unescapedMatcher.find()) {
+            processUnescapedDynamicContent(unescapedMatcher);
+        } else if (escapedMatcher.find()) {
+            processEscapedDynamicContent(escapedMatcher);
         } else {
             if (StringUtils.isBlank(content)) {
                 templateClass.appendPlainHtmlNewLine();
@@ -50,47 +52,51 @@ public class Content {
     }
 
     private void processEscapedDynamicContent(Matcher dynamicContentMatcher) {
+        processLeftPart(dynamicContentMatcher.start());
 
-        var plaintHtmlLeft = StringUtils.left(content, dynamicContentMatcher.start());
-        if (StringUtils.isBlank(plaintHtmlLeft)) { //if staring of with {{ dynamic content}}
-            templateClass.appendPlainHtmlIndentation();
-        } else {
-            templateClass.appendPlainHtml(plaintHtmlLeft, isFirstLeftPart, false);
-        }
-        isFirstLeftPart = false;
-
-        var theCode = content.substring(dynamicContentMatcher.start() + 2, dynamicContentMatcher.end() - 2)
+        var theCode = content
+                .substring(dynamicContentMatcher.start() + 2, dynamicContentMatcher.end() - 2)
                 .trim();
 
-        processTheCode(theCode);
+        addCode(Code.parse(theCode));
 
         this.content = content.substring(dynamicContentMatcher.end());
 
         processDynamicContent();
     }
 
-    private void processTheCode(String theCode) {
-        var variableMatcher = HtmlUtils.CONTENT_VARIABLE_PATTERN.matcher(theCode);
-        int findIndex = 0;
-        String newCode = theCode;
-        while (variableMatcher.find(findIndex)) {
-            var variable = theCode.substring(variableMatcher.start(), variableMatcher.end());
-            newCode = StringUtils.replaceOnce(
-                    newCode, variable, StringUtils.replaceOnce(variable, "@", "") + "()"
-            );
-            findIndex = variableMatcher.end();
-        }
-        addCode(newCode);
+    private void processUnescapedDynamicContent(Matcher unescapedDynamicContentMatcher) {
+        processLeftPart(unescapedDynamicContentMatcher.start());
+
+        var theCode = content
+                .substring(unescapedDynamicContentMatcher.start() + 3, unescapedDynamicContentMatcher.end() - 3)
+                .trim();
+
+        addUnescapedCode(Code.parse(theCode));
+
+        this.content = content.substring(unescapedDynamicContentMatcher.end());
+
+        processDynamicContent();
     }
+
+
+    private void processLeftPart(int dynamicStartIndex) {
+        var plaintHtmlLeft = StringUtils.left(content, dynamicStartIndex);
+        if (StringUtils.isBlank(plaintHtmlLeft)) { //if staring of with {{ dynamic content}}
+            templateClass.appendPlainHtmlIndentation();
+        } else {
+            templateClass.appendPlainHtml(plaintHtmlLeft, isFirstLeftPart, false);
+        }
+        isFirstLeftPart = false;
+    }
+
 
     private void addCode(String code) {
         templateClass.addCode("writer.append(content(() -> String.valueOf(" + code + ")));");
     }
 
-
-    protected String encodeContent(String content) {
-        return Encode.forJava(content);
+    private void addUnescapedCode(String code) {
+        templateClass.addCode("writer.append(unescapedContent(() -> String.valueOf(" + code + ")));");
     }
-
 
 }

@@ -1,5 +1,7 @@
 package org.ht.tags;
 
+import org.ht.processors.Code;
+import org.ht.template.HtmlTemplate;
 import org.ht.template.TemplateClass;
 
 import java.util.regex.Matcher;
@@ -7,8 +9,6 @@ import java.util.regex.Matcher;
 import static org.ht.tags.HtmlUtils.IF_ATTRIBUTE_PATTERN;
 
 public class IfHtmlTag extends RegularHtmlTag {
-
-    private String ifCondition;
 
     public static boolean matches(String string) {
         return IF_ATTRIBUTE_PATTERN.matcher(string)
@@ -25,8 +25,9 @@ public class IfHtmlTag extends RegularHtmlTag {
     public void processOpeningTag(TemplateClass templateClass) {
         var matcher = IF_ATTRIBUTE_PATTERN.matcher(this.htmlString);
         if (matcher.find()) {
-            String ifCondition = getIfCondition(matcher);
-            templateClass.addCode("if(" + ifCondition + "){");
+            String ifCondition = Code.parse(getIfCondition(matcher));
+            templateClass.addCode("if(condition( ()-> " + ifCondition + " )){");
+            templateClass.incrementFunctionIndentation();
         }
     }
 
@@ -46,14 +47,7 @@ public class IfHtmlTag extends RegularHtmlTag {
         if (matcher.find()) {
             var html = htmlString.substring(0, matcher.start())
                     + htmlString.substring(matcher.end());
-
-            if (html.charAt(html.length() - 1) == '>') {
-                return html;
-
-            } else {
-                return html + ">";
-            }
-
+            return html;
         } else {
             return super.htmlString;
         }
@@ -61,6 +55,7 @@ public class IfHtmlTag extends RegularHtmlTag {
 
     @Override
     public void processClosingTag(TemplateClass templateClass) {
+        templateClass.decrementFunctionIndentation();
         templateClass.addCode("}");
     }
 

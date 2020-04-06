@@ -33,6 +33,8 @@ public final class HtmlTags {
             return Optional.of(new MetaImportHtmlTag(tagString));
         } else if (MetaTypeTag.matches(tagString)) {
             return Optional.of(new MetaTypeTag(tagString, htmlTemplate));
+        } else if (IfHtmlTag.matches(tagString)) {
+            return Optional.of(new IfHtmlTag(tagString));
         } else {
             return Optional.empty();
         }

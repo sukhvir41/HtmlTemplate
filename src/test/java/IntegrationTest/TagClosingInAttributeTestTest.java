@@ -1,4 +1,4 @@
-package FullTest;
+package IntegrationTest;
 
 import org.ht.template.HtmlTemplate;
 import org.joor.Reflect;

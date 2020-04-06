@@ -65,7 +65,9 @@ public class HtmlUtils {
     public static final Pattern CONTENT_VARIABLE_PATTERN =
             Pattern.compile("@[a-z][a-z,0-9]*", Pattern.CASE_INSENSITIVE);
 
-    //params match [^a-z,0-9,\.]+params.get\("[^"]*"\)
+    public static final Pattern CONTENT_VARIABLE_STRING_PATTERN =
+            Pattern.compile("\"[^\"]*\"", Pattern.CASE_INSENSITIVE);
+
 
     static {
         voidTags.add("meta");

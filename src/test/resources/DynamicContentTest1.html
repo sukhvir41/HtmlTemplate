@@ -15,6 +15,10 @@
         and now having nested variable {{ @name.substring(@name.length() -1)}}
         and just a plain line in middle <br>
         and some html to escaped here {{ "<h1> this h1 tag escaped </h1>"}}
+        and now @ in string of the dynamic content {{ "sdas@dfsdf.com " }}
+        and indeof test {{ @name.indexOf("123@123")}}
+        equals test {{"123@123".equals("123@123")}}
+        unescaped content {{{ "<h1> hello </h1>" }}} and escaped h1 {{ "<h1> this h1 tag escaped </h1>"}}
     </h1>
 </div>
 </body>
