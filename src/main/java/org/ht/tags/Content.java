@@ -34,6 +34,7 @@ public class Content {
     }
 
     private void processDynamicContent() {
+        //todo : have to make this tailed recursion. stop it from modifying the class member variable.
         var escapedMatcher = HtmlUtils.ESCAPED_CONTENT_PATTERN.matcher(content);
         var unescapedMatcher = HtmlUtils.UNESCAPED_CONTENT_PATTERN.matcher(content);
 

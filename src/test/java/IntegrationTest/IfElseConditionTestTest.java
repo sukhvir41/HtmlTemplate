@@ -9,25 +9,27 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URISyntaxException;
 
-public class IfConditionTestTest {
+public class IfElseConditionTestTest {
+
     @Test
     public void testTrue() throws URISyntaxException {
 
-        var file = TestUtils.getFile("IfConditionTest.html");
+        var file = TestUtils.getFile("IfElseConditionTest.html");
 
         var htmlTemplate = new HtmlTemplate();
         var theClassString = htmlTemplate.setTemplate(file)
                 .renderReflection();
 
-        var theClass = Reflect.compile("IfConditionTest", theClassString);
-
+        var theClass = Reflect.compile("IfElseConditionTest", theClassString);
 
         Writer writer = new StringWriter();
         var instance = theClass.call("getInstance");
-        instance.call("isThisTrue", true);
+        instance.call("show", true);
         instance.call("render", writer);
 
         var output = TestUtils.strip(writer.toString());
+
+
 
         Assert.assertEquals("If condition test true", output, TestUtils.strip(getExpectedOutputTrue()));
 
@@ -36,7 +38,6 @@ public class IfConditionTestTest {
 
     String getExpectedOutputTrue() {
         return "<!DOCTYPE html>\n" +
-                "\n" +
                 "<html lang=\"en\">\n" +
                 "<head>\n" +
                 "    <meta charset=\"UTF-8\">\n" +
@@ -44,13 +45,13 @@ public class IfConditionTestTest {
                 "</head>\n" +
                 "<body>\n" +
                 "\n" +
+                "<h1>\n" +
+                "    this is before if else\n" +
+                "</h1>\n" +
                 "\n" +
-                "<h1> before if condition </h1>\n" +
-                "<div>\n" +
-                "    <h1> inside if condition </h1>\n" +
-                "</div>\n" +
-                "\n" +
-                "<h1> after if condition </h1>\n" +
+                "<h1>\n" +
+                "    inside if statement\n" +
+                "</h1>\n" +
                 "\n" +
                 "</body>\n" +
                 "</html>";
@@ -60,18 +61,18 @@ public class IfConditionTestTest {
     @Test
     public void testFalse() throws URISyntaxException {
 
-        var file = TestUtils.getFile("IfConditionTest.html");
+        var file = TestUtils.getFile("IfElseConditionTest.html");
 
         var htmlTemplate = new HtmlTemplate();
         var theClassString = htmlTemplate.setTemplate(file)
                 .renderReflection();
 
-        var theClass = Reflect.compile("IfConditionTest", theClassString);
+        var theClass = Reflect.compile("IfElseConditionTest", theClassString);
 
 
         Writer writer = new StringWriter();
         var instance = theClass.call("getInstance");
-        instance.call("isThisTrue", false);
+        instance.call("show", false);
         instance.call("render", writer);
 
         var output = TestUtils.strip(writer.toString());
@@ -82,7 +83,6 @@ public class IfConditionTestTest {
 
     String getExpectedOutputFalse() {
         return "<!DOCTYPE html>\n" +
-                "\n" +
                 "<html lang=\"en\">\n" +
                 "<head>\n" +
                 "    <meta charset=\"UTF-8\">\n" +
@@ -90,13 +90,16 @@ public class IfConditionTestTest {
                 "</head>\n" +
                 "<body>\n" +
                 "\n" +
+                "<h1>\n" +
+                "    this is before if else\n" +
+                "</h1>\n" +
                 "\n" +
-                "<h1> before if condition </h1>\n" +
-                "<h1> after if condition </h1>\n" +
+                "<h1>\n" +
+                "    inside else statement\n" +
+                "</h1>\n" +
                 "\n" +
                 "</body>\n" +
                 "</html>";
 
     }
-
 }

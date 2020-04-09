@@ -91,15 +91,8 @@ public class RegularHtmlProcessor implements HtmlProcessor {
         htmlTag.processClosingTag(templateClass);
     }
 
-
-    //todo : re-implement this part
     private void processHtmlContent(HtmlProcessorData data) {
-
         var content = new Content(data.getHtml(), data.getTemplateClass());
         content.process();
-
-
-        //  data.getTemplateClass()
-        //          .appendContent(new Content(data.getHtml(), data.getHtmlTemplate()));
     }
 }

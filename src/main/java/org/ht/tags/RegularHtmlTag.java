@@ -7,7 +7,7 @@ class RegularHtmlTag implements HtmlTag {
     protected String htmlString;
 
     public static boolean matches(String html) {
-        return true;
+        throw new UnsupportedOperationException("not implemented by child");
     }
 
     protected RegularHtmlTag(String htmlString) {

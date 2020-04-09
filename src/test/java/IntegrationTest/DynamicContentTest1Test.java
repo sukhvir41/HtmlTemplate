@@ -20,7 +20,6 @@ public class DynamicContentTest1Test {
         var theClassString = htmlTemplate.setTemplate(file)
                 .renderReflection();
 
-        System.out.println(theClassString);
 
         var theClass = Reflect.compile("DynamicContentTest1", theClassString);
 

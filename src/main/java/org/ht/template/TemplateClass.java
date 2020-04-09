@@ -9,7 +9,6 @@ public class TemplateClass {
 
     private static final String PLAIN_HTML_VARIABLE_PREFIX = "PLAIN_HTML_";
 
-    private StringBuilder classString = new StringBuilder();
     private HtmlTemplate template;
     private String className;
     private String packageName;
@@ -46,6 +45,7 @@ public class TemplateClass {
     }
 
     public void appendPlainHtml(String html, boolean appendIndentation, boolean appendNewLine) {
+
         if (StringUtils.isNotBlank(html)) {
             if (appendIndentation) {
                 getPlainHtmlValueBuilder()
@@ -94,7 +94,10 @@ public class TemplateClass {
                 .append(code)
                 .append(BREAK_LINE);
 
-        ++this.variableCount;
+        if (plainHtmlVariables.containsKey(variableCount)) {
+            ++this.variableCount;
+        }
+
     }
 
     private int getCurrentVariable() {

@@ -1,32 +1,31 @@
 package org.ht.tags;
 
 import org.ht.processors.Code;
-import org.ht.template.HtmlTemplate;
 import org.ht.template.TemplateClass;
 
 import java.util.regex.Matcher;
 
-import static org.ht.tags.HtmlUtils.IF_ATTRIBUTE_PATTERN;
+import static org.ht.tags.HtmlUtils.ELSEIF_ATTRIBUTE_PATTERN;
 
-public class IfHtmlTag extends RegularHtmlTag {
+public class ElseIfHtmlTag extends RegularHtmlTag {
 
     public static boolean matches(String string) {
-        return IF_ATTRIBUTE_PATTERN.matcher(string)
+        return ELSEIF_ATTRIBUTE_PATTERN.matcher(string)
                 .find();
     }
 
 
-    IfHtmlTag(String htmlString) {
+    ElseIfHtmlTag(String htmlString) {
         super(htmlString);
-        this.htmlString = htmlString;
     }
+
 
     @Override
     public void processOpeningTag(TemplateClass templateClass) {
-        var matcher = IF_ATTRIBUTE_PATTERN.matcher(this.htmlString);
+        var matcher = ELSEIF_ATTRIBUTE_PATTERN.matcher(this.htmlString);
         if (matcher.find()) {
             String ifCondition = Code.parse(getIfCondition(matcher));
-            templateClass.addCode("if(condition( () -> " + ifCondition + " )){");
+            templateClass.addCode("else if(condition( () -> " + ifCondition + " )){");
             templateClass.incrementFunctionIndentation();
         }
     }
@@ -41,9 +40,16 @@ public class IfHtmlTag extends RegularHtmlTag {
                 .trim();
     }
 
+
+    @Override
+    public void processClosingTag(TemplateClass templateClass) {
+        templateClass.decrementFunctionIndentation();
+        templateClass.addCode("}");
+    }
+
     @Override
     public String getHtml() {
-        var matcher = IF_ATTRIBUTE_PATTERN.matcher(this.htmlString);
+        var matcher = ELSEIF_ATTRIBUTE_PATTERN.matcher(this.htmlString);
         if (matcher.find()) {
             var leftPart = htmlString.substring(0, matcher.start());
             var rightPart = htmlString.substring(matcher.end());
@@ -52,11 +58,4 @@ public class IfHtmlTag extends RegularHtmlTag {
             return super.htmlString;
         }
     }
-
-    @Override
-    public void processClosingTag(TemplateClass templateClass) {
-        templateClass.decrementFunctionIndentation();
-        templateClass.addCode("}");
-    }
-
 }

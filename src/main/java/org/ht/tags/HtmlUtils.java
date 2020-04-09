@@ -38,6 +38,12 @@ public class HtmlUtils {
     public static final Pattern IF_ATTRIBUTE_PATTERN =
             Pattern.compile("ht-if\\s*=\\s*\"[^\"]*\"", Pattern.CASE_INSENSITIVE);
 
+    public static final Pattern ELSEIF_ATTRIBUTE_PATTERN =
+            Pattern.compile("ht-elseIf\\s*=\\s*\"[^\"]*\"", Pattern.CASE_INSENSITIVE);
+
+    public static final Pattern ELSE_ATTRIBUTE_PATTERN =
+            Pattern.compile("ht-else", Pattern.CASE_INSENSITIVE);
+
     public static final Pattern IMPORT_META_TAG_PATTERN =
             Pattern.compile("<\\s*meta[\\s,\\S]* ht-import\\s*=\\s*\"[^\"]*\"", Pattern.CASE_INSENSITIVE);
 

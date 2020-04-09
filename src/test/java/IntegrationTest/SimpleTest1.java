@@ -25,6 +25,8 @@ public class SimpleTest1 {
     @Test
     public void test() throws URISyntaxException {
 
+        //todo: this should also include comment , script and style tags as well
+
         var file = getFile("SimpleTest1.html");
 
         var htmlTemplate = new HtmlTemplate();

@@ -23,7 +23,7 @@ public class Code {
             findIndex = variableMatcher.end();
         }
 
-        return newCode;
+        return newCode.trim();
     }
 
     private static boolean isVariableInString(String theCode, int variableStartIndex) {
