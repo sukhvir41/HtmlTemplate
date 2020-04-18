@@ -36,7 +36,14 @@ public class RegularLineProcessingMode implements LineProcessingMode {
         var tag = getHtmlTag(line);
         var output = ProcessingOutput.builder();
 
-        if (StringUtils.isBlank(tag)) {
+
+        if (HtmlUtils.getStartingHtmlTagName(line).equals("!--")) {
+            return output.setNextMode(COMMENT)
+                    .setRemainingLine(line)
+                    .setSection("")
+                    .build();
+
+        } else if (StringUtils.isBlank(tag)) {
             return output.setRemainingLine(line)
                     .setNextMode(REGULAR)
                     .setSection("")
@@ -44,24 +51,11 @@ public class RegularLineProcessingMode implements LineProcessingMode {
         } else {
             var mode = getProcessingModeBasedOnTag(tag);
             var remainingLine = StringUtils.removeStart(line, tag);
-            if (mode == REGULAR) {
-                return output.setNextMode(mode)
-                        .setRemainingLine(remainingLine)
-                        .setSection(tag)
-                        .build();
-            } else {
-                if (mode.isClosingTagAtStart(remainingLine)) {
-                    return output.setNextMode(REGULAR)
-                            .setRemainingLine(remainingLine)
-                            .setSection(tag)
-                            .build();
-                } else {
-                    return output.setNextMode(mode)
-                            .setRemainingLine(remainingLine)
-                            .setSection(tag)
-                            .build();
-                }
-            }
+
+            return output.setNextMode(mode)
+                    .setRemainingLine(remainingLine)
+                    .setSection(tag)
+                    .build();
 
         }
     }
@@ -85,15 +79,6 @@ public class RegularLineProcessingMode implements LineProcessingMode {
                 return STYLE;
             }
         }
-
-        if (StringUtils.startsWith(name, "!--")) {
-            if (StringUtils.endsWith(tag, "-->")) {
-                return REGULAR;
-            } else {
-                return COMMENT;
-            }
-        }
-
         return REGULAR;
     }
 
@@ -150,7 +135,7 @@ public class RegularLineProcessingMode implements LineProcessingMode {
                     return index > matcher.start() && index < matcher.end();
                 }
             } else if (incompleteMatcher.find(searchStart)) {
-                return index > incompleteMatcher.end();
+                return index < incompleteMatcher.end();
             } else {
                 break;
             }

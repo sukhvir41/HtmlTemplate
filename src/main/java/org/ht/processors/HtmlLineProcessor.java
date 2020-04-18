@@ -18,9 +18,6 @@ public class HtmlLineProcessor {
         } else {
             this.line = line;
         }
-
-        //this.line = previousLine + line;
-        // this.previousLine = "";
     }
 
     public void carryForwardUnprocessedString() {

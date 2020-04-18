@@ -51,7 +51,6 @@ public final class ScriptLineProcessingMode implements LineProcessingMode, HtmlP
     @Override
     public void process(HtmlProcessorData data) {
 
-
         if (containsClosingTag(data.getHtml())) {
             var script = getLeftOfScriptTag(data.getHtml());
 

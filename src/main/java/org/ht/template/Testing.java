@@ -15,9 +15,9 @@ public class Testing {
 
     public static void main(String[] args) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, IOException {
 
-        createClass();
+        //createClass();
         //
-        //printLine();
+        printLine();
 
         //printNewClass();''
 
@@ -51,27 +51,21 @@ public class Testing {
     static void createClass() throws IOException {
 
         var string = new HtmlTemplate()
-                .setTemplate(new File("Test2.html"))
+                .setTemplate(new File("src/test/resources/SimpleTest1.html"))
                 .render();
 
-        var file = new File("src/main/java/Test2.java");
-        if (!file.exists()) {
-            file.createNewFile();
-        }
-        Files.writeString(file.toPath(), string, StandardOpenOption.TRUNCATE_EXISTING);
-
+        System.out.println(string);
     }
 
 
     static void printLine() throws IOException {
-        try (BufferedReader reader = Files.newBufferedReader(Paths.get("test.html"))) {
+        try (BufferedReader reader = Files.newBufferedReader(Paths.get("src/test/resources/SimpleTest1.html"))) {
             String line;
 
             var proc = new HtmlLineProcessor();
 
             while ((line = reader.readLine()) != null) {
-                System.out.println("processing line ->" + line);
-
+                //System.out.println("processing line ->" + line);
                 proc.setLine(line);
 
                 while (proc.hasNextSection()) {

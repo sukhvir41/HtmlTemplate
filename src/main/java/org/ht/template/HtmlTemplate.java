@@ -106,6 +106,7 @@ public final class HtmlTemplate {
             while (lineProcessor.hasNextSection()) {
                 String section = lineProcessor.getNextSection()
                         .trim();
+
                 if (processor == HtmlProcessors.REGULAR) {
                     if (HtmlUtils.isTemplateMetaTag(section)) {
                         readTemplate(section);

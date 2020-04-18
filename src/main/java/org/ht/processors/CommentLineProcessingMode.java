@@ -12,7 +12,7 @@ public class CommentLineProcessingMode implements LineProcessingMode, HtmlProces
     @Override
     public ProcessingOutput getNextSectionOutput(String line) {
 
-        if (isClosingTagAtStart(line)) {
+        if (line.contains("-->")) {
 
             var section = line.substring(0, line.indexOf("-->") + 3);
             var remainingLine = StringUtils.removeStart(line, section);
@@ -22,18 +22,7 @@ public class CommentLineProcessingMode implements LineProcessingMode, HtmlProces
                     .setNextMode(LineProcessingModes.REGULAR)
                     .build();
 
-        } else if (line.contains("-->")) {
-
-            var section = line.substring(0, line.indexOf("-->"));
-            var remainingLine = StringUtils.removeStart(line, section);
-            return ProcessingOutput.builder()
-                    .setSection(section)
-                    .setRemainingLine(remainingLine)
-                    .setNextMode(LineProcessingModes.COMMENT)
-                    .build();
-
         } else {
-
             return ProcessingOutput.builder()
                     .setSection(line)
                     .setRemainingLine("")
