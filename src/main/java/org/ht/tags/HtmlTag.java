@@ -1,11 +1,12 @@
 package org.ht.tags;
 
 import org.ht.template.TemplateClass;
+import org.ht.utils.HtmlUtils;
 
 public interface HtmlTag {
 
-    public static boolean matches(String html) {
-        throw new UnsupportedOperationException("Sub class implementation missing");
+    static boolean matches(String html) {
+        throw new UnsupportedOperationException("Implementation missing");
     }
 
 
@@ -17,11 +18,9 @@ public interface HtmlTag {
     void processOpeningTag(TemplateClass templateClass);
 
     /**
-     * gets the html String data. this will only contain a single html data either opening or closing. Html content is not included
-     *
-     * @return the html String data
+     * process the html tag. Only gets called once after processOpeningTag or on its own.
      */
-    String getHtml();
+    void processTag(TemplateClass templateClass);
 
     /**
      * When a respective closing tag is found, This function gets called.

@@ -2,15 +2,21 @@ package org.ht.tags;
 
 import org.apache.commons.lang3.StringUtils;
 import org.ht.processors.Code;
+import org.ht.template.IllegalSyntaxException;
 import org.ht.template.TemplateClass;
-
-import java.util.regex.Matcher;
+import org.ht.utils.HtStringUtils;
 
 public class Content {
+
+    public static final String ESCAPED_CONTENT_START = "{{";
+    public static final String ESCAPED_CONTENT_END = "}}";
+    public static final String UNESCAPED_CONTENT_START = "{{{";
+    public static final String UNESCAPED_CONTENT_END = "}}}";
 
     private String content;
     private TemplateClass templateClass;
     private boolean isFirstLeftPart = true;
+
 
     public Content(String content, TemplateClass templateClass) {
         this.content = content;
@@ -20,7 +26,7 @@ public class Content {
 
     public void process() {
         if (containsDynamicContent()) {
-            processDynamicContent();
+            processDynamicContent(content);//process left to right
         } else {
             templateClass.appendPlainHtml(content);
         }
@@ -28,20 +34,18 @@ public class Content {
 
     private boolean containsDynamicContent() {
         //this will match both escaped and unescaped content
-        return HtmlUtils.ESCAPED_CONTENT_PATTERN
-                .matcher(content)
-                .find();
+        return content.contains(ESCAPED_CONTENT_START);
     }
 
-    private void processDynamicContent() {
-        //todo : have to make this tailed recursion. stop it from modifying the class member variable.
-        var escapedMatcher = HtmlUtils.ESCAPED_CONTENT_PATTERN.matcher(content);
-        var unescapedMatcher = HtmlUtils.UNESCAPED_CONTENT_PATTERN.matcher(content);
+    private void processDynamicContent(String content) {
 
-        if (unescapedMatcher.find()) {
-            processUnescapedDynamicContent(unescapedMatcher);
-        } else if (escapedMatcher.find()) {
-            processEscapedDynamicContent(escapedMatcher);
+        int escapedStartIndex = content.indexOf(ESCAPED_CONTENT_START);
+        int unescapedStartIndex = content.indexOf(UNESCAPED_CONTENT_START);
+
+        if (unescapedStartIndex > -1 && unescapedStartIndex <= escapedStartIndex) {
+            processUnescapedDynamicContent(unescapedStartIndex, content);
+        } else if (escapedStartIndex > -1) {
+            processEscapedDynamicContent(escapedStartIndex, content);
         } else {
             if (StringUtils.isBlank(content)) {
                 templateClass.appendPlainHtmlNewLine();
@@ -49,41 +53,53 @@ public class Content {
                 templateClass.appendPlainHtml(content, false, true);
             }
         }
-
     }
 
-    private void processEscapedDynamicContent(Matcher dynamicContentMatcher) {
-        processLeftPart(dynamicContentMatcher.start());
+    private void processEscapedDynamicContent(int escapedContentStart, String content) {
+        processLeftPart(escapedContentStart, content);
+
+        int endIndex = HtStringUtils.findIndex(escapedContentStart, ESCAPED_CONTENT_END, content);
+
+        if (endIndex == -1) { // end not found
+            throw new IllegalSyntaxException("Could not find the \"" + ESCAPED_CONTENT_END + "\" in line -> \n " + this.content);
+        }
 
         var theCode = content
-                .substring(dynamicContentMatcher.start() + 2, dynamicContentMatcher.end() - 2)
+                .substring(escapedContentStart + ESCAPED_CONTENT_START.length(), endIndex)
                 .trim();
 
         addCode(Code.parse(theCode));
 
-        this.content = content.substring(dynamicContentMatcher.end());
+        var remainingContent = content.substring(endIndex + ESCAPED_CONTENT_END.length());
 
-        processDynamicContent();
+        processDynamicContent(remainingContent);
     }
 
-    private void processUnescapedDynamicContent(Matcher unescapedDynamicContentMatcher) {
-        processLeftPart(unescapedDynamicContentMatcher.start());
+
+    private void processUnescapedDynamicContent(int unescapedContentStart, String content) {
+        processLeftPart(unescapedContentStart, content);
+
+        int endIndex = HtStringUtils.findIndex(unescapedContentStart, UNESCAPED_CONTENT_END, content);
+
+        if (endIndex == -1) { // end nt found
+            throw new IllegalSyntaxException("Could not find the \"" + UNESCAPED_CONTENT_END + "\" in line -> \n " + this.content);
+        }
 
         var theCode = content
-                .substring(unescapedDynamicContentMatcher.start() + 3, unescapedDynamicContentMatcher.end() - 3)
+                .substring(unescapedContentStart + UNESCAPED_CONTENT_START.length(), endIndex)
                 .trim();
 
         addUnescapedCode(Code.parse(theCode));
 
-        this.content = content.substring(unescapedDynamicContentMatcher.end());
+        var remainingContent = content.substring(endIndex + UNESCAPED_CONTENT_END.length());
 
-        processDynamicContent();
+        processDynamicContent(remainingContent);
     }
 
 
-    private void processLeftPart(int dynamicStartIndex) {
+    private void processLeftPart(int dynamicStartIndex, String content) {
         var plaintHtmlLeft = StringUtils.left(content, dynamicStartIndex);
-        if (StringUtils.isBlank(plaintHtmlLeft)) { //if staring of with {{ dynamic content}}
+        if (StringUtils.isBlank(plaintHtmlLeft)) { //if staring of with {{ dynamic content}} or {{{ dynamic content }}}
             templateClass.appendPlainHtmlIndentation();
         } else {
             templateClass.appendPlainHtml(plaintHtmlLeft, isFirstLeftPart, false);

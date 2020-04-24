@@ -1,45 +1,41 @@
 package org.ht.tags;
 
 import org.ht.template.TemplateClass;
+import org.ht.utils.HtmlUtils;
 
 class RegularHtmlTag implements HtmlTag {
 
     protected String htmlString;
-
-    public static boolean matches(String html) {
-        throw new UnsupportedOperationException("not implemented by child");
-    }
 
     protected RegularHtmlTag(String htmlString) {
         this.htmlString = htmlString.trim();
 
     }
 
-
     @Override
-    public String getHtml() {
-        return htmlString;
+    public void processTag(TemplateClass templateClass) {
+        templateClass.appendPlainHtml(this.htmlString);
     }
 
     @Override
     public String getName() {
-        return HtmlUtils.getStartingHtmlTagName(htmlString);
+        return HtmlUtils.getStartingHtmlTagName(this.htmlString);
     }
 
     @Override
     public boolean isClosingTag() {
-        return htmlString.charAt(1) == '/';
+        return this.htmlString.charAt(1) == '/';
     }
 
 
     @Override
     public boolean isSelfClosing() {
-        return htmlString.charAt(htmlString.length() - 2) == '/';
+        return this.htmlString.charAt(this.htmlString.length() - 2) == '/';
     }
 
     @Override
     public boolean isDocTypeTag() {
-        return HtmlUtils.isStartingTagDocType(htmlString);
+        return HtmlUtils.isStartingTagDocType(this.htmlString);
     }
 
     @Override

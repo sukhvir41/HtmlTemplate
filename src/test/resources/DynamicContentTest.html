@@ -20,6 +20,12 @@
         and indeof test {{ @name.indexOf("123@123")}}
         equals test {{"123@123".equals("123@123")}}
         unescaped content {{{ "<h1> hello </h1>" }}} and escaped h1 {{ "<h1> this h1 tag escaped </h1>"}}
+        unescaped content {{{ "<h1> hello </h1>" }}} and escaped content {{ "<h1> this h1 tag escaped </h1>"}} and again unescaped content {{{ "<h1> hello </h1>" }}}
+        brackets inside test {{ " }} }}}"}} and  {{{ " }}} }}"}}} and {{ " }}} }}"}} and {{{ " }} }}}" }}}
+        brackets inside test {{ " }} }}} }} }} }} "}} and  {{{ " }}} }} }}} }}} "}}} and {{ " }}} }} }}} }} "}} and {{{ " }} }}} }} }}}" }}}
+        brackets inside test {{ " }} }}} }} }} <h1> hello </h1>"}} and  {{{ " }}} }} }}} }}} <h1> hello </h1> "}}}
+        brackets inside test {{ " }} }}} }} }} <h1> hello </h1> \" }} "}} and  {{{ " }}} }} }}} }}} <h1> hello </h1> \" }}} "}}}
+
     </h1>
 </div>
 </body>

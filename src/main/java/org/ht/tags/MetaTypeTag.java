@@ -1,28 +1,30 @@
 package org.ht.tags;
 
-import org.ht.template.HtmlTemplate;
+import org.ht.template.TemplateClass;
+
+import java.util.regex.Pattern;
 
 public class MetaTypeTag extends RegularHtmlTag {
 
-    private HtmlTemplate htmlTemplate;
+    public static final Pattern META_TYPE_TAG_PATTERN =
+            Pattern.compile("<\\s*meta\\s+ht-type\\s*=\\s*\"[^\"]*\"", Pattern.CASE_INSENSITIVE);
+    public static final Pattern TYPE_ATTRIBUTE_PATTERN =
+            Pattern.compile("ht-type\\s*=\\s*\"[^\"]*\"", Pattern.CASE_INSENSITIVE);
+
     private String variable = "";
     private String theClass = "";//the class
 
     public static boolean matches(String html) {
-        return HtmlUtils.META_TYPE_TAG_PATTERN.matcher(html)
+        return META_TYPE_TAG_PATTERN.matcher(html)
                 .find();
     }
 
-    protected MetaTypeTag(String htmlString, HtmlTemplate htmlTemplate) {
+    protected MetaTypeTag(String htmlString) {
         super(htmlString);
-        this.htmlTemplate = htmlTemplate;
-
-        extractType();
-        addType();
     }
 
     private void extractType() {
-        var matcher = HtmlUtils.TYPE_ATTRIBUTE_PATTERN
+        var matcher = TYPE_ATTRIBUTE_PATTERN
                 .matcher(super.htmlString);
 
         if (matcher.find()) {
@@ -40,15 +42,18 @@ public class MetaTypeTag extends RegularHtmlTag {
         }
     }
 
-    private void addType() {
-        this.htmlTemplate.addVariableType(this.variable, this.theClass);
+    private void addType(TemplateClass templateClass) {
+        templateClass.addVariable(this.variable, this.theClass);
     }
-
 
     @Override
-    public String getHtml() {
-        return "";
+    public void processOpeningTag(TemplateClass templateClass) {
+        extractType();
+        addType(templateClass);
     }
 
-
+    @Override
+    public void processTag(TemplateClass templateClass) {
+        // do nothing
+    }
 }

@@ -1,14 +1,15 @@
 package org.ht.tags;
 
 import org.ht.processors.Code;
-import org.ht.template.HtmlTemplate;
 import org.ht.template.TemplateClass;
 
 import java.util.regex.Matcher;
-
-import static org.ht.tags.HtmlUtils.IF_ATTRIBUTE_PATTERN;
+import java.util.regex.Pattern;
 
 public class IfHtmlTag extends RegularHtmlTag {
+
+    public static final Pattern IF_ATTRIBUTE_PATTERN =
+            Pattern.compile("ht-if\\s*=\\s*\"[^\"]*\"", Pattern.CASE_INSENSITIVE);
 
     public static boolean matches(String string) {
         return IF_ATTRIBUTE_PATTERN.matcher(string)
@@ -42,14 +43,14 @@ public class IfHtmlTag extends RegularHtmlTag {
     }
 
     @Override
-    public String getHtml() {
+    public void processTag(TemplateClass templateClass) {
         var matcher = IF_ATTRIBUTE_PATTERN.matcher(this.htmlString);
         if (matcher.find()) {
-            var leftPart = htmlString.substring(0, matcher.start());
-            var rightPart = htmlString.substring(matcher.end());
-            return leftPart + rightPart;
+            var leftPart = this.htmlString.substring(0, matcher.start());
+            var rightPart = this.htmlString.substring(matcher.end());
+            templateClass.appendPlainHtml(leftPart + rightPart);
         } else {
-            return super.htmlString;
+            templateClass.appendPlainHtml(this.htmlString);
         }
     }
 

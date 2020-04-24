@@ -1,6 +1,7 @@
 package org.ht.tags;
 
 import org.ht.template.HtmlTemplate;
+import org.ht.utils.HtmlUtils;
 
 import java.util.Optional;
 
@@ -13,12 +14,12 @@ public final class HtmlTags {
      * @param htmlString string containing html
      * @return HtmlTag
      */
-    public static Optional<HtmlTag> parse(String htmlString, HtmlTemplate htmlTemplate) {
+    public static Optional<HtmlTag> parse(String htmlString) {
 
         if (HtmlUtils.isHtmlTagAtStart(htmlString)) {
             //return Optional.of(new RegularHtmlTag(htmlString));
             if (containsDynamicAttribute(htmlString)) {
-                return parseDynamicHtml(htmlString, htmlTemplate);
+                return parseDynamicHtml(htmlString);
             } else {
                 return Optional.of(new RegularHtmlTag(htmlString));
             }
@@ -28,12 +29,12 @@ public final class HtmlTags {
 
     }
 
-    private static Optional<HtmlTag> parseDynamicHtml(String tagString, HtmlTemplate htmlTemplate) {
+    private static Optional<HtmlTag> parseDynamicHtml(String tagString) {
         if (MetaImportHtmlTag.matches(tagString)) {
             return Optional.of(new MetaImportHtmlTag(tagString));
 
         } else if (MetaTypeTag.matches(tagString)) {
-            return Optional.of(new MetaTypeTag(tagString, htmlTemplate));
+            return Optional.of(new MetaTypeTag(tagString));
 
         } else if (IfHtmlTag.matches(tagString)) {
             return Optional.of(new IfHtmlTag(tagString));

@@ -1,6 +1,7 @@
 package org.ht.template;
 
 import org.ht.processors.HtmlLineProcessor;
+import org.ht.utils.HtStringUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -18,6 +19,7 @@ public class Testing {
         //createClass();
         //
         printLine();
+        //System.out.println(HtStringUtils.findIndex(0,"c","\"abc\"c"));
 
         //printNewClass();''
 
@@ -59,7 +61,7 @@ public class Testing {
 
 
     static void printLine() throws IOException {
-        try (BufferedReader reader = Files.newBufferedReader(Paths.get("src/test/resources/SimpleTest1.html"))) {
+        try (BufferedReader reader = Files.newBufferedReader(Paths.get("src/test/resources/DynamicContentTest.html"))) {
             String line;
 
             var proc = new HtmlLineProcessor();

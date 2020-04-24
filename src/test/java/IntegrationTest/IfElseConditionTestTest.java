@@ -30,7 +30,6 @@ public class IfElseConditionTestTest {
         var output = TestUtils.strip(writer.toString());
 
 
-
         Assert.assertEquals("If condition test true", output, TestUtils.strip(getExpectedOutputTrue()));
 
     }

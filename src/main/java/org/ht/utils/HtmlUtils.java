@@ -1,4 +1,4 @@
-package org.ht.tags;
+package org.ht.utils;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -11,19 +11,19 @@ public class HtmlUtils {
     private static final Set<String> voidTags = new HashSet<>();
 
     public static final Pattern ATTRIBUTE_MATCHER_PATTERN = Pattern.compile("" +
-                    "[^\\u007f-\\u009f,^\\u0020,^\\u0022,^\\u0027,^\\u003e,^\\u002f,^\\u003d,^\\uFDD0-\\uFDEF,^\\uFFFE, " +
-                    "^\\uFFFF, ^\\u1FFFE, ^\\u1FFFF, ^\\u2FFFE, ^\\u2FFFF, ^\\u3FFFE, ^\\u3FFFF, ^\\u4FFFE, ^\\u4FFFF, " +
-                    "^\\u5FFFE, ^\\u5FFFF, ^\\u6FFFE, ^\\u6FFFF, ^\\u7FFFE, ^\\u7FFFF, ^\\u8FFFE, ^\\u8FFFF, ^\\u9FFFE, " +
-                    "^\\u9FFFF, ^\\uAFFFE, ^\\uAFFFF, ^\\uBFFFE, ^\\uBFFFF, ^\\uCFFFE, ^\\uCFFFF, ^\\uDFFFE, ^\\uDFFFF, " +
-                    "^\\uEFFFE, ^\\uEFFFF, ^\\uFFFFE, ^\\uFFFFF, ^\\u10FFFE, ^\\u10FFFF]*\\s*=\\s*\"[^/\"]*\""
+                    "[^\\u007f-\\u009f,\\u0020,\\u0022,\\u0027,\\u003e,\\u002f,\\u003d,\\uFDD0-\\uFDEF,\\uFFFE, " +
+                    "\\uFFFF, \\u1FFFE, \\u1FFFF, \\u2FFFE, \\u2FFFF, \\u3FFFE, \\u3FFFF, \\u4FFFE, \\u4FFFF, " +
+                    "\\u5FFFE, \\u5FFFF, \\u6FFFE, \\u6FFFF, \\u7FFFE, \\u7FFFF, \\u8FFFE, \\u8FFFF, \\u9FFFE, " +
+                    "\\u9FFFF, \\uAFFFE, \\uAFFFF, \\uBFFFE, \\uBFFFF, \\uCFFFE, \\uCFFFF, \\uDFFFE, \\uDFFFF, " +
+                    "\\uEFFFE, \\uEFFFF, \\uFFFFE, \\uFFFFF, \\u10FFFE, \\u10FFFF]*\\s*=\\s*\"[^/\"]*\""
             , Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
     public static final Pattern INCOMPLETE_ATTRIBUTE_MATCHER_PATTERN = Pattern.compile("" +
-                    "[^\\u007f-\\u009f,^\\u0020,^\\u0022,^\\u0027,^\\u003e,^\\u002f,^\\u003d,^\\uFDD0-\\uFDEF,^\\uFFFE, " +
-                    "^\\uFFFF, ^\\u1FFFE, ^\\u1FFFF, ^\\u2FFFE, ^\\u2FFFF, ^\\u3FFFE, ^\\u3FFFF, ^\\u4FFFE, ^\\u4FFFF, " +
-                    "^\\u5FFFE, ^\\u5FFFF, ^\\u6FFFE, ^\\u6FFFF, ^\\u7FFFE, ^\\u7FFFF, ^\\u8FFFE, ^\\u8FFFF, ^\\u9FFFE, " +
-                    "^\\u9FFFF, ^\\uAFFFE, ^\\uAFFFF, ^\\uBFFFE, ^\\uBFFFF, ^\\uCFFFE, ^\\uCFFFF, ^\\uDFFFE, ^\\uDFFFF, " +
-                    "^\\uEFFFE, ^\\uEFFFF, ^\\uFFFFE, ^\\uFFFFF, ^\\u10FFFE, ^\\u10FFFF]*\\s*=\\s*\""
+                    "[^\\u007f-\\u009f,\\u0020,\\u0022,\\u0027,\\u003e,\\u002f,\\u003d,\\uFDD0-\\uFDEF,\\uFFFE, " +
+                    "\\uFFFF, \\u1FFFE, \\u1FFFF, \\u2FFFE, \\u2FFFF, \\u3FFFE, \\u3FFFF, \\u4FFFE, \\u4FFFF, " +
+                    "\\u5FFFE, \\u5FFFF, \\u6FFFE, \\u6FFFF, \\u7FFFE, \\u7FFFF, \\u8FFFE, \\u8FFFF, \\u9FFFE, " +
+                    "\\u9FFFF, \\uAFFFE, \\uAFFFF, \\uBFFFE, \\uBFFFF, \\uCFFFE, \\uCFFFF, \\uDFFFE, \\uDFFFF, " +
+                    "\\uEFFFE, \\uEFFFF, \\uFFFFE, \\uFFFFF, \\u10FFFE, \\u10FFFF]*\\s*=\\s*\""
             , Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
     public static final Pattern SCRIPT_CLOSING_TAG_PATTERN =
@@ -35,44 +35,24 @@ public class HtmlUtils {
     public static final Pattern DYNAMIC_ATTRIBUTE =
             Pattern.compile("ht-[a-z]+", Pattern.CASE_INSENSITIVE);
 
-    public static final Pattern IF_ATTRIBUTE_PATTERN =
-            Pattern.compile("ht-if\\s*=\\s*\"[^\"]*\"", Pattern.CASE_INSENSITIVE);
-
-    public static final Pattern ELSEIF_ATTRIBUTE_PATTERN =
-            Pattern.compile("ht-elseIf\\s*=\\s*\"[^\"]*\"", Pattern.CASE_INSENSITIVE);
-
-    public static final Pattern ELSE_ATTRIBUTE_PATTERN =
-            Pattern.compile("ht-else", Pattern.CASE_INSENSITIVE);
-
-    public static final Pattern IMPORT_META_TAG_PATTERN =
-            Pattern.compile("<\\s*meta[\\s,\\S]* ht-import\\s*=\\s*\"[^\"]*\"", Pattern.CASE_INSENSITIVE);
-
-    public static final Pattern IMPORT_ATTRIBUTE_PATTERN =
-            Pattern.compile("ht-import\\s*=\\s*\"[^\"]*\"", Pattern.CASE_INSENSITIVE);
-
-    public static final Pattern TEMPLATE_META_TAG_PATTERN =
+    public static final Pattern META_TEMPLATE_TAG_PATTERN =
             Pattern.compile("<\\s*meta[\\s,\\S]* ht-template\\s*=\\s*\"[^\"]*\"", Pattern.CASE_INSENSITIVE);
 
     public static final Pattern TEMPLATE_ATTRIBUTE_PATTERN =
             Pattern.compile("ht-template\\s*=\\s*\"[^\"]*\"", Pattern.CASE_INSENSITIVE);
 
-    public static final Pattern ESCAPED_CONTENT_PATTERN =
-            Pattern.compile("\\{\\{\\s*[^}}]*\\}\\}"); //this will match unescasped content pattern as well
-
-    public static final Pattern UNESCAPED_CONTENT_PATTERN =
-            Pattern.compile("\\{\\{\\{\\s*[^}}]*\\}\\}\\}");
-
-    public static final Pattern META_TYPE_TAG_PATTERN =
-            Pattern.compile("<\\s*meta\\s+ht-type\\s*=\\s*\"[^\"]*\"", Pattern.CASE_INSENSITIVE);
-
-    public static final Pattern TYPE_ATTRIBUTE_PATTERN =
-            Pattern.compile("ht-type\\s*=\\s*\"[^\"]*\"", Pattern.CASE_INSENSITIVE);
 
     public static final Pattern CONTENT_VARIABLE_PATTERN =
-            Pattern.compile("@[a-z][a-z,0-9]*", Pattern.CASE_INSENSITIVE);
+            Pattern.compile("@[a-z,_,$][a-z,0-9,_,$]*", Pattern.CASE_INSENSITIVE);
 
+    /**
+     * string literal regex from stack overflow.
+     * https://stackoverflow.com/questions/171480/regex-grabbing-values-between-quotation-marks
+     * author: deadbug.
+     * regex taken from comment by: Aran-Fey.
+     */
     public static final Pattern CONTENT_VARIABLE_STRING_PATTERN =
-            Pattern.compile("\"[^\"]*\"", Pattern.CASE_INSENSITIVE);
+            Pattern.compile("([\"])(?:\\\\.|[^\\\\])*?\\1", Pattern.CASE_INSENSITIVE);
 
 
     static {
@@ -118,10 +98,10 @@ public class HtmlUtils {
         boolean characterHit = false;
 
         if (isStartingTagClosingTag(trimmedLine)) {
-            //starting form 2 and the first chars are '</' to ignore it.
+            //starting form 2 as the first chars are '</' and need to be ignored.
             startPosition = 2;
         } else if (isStartingTagDocType(line)) {
-            startPosition = getEndOfDocTypeTest(line);
+            startPosition = getEndOfDocTypeText(line);
         } else {
             //starting form 1 ad the first char is '<' to ignore it.
             startPosition = 1;
@@ -141,7 +121,7 @@ public class HtmlUtils {
         return name.toString();
     }
 
-    private static int getEndOfDocTypeTest(String line) {
+    private static int getEndOfDocTypeText(String line) {
         var trimmedLine = line.trim();
 
         int index = 1;
@@ -173,7 +153,6 @@ public class HtmlUtils {
             var name = new StringBuilder();
             boolean characterHit = false;
 
-
             for (int i = 1; i < trimmedLine.length(); i++) {
                 if (trimmedLine.charAt(i) == ' ' || trimmedLine.charAt(i) == '>') {
                     if (characterHit) {
@@ -202,7 +181,7 @@ public class HtmlUtils {
     }
 
     public static boolean isTemplateMetaTag(String tags) {
-        return TEMPLATE_META_TAG_PATTERN.matcher(tags)
+        return META_TEMPLATE_TAG_PATTERN.matcher(tags)
                 .find();
     }
 

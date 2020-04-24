@@ -1,7 +1,7 @@
 package org.ht.processors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.ht.tags.HtmlUtils;
+import org.ht.utils.HtmlUtils;
 
 public final class ScriptLineProcessingMode implements LineProcessingMode, HtmlProcessor {
 

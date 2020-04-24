@@ -23,7 +23,7 @@ public class RegularHtmlProcessor implements HtmlProcessor {
     }
 
     private void processRegularHtmlTag(HtmlProcessorData data) {
-        HtmlTags.parse(data.getHtml(), data.getHtmlTemplate())
+        HtmlTags.parse(data.getHtml())
                 .ifPresentOrElse(htmlTag -> processHtmlTag(htmlTag, data), () -> processHtmlContent(data));
     }
 
@@ -41,9 +41,7 @@ public class RegularHtmlProcessor implements HtmlProcessor {
 
         htmlTag.processOpeningTag(data.getTemplateClass());
 
-        data.getTemplateClass()
-                .appendPlainHtml(htmlTag.getHtml());
-
+        htmlTag.processTag(data.getTemplateClass());
         data.getHtmlTemplate()
                 .addToTagStack(htmlTag);
 
@@ -70,9 +68,7 @@ public class RegularHtmlProcessor implements HtmlProcessor {
 
             template.removeFromTagStack();
 
-            data.getTemplateClass()
-                    .appendPlainHtml(htmlTag.getHtml());
-
+            htmlTag.processTag(data.getTemplateClass());
             openingHtmlTag.processClosingTag(data.getTemplateClass());
 
 
@@ -87,12 +83,12 @@ public class RegularHtmlProcessor implements HtmlProcessor {
         var templateClass = data.getTemplateClass();
 
         htmlTag.processOpeningTag(templateClass);
-        templateClass.appendPlainHtml(htmlTag.getHtml());
+        htmlTag.processTag(templateClass);
         htmlTag.processClosingTag(templateClass);
     }
 
     private void processHtmlContent(HtmlProcessorData data) {
-        var content = new Content(data.getHtml(), data.getTemplateClass());
-        content.process();
+        new Content(data.getHtml(), data.getTemplateClass())
+                .process();
     }
 }

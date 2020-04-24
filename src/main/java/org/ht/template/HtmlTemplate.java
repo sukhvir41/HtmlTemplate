@@ -1,18 +1,18 @@
 package org.ht.template;
 
-import org.apache.commons.lang3.StringUtils;
 import org.ht.processors.HtmlLineProcessor;
 import org.ht.processors.HtmlProcessorData;
 import org.ht.processors.HtmlProcessors;
 import org.ht.tags.HtmlTag;
-import org.ht.tags.HtmlUtils;
+import org.ht.utils.HtmlUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.Reader;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.Optional;
 
 public final class HtmlTemplate {
 
@@ -173,10 +173,5 @@ public final class HtmlTemplate {
             return Optional.empty();
         }
     }
-
-    public void addVariableType(String name, String theClass) {
-        this.templateClass.addVariable(name, theClass);
-    }
-
 
 }

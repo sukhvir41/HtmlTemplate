@@ -2,7 +2,7 @@ package org.ht.processors;
 
 import org.apache.commons.lang3.StringUtils;
 
-import static org.ht.tags.HtmlUtils.STYLE_CLOSING_TAG_PATTERN;
+import static org.ht.utils.HtmlUtils.STYLE_CLOSING_TAG_PATTERN;
 
 public class StyleLineProcessingMode implements LineProcessingMode, HtmlProcessor {
 

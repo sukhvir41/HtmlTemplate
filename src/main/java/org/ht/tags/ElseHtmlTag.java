@@ -1,14 +1,14 @@
 package org.ht.tags;
 
+import org.apache.commons.lang3.StringUtils;
 import org.ht.template.TemplateClass;
-
-import static org.ht.tags.HtmlUtils.ELSE_ATTRIBUTE_PATTERN;
 
 public class ElseHtmlTag extends RegularHtmlTag {
 
+    private static String HT_ELSE = "ht-else";
+
     public static boolean matches(String string) {
-        return ELSE_ATTRIBUTE_PATTERN.matcher(string)
-                .find();
+        return StringUtils.containsIgnoreCase(string, HT_ELSE);
     }
 
     public ElseHtmlTag(String htmlString) {
@@ -28,14 +28,18 @@ public class ElseHtmlTag extends RegularHtmlTag {
     }
 
     @Override
-    public String getHtml() {
-        var matcher = ELSE_ATTRIBUTE_PATTERN.matcher(this.htmlString);
-        if (matcher.find()) {
-            var leftPart = this.htmlString.substring(0, matcher.start());
-            var rightPart = this.htmlString.substring(matcher.end());
-            return leftPart + rightPart;
+    public void processTag(TemplateClass templateClass) {
+
+        int startIndex = this.htmlString.indexOf(HT_ELSE);
+
+        if (startIndex == -1) {
+            templateClass.appendPlainHtml(this.htmlString);
         } else {
-            return this.htmlString;
+            int endIndex = startIndex + HT_ELSE.length();
+            var leftPart = this.htmlString.substring(0, startIndex);
+            var rightPart = this.htmlString.substring(endIndex);
+            templateClass.appendPlainHtml(leftPart + rightPart);
         }
+
     }
 }
