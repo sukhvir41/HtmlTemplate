@@ -1,6 +1,5 @@
 package org.ht.tags;
 
-import org.ht.template.HtmlTemplate;
 import org.ht.utils.HtmlUtils;
 
 import java.util.Optional;
@@ -44,6 +43,9 @@ public final class HtmlTags {
 
         } else if (ElseHtmlTag.matches(tagString)) { // else tag check should be after else if check
             return Optional.of(new ElseHtmlTag(tagString));
+
+        } else if (ForHtmlTag.matches(tagString)) {
+            return Optional.of(new ForHtmlTag(tagString));
 
         } else {
             return Optional.empty();

@@ -3,7 +3,7 @@ package org.ht.tags;
 import org.apache.commons.lang3.StringUtils;
 import org.ht.template.TemplateClass;
 
-public class ElseHtmlTag extends RegularHtmlTag {
+public final class ElseHtmlTag extends RegularHtmlTag {
 
     private static String HT_ELSE = "ht-else";
 
@@ -11,7 +11,7 @@ public class ElseHtmlTag extends RegularHtmlTag {
         return StringUtils.containsIgnoreCase(string, HT_ELSE);
     }
 
-    public ElseHtmlTag(String htmlString) {
+    ElseHtmlTag(String htmlString) {
         super(htmlString);
     }
 

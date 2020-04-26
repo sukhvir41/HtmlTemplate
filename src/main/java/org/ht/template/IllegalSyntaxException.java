@@ -1,6 +1,10 @@
 package org.ht.template;
 
+import java.util.Optional;
+
 public class IllegalSyntaxException extends RuntimeException {
+
+    private Exception exception;
 
     public IllegalSyntaxException(String message) {
         super(message);
@@ -8,6 +12,14 @@ public class IllegalSyntaxException extends RuntimeException {
 
     public IllegalSyntaxException(String message, Exception e) {
         super(message);
-        e.printStackTrace();
+        this.exception = e;
+    }
+
+
+    @Override
+    public void printStackTrace() {
+        super.printStackTrace();
+        Optional.of(exception)
+                .ifPresent(Exception::printStackTrace);
     }
 }

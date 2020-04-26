@@ -1,7 +1,6 @@
 package org.ht.template;
 
 import org.ht.processors.HtmlLineProcessor;
-import org.ht.utils.HtStringUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -9,7 +8,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 
 public class Testing {
 

@@ -34,7 +34,7 @@ public class Code {
             if (stringMatcher.start() < variableStartIndex && stringMatcher.end() > variableStartIndex) {
                 return true;
             } else {
-                startIndex = stringMatcher.end();
+                startIndex = stringMatcher.end() + 1;
             }
         }
 

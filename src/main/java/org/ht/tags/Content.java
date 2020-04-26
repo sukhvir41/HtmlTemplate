@@ -6,7 +6,7 @@ import org.ht.template.IllegalSyntaxException;
 import org.ht.template.TemplateClass;
 import org.ht.utils.HtStringUtils;
 
-public class Content {
+public final class Content {
 
     public static final String ESCAPED_CONTENT_START = "{{";
     public static final String ESCAPED_CONTENT_END = "}}";

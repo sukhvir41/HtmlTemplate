@@ -33,7 +33,10 @@ public final class MetaImportHtmlTag implements HtmlTag {
                         .replace("\"", "")
                         .trim();
 
-                templateClass.addImportStatement(importString);
+                var imports = importString.split(",");
+                for (int i = 0; i < imports.length; i++) {
+                    templateClass.addImportStatement(imports[i].trim());
+                }
             }
         } catch (Exception e) {
             throw new IllegalSyntaxException("Unable to process import statement \n" +

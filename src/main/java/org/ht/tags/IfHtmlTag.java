@@ -6,7 +6,7 @@ import org.ht.template.TemplateClass;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class IfHtmlTag extends RegularHtmlTag {
+public final class IfHtmlTag extends RegularHtmlTag {
 
     public static final Pattern IF_ATTRIBUTE_PATTERN =
             Pattern.compile("ht-if\\s*=\\s*\"[^\"]*\"", Pattern.CASE_INSENSITIVE);

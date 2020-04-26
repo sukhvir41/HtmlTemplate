@@ -116,7 +116,7 @@ public class TemplateClass {
 
     public void addVariable(String name, String type) {
         if (StringUtils.isNoneBlank(name, type)) {
-            this.variablesTypes.put(name, type);
+            this.variablesTypes.put(name.trim(), type.trim());
         }
     }
 

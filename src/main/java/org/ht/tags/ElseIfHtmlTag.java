@@ -6,7 +6,7 @@ import org.ht.template.TemplateClass;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ElseIfHtmlTag extends RegularHtmlTag {
+public final class ElseIfHtmlTag extends RegularHtmlTag {
 
     public static final Pattern ELSEIF_ATTRIBUTE_PATTERN =
             Pattern.compile("ht-elseIf\\s*=\\s*\"[^\"]*\"", Pattern.CASE_INSENSITIVE);

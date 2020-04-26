@@ -20,15 +20,14 @@ public class MetaTypeTestTest {
     }
 
     @Test
-
     public void testMethod() throws URISyntaxException {
 
         var file = TestUtils.getFile(getFilePath());
         var htmlTemplate = new HtmlTemplate();
 
-        var theClass = Reflect.compile(getClassName(), htmlTemplate.setTemplate(file)
-                .renderReflection());
-
+        var classString = htmlTemplate.setTemplate(file)
+                .renderReflection();
+        var theClass = Reflect.compile(getClassName(), classString);
 
         Writer writer = new StringWriter();
         var instance = theClass.call("getInstance");

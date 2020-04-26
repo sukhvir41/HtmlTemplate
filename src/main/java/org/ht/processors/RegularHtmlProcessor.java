@@ -8,7 +8,6 @@ import org.ht.template.HtmlTemplate;
 
 public class RegularHtmlProcessor implements HtmlProcessor {
 
-
     @Override
     public void process(HtmlProcessorData data) {
 
@@ -75,7 +74,6 @@ public class RegularHtmlProcessor implements HtmlProcessor {
         } else {
             throw new IllegalStateException("Miss matched closing tag. Tags may not be closed in the right order " + htmlTag.getName());
         }
-
 
     }
 
