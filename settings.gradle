@@ -1,2 +1,4 @@
-rootProject.name = 'HtmlTemplater'
+rootProject.name = 'HtmlTemplate'
+include 'HtmlTemplate-Core'
+include 'HtmlTemplate-Cli'
 

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <meta ht-import="java.util.*">
+    <meta ht-variables="String[],names, List<Integer>,ages, int[], counters ">
+</head>
+<body>
+
+<h1>looping names</h1>
+<h1 ht-for="   name      in          @names   ">
+    {{ name }}
+</h1>
+
+<h1>looping names with index </h1>
+<h1 ht-for="    index   ,   name     in    @names   ">
+    {{ name }},{{index }}
+</h1>
+
+<h1> looping ages</h1>
+<h1 ht-for="    age   in ages">
+    {{age }}
+</h1>
+
+<h1> looping ages with index</h1>
+<h1 ht-for="   index   ,    age    in      ages">
+    {{age }},{{index}}
+</h1>
+
+<h1>looping counter</h1>
+
+<h1 ht-for="   counter   in    counters    ">
+    {{ counter }}
+</h1>
+
+<h1>looping counter with index</h1>
+
+<h1 ht-for="index,counter in counters">
+    {{ counter }},{{index}}
+</h1>
+
+</body>
+</html>
