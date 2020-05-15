@@ -1,4 +1,5 @@
 rootProject.name = 'HtmlTemplate'
 include 'HtmlTemplate-Core'
 include 'HtmlTemplate-Cli'
+include 'HtmlTemplate-GradlePlugin'
 
