@@ -14,7 +14,7 @@
         <module name="HtmlTemplate.HtmlTemplate-Cli.main" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
+    <bytecodeTargetLevel target="1.10">
       <module name="HtmlTemplate.buildSrc.main" target="1.10" />
       <module name="HtmlTemplate.buildSrc.test" target="1.10" />
       <module name="HtmlTemplate.HtTemplate-Cli.main" target="1.10" />
