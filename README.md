@@ -1,18 +1,18 @@
-#HtmlTemplate
+# HtmlTemplate
 HtmlTemplate is a preprocessor that converts html to Java. Template syntax Inspired by [ThymeLeaf](https://github.com/thymeleaf/thymeleaf), 
 [Vue.js](https://github.com/vuejs/vue) and implementation inspired by [Rocker Template](https://github.com/fizzed/rocker).
 HtmlTemplate is compatible with java 10+, is statically typed ,with no reflection and compiles along your project. 
 
-##Features
+## Features
 + Statically typed
 + Everything is in html tags
 + No reflection
 + Memory efficient (Maybe? needs testing)
 
-##Syntax
+## Syntax
 Have a look at the <a href="SYNTAX.md">SYNTAX.md</a>. 
 
-##Libraries used
+## Libraries used
 + [Apache commons lang](http://commons.apache.org/proper/commons-lang/)
 + [Apache commons text](http://commons.apache.org/proper/commons-text/)
 + [JOOR](https://github.com/jOOQ/jOOR)
