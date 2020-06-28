@@ -18,21 +18,25 @@ package com.github.sukhvir41.tags;
 
 import com.github.sukhvir41.template.IllegalSyntaxException;
 import com.github.sukhvir41.template.TemplateClass;
+import com.github.sukhvir41.utils.HtmlUtils;
 
 import java.util.regex.Pattern;
 
 final class MetaImportHtmlTag implements HtmlTag {
 
-    public static final Pattern IMPORT_META_TAG_PATTERN =
-            Pattern.compile("<\\s*meta[\\s,\\S]* ht-import\\s*=\\s*\"[^\"]*\"", Pattern.CASE_INSENSITIVE);
+    private static final String TAG_NAME = "meta";
     public static final Pattern IMPORT_ATTRIBUTE_PATTERN =
             Pattern.compile("ht-import\\s*=\\s*\"[^\"]*\"", Pattern.CASE_INSENSITIVE);
 
     private String htmlString;
 
     public static boolean matches(String string) {
-        return IMPORT_META_TAG_PATTERN.matcher(string)
-                .find();
+
+        return HtmlUtils.getStartingHtmlTagName(string)
+                .equalsIgnoreCase(TAG_NAME)
+                &&
+                IMPORT_ATTRIBUTE_PATTERN.matcher(string)
+                        .find();
     }
 
     MetaImportHtmlTag(String htmlString) {

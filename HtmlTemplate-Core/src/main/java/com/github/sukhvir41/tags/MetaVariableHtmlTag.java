@@ -18,19 +18,23 @@ package com.github.sukhvir41.tags;
 
 import com.github.sukhvir41.template.IllegalSyntaxException;
 import com.github.sukhvir41.template.TemplateClass;
+import com.github.sukhvir41.utils.HtmlUtils;
 
 import java.util.regex.Pattern;
 
 final class MetaVariableHtmlTag extends RegularHtmlTag {
 
-    public static final Pattern META_TYPE_TAG_PATTERN =
-            Pattern.compile("<\\s*meta\\s+ht-variables\\s*=\\s*\"[^\"]*\"", Pattern.CASE_INSENSITIVE);
+    private static final String TAG_NAME = "meta";
     public static final Pattern TYPE_ATTRIBUTE_PATTERN =
             Pattern.compile("ht-variables\\s*=\\s*\"[^\"]*\"", Pattern.CASE_INSENSITIVE);
 
     public static boolean matches(String html) {
-        return META_TYPE_TAG_PATTERN.matcher(html)
-                .find();
+
+        return HtmlUtils.getStartingHtmlTagName(html)
+                .equalsIgnoreCase(TAG_NAME)
+                &&
+                TYPE_ATTRIBUTE_PATTERN.matcher(html)
+                        .find();
     }
 
     protected MetaVariableHtmlTag(String htmlString) {
