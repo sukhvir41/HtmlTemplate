@@ -1,13 +1,26 @@
 # HtmlTemplate
-HtmlTemplate is a preprocessor that converts html to Java. Template syntax Inspired by [ThymeLeaf](https://github.com/thymeleaf/thymeleaf), 
-[Vue.js](https://github.com/vuejs/vue) and implementation inspired by [Rocker Template](https://github.com/fizzed/rocker).
-HtmlTemplate is compatible with java 10+, is statically typed ,with no reflection and compiles along your project. 
+HtmlTemplate is a Java Html Template as you may have guessed from the name. The template engine is memory efficient by 
+loading the static parts in memory once and is statically typed with no reflection. This is achieved by converting 
+the html template into a java template class. Syntax in based on Html attributes and Html tags(no custom html tag). 
+Template syntax is inspired by [ThymeLeaf](https://github.com/thymeleaf/thymeleaf), [Vue.js](https://github.com/vuejs/vue) 
+and implementation inspired by [Rocker Template](https://github.com/fizzed/rocker). HtmlTemplate is compatible with 
+java 10+.
 
 ## Features
 + Statically typed
 + Everything is in html tags
 + No reflection
-+ Memory efficient (Maybe? needs testing)
++ Memory efficient by loading static parts only once (zero copy)
+
+## Why another Html templating engine in Java
+This project was born by the frustration of using JSP(JSTL) and other templating engines. Some of the templating engines
+are general purpose but none of them were good for Html templating IMO. The problem most of the faced were custom syntax 
+(not tag based or attribute mixing languages) or either too verbose(JSTL) or need a servlet container to work and would 
+not render well in the browser directly. These problems were solved by Thymeleaf but it did most of the things in runtime 
+leading to errors could only be know during runtime basically not statically typed. HtmlTemplate is an attempt to solve 
+these problems by having the syntax based html attributes and tags (when writing html stay in html), statically typed 
+and memory optimization in mind by loading static parts of the template into memory once and reusing them for each render.
+This is achieved by converting the html template file into a java template class.    
 
 ## Syntax
 Have a look at the <a href="SYNTAX.md">SYNTAX.md</a>. 
@@ -22,8 +35,8 @@ Have a look at the <a href="SYNTAX.md">SYNTAX.md</a>.
 
 ## Getting Started
 
-HtmlTemplate comprised of a parser/converter that converts html file to a java file.
-For the only way to do this is use the command line tool. 
+HtmlTemplate is comprised of a parser/converter that converts html file to a java template class.
+For now the only way to do this is to use the command line tool. 
 
 ##### Create a html file
 To get started lets create a html file named Hello.html which will contain the following html code.
