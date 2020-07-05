@@ -15,8 +15,6 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="1.10">
-      <module name="HtmlTemplate.buildSrc.main" target="1.10" />
-      <module name="HtmlTemplate.buildSrc.test" target="1.10" />
       <module name="HtmlTemplate.HtTemplate-Cli.main" target="1.10" />
       <module name="HtmlTemplate.HtTemplate-Cli.test" target="1.10" />
       <module name="HtmlTemplater.buildSrc.main" target="1.10" />

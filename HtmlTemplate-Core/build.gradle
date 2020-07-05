@@ -37,3 +37,9 @@ dependencies {
 test {
     useJUnit()
 }
+
+shadowJar {
+    archiveFileName = jar.archiveFileName
+}
+
+apply plugin: ProjectReleasePlugin
