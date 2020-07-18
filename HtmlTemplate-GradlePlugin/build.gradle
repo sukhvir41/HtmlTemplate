@@ -11,5 +11,19 @@ repositories {
 
 dependencies {
     implementation localGroovy()
+    implementation gradleApi()
+    implementation project(":HtmlTemplate-Core")
     testImplementation group: 'junit', name: 'junit', version: '4.12'
 }
+
+gradlePlugin {
+    plugins {
+        simplePlugin {
+            id = 'com.github.HtmlTemplate'
+            implementationClass = 'com.github.sukhvir41.gradleplugin.HtmlTemplatePlugin'
+        }
+    }
+}
+
+
+apply plugin: ProjectReleasePlugin

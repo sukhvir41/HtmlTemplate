@@ -16,14 +16,45 @@
 
 package com.github.sukhvir41.gradleplugin
 
+import groovy.io.FileType
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.plugins.JavaPlugin
+import org.gradle.api.plugins.JavaPluginConvention
+
+import java.nio.file.Path
 
 class HtmlTemplatePlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
-        project.getBu
+        project.getPluginManager()
+                .apply(JavaPlugin);
+
+        def extension = project.extensions.create("HtTemplate", HtTemplateExt)
+
+        def htTemplateTask = project.tasks.register("createHtmlTemplate", CreateHtmlTemplate) {
+            templateFiles(getTemplateFiles(extension, project))
+        }
+
+        project.getTasks().getByName(JavaPlugin.COMPILE_JAVA_TASK_NAME)
+                .dependsOn(htTemplateTask)
+    }
+
+    private Set<Path> getTemplateFiles(HtTemplateExt ext, Project project) {
+        def sourceDir = project.convention.getPlugin(JavaPluginConvention).sourceSets.main.java
+        def packageDir = sourceDir.sourceDirectories
+                .singleFile
+                .toPath()
+                .resolve(ext.javaPackage.replace(".", File.separator))
+
+        def set = new HashSet<Path>()
+        packageDir.eachFileRecurse(FileType.FILES) { file ->
+            if (ext.ignoreFiles.contains(file.getFileName().toString())) {
+                set.add(file)
+            }
+        }
+        return set
     }
 
 }
