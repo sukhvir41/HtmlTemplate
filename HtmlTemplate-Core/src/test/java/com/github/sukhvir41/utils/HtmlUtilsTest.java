@@ -107,16 +107,4 @@ public class HtmlUtilsTest {
         }
     }
 
-    @Test
-    public void isMetaIncludeTagTest() {
-        var test1 = " {{ <some code> }}";
-        Assert.assertFalse("contains only dynamic content", HtmlUtils.isMetaIncludeTag(test1));
-
-        var test2 = " < meta    ht-include =  \"some/link\"> {{ <some code> }}";
-        Assert.assertTrue("contains only dynamic content", HtmlUtils.isMetaIncludeTag(test2));
-
-        var test3 = " <meta    ht-include =  \"some/link\">";
-        Assert.assertTrue("contains only dynamic content", HtmlUtils.isMetaIncludeTag(test3));
-    }
-
 }

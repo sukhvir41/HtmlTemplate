@@ -16,18 +16,23 @@
 
 package com.github.sukhvir41.tags;
 
-import com.github.sukhvir41.template.TemplateClass;
-
 import static org.junit.Assert.*;
 
+import com.github.sukhvir41.core.ClassGenerator;
+import com.github.sukhvir41.newCore.TemplateClassGenerator;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.Mockito;
+import org.junit.runner.RunWith;
+import org.mockito.*;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(IfHtmlTag.class)
 public class IfHtmlTagTest {
 
     @Rule
@@ -36,46 +41,73 @@ public class IfHtmlTagTest {
     @Captor
     private ArgumentCaptor<String> addCodeCapture;
 
+    @Mock
+    public TemplateClassGenerator classGenerator;
+
+    @Mock
+    public DynamicAttributeHtmlTag dynamicAttributeHtmlTag;
+
+    @Before
+    public void beforeTest() throws Exception {
+        Mockito.doNothing()
+                .when(dynamicAttributeHtmlTag)
+                .processOpeningTag(classGenerator);
+
+        PowerMockito.whenNew(DynamicAttributeHtmlTag.class)
+                .withArguments(ArgumentMatchers.anyString())
+                .thenReturn(dynamicAttributeHtmlTag);
+    }
+
     @Test
-    public void test1() {
-        TemplateClass templateClass = Mockito.mock(TemplateClass.class);
+    public void test1() throws Exception {
 
-        IfHtmlTag ifHtmlTag = new IfHtmlTag("< h1 ht-if=\"@isTrue\">  ");
 
-        ifHtmlTag.processOpeningTag(templateClass);
-        Mockito.verify(templateClass)
+        IfHtmlTag ifHtmlTag = new IfHtmlTag("<h1 ht-if=\"@isTrue\">");
+
+        ifHtmlTag.processOpeningTag(classGenerator);
+
+        Mockito.verify(classGenerator)
                 .addCode(addCodeCapture.capture());
-        Mockito.verify(templateClass).incrementFunctionIndentation();
+        Mockito.verify(classGenerator)
+                .incrementRenderFunctionIndentation();
         assertEquals("if(condition( () -> isTrue() )){", addCodeCapture.getValue());
 
-        ifHtmlTag.processClosingTag(templateClass);
-        Mockito.verify(templateClass, Mockito.times(2))
+        ifHtmlTag.processClosingTag(classGenerator);
+
+        Mockito.verify(classGenerator, Mockito.times(2))
                 .addCode(addCodeCapture.capture());
-        Mockito.verify(templateClass)
-                .decrementFunctionIndentation();
+        Mockito.verify(classGenerator)
+                .decrementRenderFunctionIndentation();
         assertEquals("}", addCodeCapture.getValue());
+
+        PowerMockito.verifyNew(DynamicAttributeHtmlTag.class)
+                .withArguments("<h1>");
 
     }
 
     @Test
-    public void test2() {
-        TemplateClass templateClass = Mockito.mock(TemplateClass.class);
+    public void test2() throws Exception {
 
-        IfHtmlTag ifHtmlTag = new IfHtmlTag("< h1 ht-if=\"@string.indexOf('@test.com') > 10\">  ");
+        IfHtmlTag ifHtmlTag = new IfHtmlTag("<h1 ht-if=\"@string.indexOf('@test.com') > 10\">");
 
-        ifHtmlTag.processOpeningTag(templateClass);
-        Mockito.verify(templateClass)
+        ifHtmlTag.processOpeningTag(classGenerator);
+
+        Mockito.verify(classGenerator)
                 .addCode(addCodeCapture.capture());
-        Mockito.verify(templateClass)
-                .incrementFunctionIndentation();
+        Mockito.verify(classGenerator)
+                .incrementRenderFunctionIndentation();
         assertEquals("if(condition( () -> string().indexOf(\"@test.com\") > 10 )){", addCodeCapture.getValue());
 
-        ifHtmlTag.processClosingTag(templateClass);
-        Mockito.verify(templateClass, Mockito.times(2))
+        ifHtmlTag.processClosingTag(classGenerator);
+
+        Mockito.verify(classGenerator, Mockito.times(2))
                 .addCode(addCodeCapture.capture());
-        Mockito.verify(templateClass)
-                .decrementFunctionIndentation();
+        Mockito.verify(classGenerator)
+                .decrementRenderFunctionIndentation();
         assertEquals("}", addCodeCapture.getValue());
+
+        PowerMockito.verifyNew(DynamicAttributeHtmlTag.class)
+                .withArguments("<h1>");
 
     }
 

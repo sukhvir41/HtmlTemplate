@@ -16,7 +16,7 @@
 
 package com.github.sukhvir41.tags;
 
-import com.github.sukhvir41.template.TemplateClass;
+import com.github.sukhvir41.newCore.TemplateClassGenerator;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -47,10 +47,9 @@ public class DynamicAttributeHtmlTagTest {
     private DynamicAttributeHtmlTag dynamicTag = new DynamicAttributeHtmlTag("<h1 ht-test = \"@testValue\" ht-test1 = \"@test1Value\" >");
 
     @Test
-    public void testOpeningAndClosing() {
-        var templateClass = Mockito.mock(TemplateClass.class);
+    public void testClosing() {
+        TemplateClassGenerator templateClass = Mockito.mock(TemplateClassGenerator.class);
 
-        dynamicTag.processOpeningTag(templateClass);
         dynamicTag.processClosingTag(templateClass);
 
         Mockito.verifyNoInteractions(templateClass);
@@ -58,14 +57,18 @@ public class DynamicAttributeHtmlTagTest {
     }
 
     @Test
-    public void testProcess() {
+    public void testOpeningTag() {
 
-        var templateClass = Mockito.mock(TemplateClass.class);
+        TemplateClassGenerator classGenerator = Mockito.mock(TemplateClassGenerator.class);
 
-        dynamicTag.processTag(templateClass);
+        Mockito.when(classGenerator.getWriterVariableName())
+                .thenReturn("testWriter");
 
-        Mockito.verify(templateClass, Mockito.times(6))
+        dynamicTag.processOpeningTag(classGenerator);
+
+        Mockito.verify(classGenerator, Mockito.times(6))
                 .appendPlainHtml(addPlainHtmlCapture.capture(), appendIndentationCapture.capture(), appendNewLineCapture.capture());
+
         var capturedPlainHtml = addPlainHtmlCapture.getAllValues();
         var capturedIndentation = appendIndentationCapture.getAllValues();
         var capturedNewLine = appendNewLineCapture.getAllValues();
@@ -90,12 +93,12 @@ public class DynamicAttributeHtmlTagTest {
         assertTrue(capturedNewLine.get(5));
 
 
-        Mockito.verify(templateClass, Mockito.times(2))
+        Mockito.verify(classGenerator, Mockito.times(2))
                 .addCode(addCodeCapture.capture());
 
         var codes = addCodeCapture.getAllValues();
-        assertEquals("writer.append(content(() -> String.valueOf(testValue())));", codes.get(0));
-        assertEquals("writer.append(content(() -> String.valueOf(test1Value())));", codes.get(1));
+        assertEquals("testWriter.append(content(() -> String.valueOf(testValue())));", codes.get(0));
+        assertEquals("testWriter.append(content(() -> String.valueOf(test1Value())));", codes.get(1));
 
 
     }

@@ -16,19 +16,20 @@
 
 package com.github.sukhvir41.tags;
 
-import com.github.sukhvir41.template.IllegalSyntaxException;
-import com.github.sukhvir41.template.TemplateClass;
+import com.github.sukhvir41.core.IllegalSyntaxException;
+import com.github.sukhvir41.core.ClassGenerator;
+import com.github.sukhvir41.newCore.TemplateClassGenerator;
 import com.github.sukhvir41.utils.HtmlUtils;
 
 import java.util.regex.Pattern;
 
-final class MetaImportHtmlTag implements HtmlTag {
+public final class MetaImportHtmlTag implements HtmlTag {
 
     private static final String TAG_NAME = "meta";
     public static final Pattern IMPORT_ATTRIBUTE_PATTERN =
             Pattern.compile("ht-import\\s*=\\s*\"[^\"]*\"", Pattern.CASE_INSENSITIVE);
 
-    private String htmlString;
+    private final String htmlString;
 
     public static boolean matches(String string) {
 
@@ -39,12 +40,12 @@ final class MetaImportHtmlTag implements HtmlTag {
                         .find();
     }
 
-    MetaImportHtmlTag(String htmlString) {
+    public MetaImportHtmlTag(String htmlString) {
         this.htmlString = htmlString;
     }
 
     @Override
-    public void processOpeningTag(TemplateClass templateClass) {
+    public void processOpeningTag(TemplateClassGenerator classGenerator) {
         var matcher = IMPORT_ATTRIBUTE_PATTERN.matcher(htmlString);
         try {
             if (matcher.find()) {
@@ -55,7 +56,7 @@ final class MetaImportHtmlTag implements HtmlTag {
 
                 var imports = importString.split(",");
                 for (int i = 0; i < imports.length; i++) {
-                    templateClass.addImportStatement(imports[i].trim());
+                    classGenerator.addImportStatement(imports[i].trim());
                 }
             }
         } catch (Exception e) {
@@ -65,12 +66,7 @@ final class MetaImportHtmlTag implements HtmlTag {
     }
 
     @Override
-    public void processTag(TemplateClass templateClass) {
-        // do nothing
-    }
-
-    @Override
-    public void processClosingTag(TemplateClass templateClass) {
+    public void processClosingTag(TemplateClassGenerator classGenerator) {
         // do nothing
     }
 

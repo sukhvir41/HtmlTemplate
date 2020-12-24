@@ -16,17 +16,24 @@
 
 package com.github.sukhvir41.tags;
 
-import com.github.sukhvir41.template.IllegalSyntaxException;
-import com.github.sukhvir41.template.TemplateClass;
+import com.github.sukhvir41.core.IllegalSyntaxException;
+import com.github.sukhvir41.newCore.TemplateClassGenerator;
 import com.github.sukhvir41.utils.HtmlUtils;
+import org.apache.commons.lang3.StringUtils;
 
+import java.lang.invoke.SwitchPoint;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 
-final class MetaVariableHtmlTag extends RegularHtmlTag {
+public class MetaVariableHtmlTag implements HtmlTag {
 
     private static final String TAG_NAME = "meta";
     public static final Pattern TYPE_ATTRIBUTE_PATTERN =
             Pattern.compile("ht-variables\\s*=\\s*\"[^\"]*\"", Pattern.CASE_INSENSITIVE);
+
+    public String htmlString;
 
     public static boolean matches(String html) {
 
@@ -37,42 +44,97 @@ final class MetaVariableHtmlTag extends RegularHtmlTag {
                         .find();
     }
 
-    protected MetaVariableHtmlTag(String htmlString) {
-        super(htmlString);
+    public MetaVariableHtmlTag(String htmlString) {
+        this.htmlString = htmlString;
     }
 
     @Override
-    public void processOpeningTag(TemplateClass templateClass) {
-        extractAndAddType(templateClass);
+    public void processOpeningTag(TemplateClassGenerator classGenerator) {
+        String variablesString = extractVariablesString();
+        Map<String, String> variables = getVariables(variablesString);
+        addVariables(classGenerator, variables);
+
     }
 
-    private void extractAndAddType(TemplateClass templateClass) {
-
+    protected String extractVariablesString() {
         var matcher = TYPE_ATTRIBUTE_PATTERN
-                .matcher(super.htmlString);
-
+                .matcher(this.htmlString);
         if (matcher.find()) {
-            var types = super.htmlString
+            String htVariables = this.htmlString
                     .substring(matcher.start(), matcher.end());
-            types = types.substring(types.indexOf("\"") + 1, types.length() - 1);
+            return htVariables.substring(htVariables.indexOf("\"") + 1, htVariables.length() - 1);
+        } else {
+            return "";
+        }
+    }
 
-            String[] typesParts = types.split(",");
-
-            if (typesParts.length % 2 != 0) {
+    // key variable name, value -  type
+    protected Map<String, String> getVariables(String variableString) {
+        if (StringUtils.isBlank(variableString)) {
+            return Collections.emptyMap();
+        } else {
+            String[] variableParts = variableString.split(",");
+            if (variableParts.length % 2 != 0) {
                 throw new IllegalSyntaxException("A missing name or type.\nLine -> " + this.htmlString);
             } else {
-                for (int i = 0; i < typesParts.length; i += 2) {
-                    templateClass.addVariable(typesParts[i], typesParts[i + 1]);
+                Map<String, String> variables = new HashMap<>();
+                for (int i = 0; i < variableParts.length; i += 2) {
+                    variables.put(variableParts[i + 1].trim(), covertFromPrimitiveToObjectType(variableParts[i].trim()));
                 }
+                return variables;
             }
         }
+    }
 
+    private String covertFromPrimitiveToObjectType(String type) {
+        switch (type) {
+            case "byte":
+                return "Byte";
+            case "short":
+                return "Short";
+            case "int":
+                return "Integer";
+            case "long":
+                return "Long";
+            case "float":
+                return "Float";
+            case "double":
+                return "Double";
+            case "char":
+                return "Character";
+            default:
+                return type;
+        }
+    }
+
+    protected void addVariables(TemplateClassGenerator classGenerator, Map<String, String> variables) {
+        variables.forEach((name, type) -> classGenerator.addVariable(type, name));
+    }
+
+
+    @Override
+
+    public void processClosingTag(TemplateClassGenerator classGenerator) {
     }
 
     @Override
-    public void processTag(TemplateClass templateClass) {
-        // do nothing
+    public String getName() {
+        return "meta";
     }
 
+    @Override
+    public boolean isClosingTag() {
+        return false;
+    }
+
+    @Override
+    public boolean isSelfClosing() {
+        return true;
+    }
+
+    @Override
+    public boolean isDocTypeTag() {
+        return false;
+    }
 
 }

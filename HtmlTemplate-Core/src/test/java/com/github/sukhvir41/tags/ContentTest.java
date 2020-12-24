@@ -16,7 +16,7 @@
 
 package com.github.sukhvir41.tags;
 
-import com.github.sukhvir41.template.TemplateClass;
+import com.github.sukhvir41.newCore.TemplateClassGenerator;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -47,12 +47,12 @@ public class ContentTest {
 
     @Test
     public void plainTest() {
-        TemplateClass templateClass = Mockito.mock(TemplateClass.class);
+        TemplateClassGenerator classGenerator = Mockito.mock(TemplateClassGenerator.class);
 
-        var content = new Content(" some content ", templateClass);
-        content.process();
+        var content = new Content(" some content ",null);
+        content.processOpeningTag(classGenerator);
 
-        Mockito.verify(templateClass)
+        Mockito.verify(classGenerator)
                 .appendPlainHtml(addPlainHtmlCapture.capture());
 
         assertEquals(" some content ", addPlainHtmlCapture.getValue());
@@ -61,13 +61,17 @@ public class ContentTest {
 
     @Test
     public void escapedCodeTest() {
-        TemplateClass templateClass = Mockito.mock(TemplateClass.class);
+        TemplateClassGenerator classGenerator = Mockito.mock(TemplateClassGenerator.class);
 
-        var content = new Content(" content1 {{ \"some content2\" }} content3 {{ \"<h1> content4 </h1>\" }}", templateClass);
-        content.process();
+        Mockito.when(classGenerator.getWriterVariableName())
+                .thenReturn("testWriter");
+
+
+        var content = new Content(" content1 {{ \"some content2\" }} content3 {{ \"<h1> content4 </h1>\" }}",null);
+        content.processOpeningTag(classGenerator);
 
         //testing plain content part
-        Mockito.verify(templateClass, Mockito.times(2))
+        Mockito.verify(classGenerator, Mockito.times(2))
                 .appendPlainHtml(addPlainHtmlCapture.capture(), appendIndentationCapture.capture(), appendNewLineCapture.capture());
         var capturedPlainHtml = addPlainHtmlCapture.getAllValues();
         var capturedIndentation = appendIndentationCapture.getAllValues();
@@ -81,26 +85,29 @@ public class ContentTest {
 
 
         //testing escaped dynamic content part
-        Mockito.verify(templateClass, Mockito.times(2))
+        Mockito.verify(classGenerator, Mockito.times(2))
                 .addCode(addCodeCapture.capture());
         var addedCodes = addCodeCapture.getAllValues();
-        assertEquals("writer.append(content(() -> String.valueOf(\"some content2\")));", addedCodes.get(0));
-        assertEquals("writer.append(content(() -> String.valueOf(\"<h1> content4 </h1>\")));", addedCodes.get(1));
+        assertEquals("testWriter.append(content(() -> String.valueOf(\"some content2\")));", addedCodes.get(0));
+        assertEquals("testWriter.append(content(() -> String.valueOf(\"<h1> content4 </h1>\")));", addedCodes.get(1));
 
         //testing new line added at end
-        Mockito.verify(templateClass)
+        Mockito.verify(classGenerator)
                 .appendPlainHtmlNewLine();
     }
 
     @Test
     public void unescapedCodeTest() {
-        TemplateClass templateClass = Mockito.mock(TemplateClass.class);
+        TemplateClassGenerator classGenerator = Mockito.mock(TemplateClassGenerator.class);
 
-        var content = new Content(" content1 {{ \"some content2\" }} content3 {{{ \"<h1> content4 </h1>\" }}}", templateClass);
-        content.process();
+        Mockito.when(classGenerator.getWriterVariableName())
+                .thenReturn("testWriter");
+
+        var content = new Content(" content1 {{ \"some content2\" }} content3 {{{ \"<h1> content4 </h1>\" }}}",null);
+        content.processOpeningTag(classGenerator);
 
         //testing plain content part
-        Mockito.verify(templateClass, Mockito.times(2))
+        Mockito.verify(classGenerator, Mockito.times(2))
                 .appendPlainHtml(addPlainHtmlCapture.capture(), appendIndentationCapture.capture(), appendNewLineCapture.capture());
         var capturedPlainHtml = addPlainHtmlCapture.getAllValues();
         var capturedIndentation = appendIndentationCapture.getAllValues();
@@ -114,14 +121,14 @@ public class ContentTest {
 
 
         //testing escaped dynamic content part
-        Mockito.verify(templateClass, Mockito.times(2))
+        Mockito.verify(classGenerator, Mockito.times(2))
                 .addCode(addCodeCapture.capture());
         var addedCodes = addCodeCapture.getAllValues();
-        assertEquals("writer.append(content(() -> String.valueOf(\"some content2\")));", addedCodes.get(0));
-        assertEquals("writer.append(unescapedContent(() -> String.valueOf(\"<h1> content4 </h1>\")));", addedCodes.get(1));
+        assertEquals("testWriter.append(content(() -> String.valueOf(\"some content2\")));", addedCodes.get(0));
+        assertEquals("testWriter.append(unescapedContent(() -> String.valueOf(\"<h1> content4 </h1>\")));", addedCodes.get(1));
 
         //testing new line added at end
-        Mockito.verify(templateClass)
+        Mockito.verify(classGenerator)
                 .appendPlainHtmlNewLine();
     }
 

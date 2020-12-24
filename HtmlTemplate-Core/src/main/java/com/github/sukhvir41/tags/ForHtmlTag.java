@@ -16,16 +16,17 @@
 
 package com.github.sukhvir41.tags;
 
-import com.github.sukhvir41.processors.Code;
-import com.github.sukhvir41.template.IllegalSyntaxException;
-import com.github.sukhvir41.template.TemplateClass;
+import com.github.sukhvir41.newCore.TemplateClassGenerator;
+import com.github.sukhvir41.parsers.Code;
+import com.github.sukhvir41.core.IllegalSyntaxException;
+import com.github.sukhvir41.core.ClassGenerator;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-final class ForHtmlTag extends RegularHtmlTag {
+public final class ForHtmlTag extends RegularHtmlTag {
 
     public static final Pattern FOR_ATTRIBUTE_PATTERN =
             Pattern.compile("ht-for\\s*=\\s*\"[^\"]*\"", Pattern.CASE_INSENSITIVE);
@@ -33,18 +34,18 @@ final class ForHtmlTag extends RegularHtmlTag {
     private static final String IN = " in ";
 
 
-    static boolean matches(String html) {
+    public static boolean matches(String html) {
         return FOR_ATTRIBUTE_PATTERN.matcher(html)
                 .find();
     }
 
 
-    ForHtmlTag(String htmlString) {
+    public ForHtmlTag(String htmlString) {
         super(htmlString);
     }
 
     @Override
-    public void processOpeningTag(TemplateClass templateClass) {
+    public void processOpeningTag(TemplateClassGenerator classGenerator) {
         var matcher = FOR_ATTRIBUTE_PATTERN.matcher(this.htmlString);
         if (matcher.find()) {
             var forStatement = extractForStatement(matcher);
@@ -60,10 +61,12 @@ final class ForHtmlTag extends RegularHtmlTag {
                     .map(String::trim)
                     .collect(Collectors.joining(", "));
 
-            templateClass.addCode("forEach(" + collection + ", (" + variables + ") -> {");
-            templateClass.incrementFunctionIndentation();
+            classGenerator.addCode("forEach(" + collection + ", (" + variables + ") -> {");
+            classGenerator.incrementRenderFunctionIndentation();
 
         }
+
+        processTag(classGenerator);
     }
 
     private String extractForStatement(Matcher matcher) {
@@ -74,8 +77,7 @@ final class ForHtmlTag extends RegularHtmlTag {
                 .replace("'", "\"");
     }
 
-    @Override
-    public void processTag(TemplateClass templateClass) {
+    private void processTag(TemplateClassGenerator classGenerator) {
         var matcher = FOR_ATTRIBUTE_PATTERN.matcher(this.htmlString);
         if (matcher.find()) {
             var leftPart = this.htmlString.substring(0, matcher.start())
@@ -83,17 +85,17 @@ final class ForHtmlTag extends RegularHtmlTag {
             var rightPart = this.htmlString.substring(matcher.end());
 
             new DynamicAttributeHtmlTag(leftPart + rightPart)
-                    .processTag(templateClass);
+                    .processOpeningTag(classGenerator);
         } else {
 
             new DynamicAttributeHtmlTag(this.htmlString)
-                    .processTag(templateClass);
+                    .processOpeningTag(classGenerator);
         }
     }
 
     @Override
-    public void processClosingTag(TemplateClass templateClass) {
-        templateClass.decrementFunctionIndentation();
-        templateClass.addCode("});");
+    public void processClosingTag(TemplateClassGenerator classGenerator) {
+        classGenerator.decrementRenderFunctionIndentation();
+        classGenerator.addCode("});");
     }
 }

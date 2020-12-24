@@ -16,7 +16,8 @@
 
 package IntegrationTest;
 
-import com.github.sukhvir41.template.HtmlTemplate;
+import com.github.sukhvir41.core.TemplateGenerator;
+import com.github.sukhvir41.template.HtmlTemplateLoader;
 import org.joor.Reflect;
 import org.junit.Assert;
 import org.junit.Test;
@@ -24,9 +25,10 @@ import org.junit.Test;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URISyntaxException;
+import java.util.Collections;
 
-import static IntegrationTest.TestUtils.getFile;
-import static IntegrationTest.TestUtils.strip;
+import static com.github.sukhvir41.TestUtils.getFile;
+import static com.github.sukhvir41.TestUtils.strip;
 
 public class SimpleTestTest {
 
@@ -112,20 +114,10 @@ public class SimpleTestTest {
         var file = getFile("SimpleTest1.html");
 
 
-        var htmlTemplate = new HtmlTemplate();
+        String output = HtmlTemplateLoader.load(file)
+                .render(Collections.emptyMap());
 
-        var classString = htmlTemplate.setTemplate(file)
-                .renderReflection();
-
-        var theClass = Reflect.compile("SimpleTest1", classString);
-
-        Writer writer = new StringWriter();
-        var instance = theClass.call("getInstance");
-        instance.call("render", writer);
-
-        var output = strip(writer.toString());
-
-        Assert.assertEquals("Simple test 1 ", strip(expectedOutput), output);
+        Assert.assertEquals("Simple test 1 ", strip(expectedOutput), strip(output));
     }
 
 }

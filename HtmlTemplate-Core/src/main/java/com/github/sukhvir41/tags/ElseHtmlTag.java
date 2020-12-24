@@ -16,10 +16,10 @@
 
 package com.github.sukhvir41.tags;
 
-import com.github.sukhvir41.template.TemplateClass;
+import com.github.sukhvir41.newCore.TemplateClassGenerator;
 import org.apache.commons.lang3.StringUtils;
 
-final class ElseHtmlTag extends RegularHtmlTag {
+public final class ElseHtmlTag extends RegularHtmlTag {
 
     private static String HT_ELSE = "ht-else";
     private static final String OPENING_CODE = "else {";
@@ -29,37 +29,38 @@ final class ElseHtmlTag extends RegularHtmlTag {
         return StringUtils.containsIgnoreCase(string, HT_ELSE);
     }
 
-    ElseHtmlTag(String htmlString) {
+    public ElseHtmlTag(String htmlString) {
         super(htmlString);
     }
 
     @Override
-    public void processOpeningTag(TemplateClass templateClass) {
-        templateClass.addCode(OPENING_CODE);
-        templateClass.incrementFunctionIndentation();
+    public void processOpeningTag(TemplateClassGenerator classGenerator) {
+        classGenerator.addCode(OPENING_CODE);
+        classGenerator.incrementRenderFunctionIndentation();
+        processTag(classGenerator);
     }
 
     @Override
-    public void processClosingTag(TemplateClass templateClass) {
-        templateClass.decrementFunctionIndentation();
-        templateClass.addCode(CLOSING_CODE);
+    public void processClosingTag(TemplateClassGenerator classGenerator) {
+        classGenerator.decrementRenderFunctionIndentation();
+        classGenerator.addCode(CLOSING_CODE);
     }
 
-    @Override
-    public void processTag(TemplateClass templateClass) {
+
+    private void processTag(TemplateClassGenerator classGenerator) {
 
         int startIndex = this.htmlString.indexOf(HT_ELSE);
 
         if (startIndex == -1) {
             new DynamicAttributeHtmlTag(this.htmlString)
-                    .processTag(templateClass);
+                    .processOpeningTag(classGenerator);
         } else {
             int endIndex = startIndex + HT_ELSE.length();
             var leftPart = this.htmlString.substring(0, startIndex)
                     .trim();
             var rightPart = this.htmlString.substring(endIndex);
             new DynamicAttributeHtmlTag(leftPart + rightPart)
-                    .processTag(templateClass);
+                    .processOpeningTag(classGenerator);
         }
 
     }

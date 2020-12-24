@@ -16,17 +16,22 @@
 
 package com.github.sukhvir41.tags;
 
-import com.github.sukhvir41.template.TemplateClass;
+import com.github.sukhvir41.newCore.TemplateClassGenerator;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.Mockito;
+import org.junit.runner.RunWith;
+import org.mockito.*;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import static org.junit.Assert.assertEquals;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(ForHtmlTag.class)
 public class ForHtmlTagTest {
 
     @Rule
@@ -35,18 +40,33 @@ public class ForHtmlTagTest {
     @Captor
     private ArgumentCaptor<String> addCodeCapture;
 
-    @Test
-    public void valueTest() {
-        var templateClass = Mockito.mock(TemplateClass.class);
+    @Mock
+    public TemplateClassGenerator templateClass;
 
-        var forTag = new ForHtmlTag("<h1 ht-for=\"name in @names\"");
+    @Mock
+    public DynamicAttributeHtmlTag dynamicAttributeHtmlTag;
+
+    @Before
+    public void beforeTest() throws Exception {
+        Mockito.doNothing()
+                .when(dynamicAttributeHtmlTag)
+                .processOpeningTag(templateClass);
+
+        PowerMockito.whenNew(DynamicAttributeHtmlTag.class)
+                .withArguments(ArgumentMatchers.anyString())
+                .thenReturn(dynamicAttributeHtmlTag);
+    }
+
+    @Test
+    public void valueTest() throws Exception {
+        ForHtmlTag forTag = new ForHtmlTag("<h1 test=\"test\" ht-for=\"name in @names\" test=\"test\">");
         forTag.processOpeningTag(templateClass);
         forTag.processClosingTag(templateClass);
 
         Mockito.verify(templateClass)
-                .incrementFunctionIndentation();
+                .incrementRenderFunctionIndentation();
         Mockito.verify(templateClass)
-                .decrementFunctionIndentation();
+                .decrementRenderFunctionIndentation();
         Mockito.verify(templateClass, Mockito.times(2))
                 .addCode(addCodeCapture.capture());
 
@@ -54,20 +74,22 @@ public class ForHtmlTagTest {
         var codes = addCodeCapture.getAllValues();
         assertEquals("forEach(names(), (name) -> {", codes.get(0));
         assertEquals("});", codes.get(1));
+
+        PowerMockito.verifyNew(DynamicAttributeHtmlTag.class)
+                .withArguments("<h1 test=\"test\" test=\"test\">");
+
     }
 
     @Test
-    public void indexValueTest() {
-        var templateClass = Mockito.mock(TemplateClass.class);
-
-        var forTag = new ForHtmlTag("<h1 ht-for=\"index,name in @names\"");
+    public void indexValueTest() throws Exception {
+        var forTag = new ForHtmlTag("<h1 ht-for=\"index,name in @names\" >");
         forTag.processOpeningTag(templateClass);
         forTag.processClosingTag(templateClass);
 
         Mockito.verify(templateClass)
-                .incrementFunctionIndentation();
+                .incrementRenderFunctionIndentation();
         Mockito.verify(templateClass)
-                .decrementFunctionIndentation();
+                .decrementRenderFunctionIndentation();
         Mockito.verify(templateClass, Mockito.times(2))
                 .addCode(addCodeCapture.capture());
 
@@ -75,20 +97,21 @@ public class ForHtmlTagTest {
         var codes = addCodeCapture.getAllValues();
         assertEquals("forEach(names(), (index, name) -> {", codes.get(0));
         assertEquals("});", codes.get(1));
+
+        PowerMockito.verifyNew(DynamicAttributeHtmlTag.class)
+                .withArguments("<h1 >");
     }
 
     @Test
-    public void MapTest() {
-        var templateClass = Mockito.mock(TemplateClass.class);
-
-        var forTag = new ForHtmlTag("<h1 ht-for=\"index,key,value in @names\"");
+    public void MapTest() throws Exception {
+        var forTag = new ForHtmlTag("<h1 ht-for=\"index,key,value in @names\">");
         forTag.processOpeningTag(templateClass);
         forTag.processClosingTag(templateClass);
 
         Mockito.verify(templateClass)
-                .incrementFunctionIndentation();
+                .incrementRenderFunctionIndentation();
         Mockito.verify(templateClass)
-                .decrementFunctionIndentation();
+                .decrementRenderFunctionIndentation();
         Mockito.verify(templateClass, Mockito.times(2))
                 .addCode(addCodeCapture.capture());
 
@@ -96,6 +119,9 @@ public class ForHtmlTagTest {
         var codes = addCodeCapture.getAllValues();
         assertEquals("forEach(names(), (index, key, value) -> {", codes.get(0));
         assertEquals("});", codes.get(1));
+
+        PowerMockito.verifyNew(DynamicAttributeHtmlTag.class)
+                .withArguments("<h1>");
     }
 
 }

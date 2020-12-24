@@ -16,21 +16,16 @@
 
 package com.github.sukhvir41.tags;
 
-import com.github.sukhvir41.template.TemplateClass;
+import com.github.sukhvir41.newCore.TemplateClassGenerator;
 import com.github.sukhvir41.utils.HtmlUtils;
 
-class RegularHtmlTag implements HtmlTag {
+public class RegularHtmlTag implements HtmlTag {
 
     protected String htmlString;
 
-    protected RegularHtmlTag(String htmlString) {
-        this.htmlString = htmlString.trim();
+    public RegularHtmlTag(String htmlString) {
+        this.htmlString = htmlString;
 
-    }
-
-    @Override
-    public void processTag(TemplateClass templateClass) {
-        templateClass.appendPlainHtml(this.htmlString);
     }
 
     @Override
@@ -55,12 +50,12 @@ class RegularHtmlTag implements HtmlTag {
     }
 
     @Override
-    public void processOpeningTag(TemplateClass templateClass) {
-        // does nothing
+    public void processOpeningTag(TemplateClassGenerator classGenerator) {
+        classGenerator.appendPlainHtml(this.htmlString);
     }
 
     @Override
-    public void processClosingTag(TemplateClass templateClass) {
+    public void processClosingTag(TemplateClassGenerator classGenerator) {
         // does nothing
     }
 

@@ -16,7 +16,8 @@
 
 package com.github.sukhvir41.tags;
 
-import com.github.sukhvir41.template.TemplateClass;
+import com.github.sukhvir41.core.ClassGenerator;
+import com.github.sukhvir41.newCore.TemplateClassGenerator;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -40,14 +41,14 @@ public class MetaVariableHtmlTagTest {
     private ArgumentCaptor<String> nameCaptor;
 
     @Mock
-    private TemplateClass templateClass;
+    private TemplateClassGenerator classGenerator;
 
     @Test
     public void testSingleVariable() {
-        var metaVariableTag = new MetaVariableHtmlTag("<meta ht-variables=\"String,name\" > ");
+        var metaVariableTag = new MetaVariableHtmlTag("<meta ht-variables=\"String,name\">");
 
-        metaVariableTag.processOpeningTag(templateClass);
-        Mockito.verify(templateClass)
+        metaVariableTag.processOpeningTag(classGenerator);
+        Mockito.verify(classGenerator)
                 .addVariable(typeCaptor.capture(), nameCaptor.capture());
 
         assertEquals("String", typeCaptor.getValue());
@@ -59,15 +60,16 @@ public class MetaVariableHtmlTagTest {
     public void testMultiVariable() {
         var metaVariableTag = new MetaVariableHtmlTag("<meta ht-variables=\"String,name, int, age\" > ");
 
-        metaVariableTag.processOpeningTag(templateClass);
-        Mockito.verify(templateClass, Mockito.times(2))
+        metaVariableTag.processOpeningTag(classGenerator);
+        Mockito.verify(classGenerator, Mockito.times(2))
                 .addVariable(typeCaptor.capture(), nameCaptor.capture());
 
         var typeList = typeCaptor.getAllValues();
         var nameList = nameCaptor.getAllValues();
+
         assertEquals("String", typeList.get(0).trim());
         assertEquals("name", nameList.get(0).trim());
-        assertEquals("int", typeList.get(1).trim());
+        assertEquals("Integer", typeList.get(1).trim());
         assertEquals("age", nameList.get(1).trim());
     }
 

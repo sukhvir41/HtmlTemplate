@@ -24,25 +24,9 @@ import java.util.regex.Pattern;
 
 public final class HtmlUtils {
 
-    //Handy link ofr html syntax https://html.spec.whatwg.org/#syntax
+    //Handy link for html syntax https://html.spec.whatwg.org/#syntax
 
     private static final Set<String> voidTags = new HashSet<>();
-
-    public static final Pattern ATTRIBUTE_MATCHER_PATTERN = Pattern.compile("" +
-                    "[^\\u007f-\\u009f,\\u0020,\\u0022,\\u0027,\\u003e,\\u002f,\\u003d,\\uFDD0-\\uFDEF,\\uFFFE, " +
-                    "\\uFFFF, \\u1FFFE, \\u1FFFF, \\u2FFFE, \\u2FFFF, \\u3FFFE, \\u3FFFF, \\u4FFFE, \\u4FFFF, " +
-                    "\\u5FFFE, \\u5FFFF, \\u6FFFE, \\u6FFFF, \\u7FFFE, \\u7FFFF, \\u8FFFE, \\u8FFFF, \\u9FFFE, " +
-                    "\\u9FFFF, \\uAFFFE, \\uAFFFF, \\uBFFFE, \\uBFFFF, \\uCFFFE, \\uCFFFF, \\uDFFFE, \\uDFFFF, " +
-                    "\\uEFFFE, \\uEFFFF, \\uFFFFE, \\uFFFFF, \\u10FFFE, \\u10FFFF]*\\s*=\\s*\"[^/\"]*\""
-            , Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
-
-    public static final Pattern INCOMPLETE_ATTRIBUTE_MATCHER_PATTERN = Pattern.compile("" +
-                    "[^\\u007f-\\u009f,\\u0020,\\u0022,\\u0027,\\u003e,\\u002f,\\u003d,\\uFDD0-\\uFDEF,\\uFFFE, " +
-                    "\\uFFFF, \\u1FFFE, \\u1FFFF, \\u2FFFE, \\u2FFFF, \\u3FFFE, \\u3FFFF, \\u4FFFE, \\u4FFFF, " +
-                    "\\u5FFFE, \\u5FFFF, \\u6FFFE, \\u6FFFF, \\u7FFFE, \\u7FFFF, \\u8FFFE, \\u8FFFF, \\u9FFFE, " +
-                    "\\u9FFFF, \\uAFFFE, \\uAFFFF, \\uBFFFE, \\uBFFFF, \\uCFFFE, \\uCFFFF, \\uDFFFE, \\uDFFFF, " +
-                    "\\uEFFFE, \\uEFFFF, \\uFFFFE, \\uFFFFF, \\u10FFFE, \\u10FFFF]*\\s*=\\s*\""
-            , Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);// is unicode needed?
 
     public static final Pattern SCRIPT_CLOSING_TAG_PATTERN =
             Pattern.compile("</\\s*script", Pattern.CASE_INSENSITIVE);
@@ -52,17 +36,6 @@ public final class HtmlUtils {
 
     public static final Pattern DYNAMIC_ATTRIBUTE =
             Pattern.compile("ht-[^=]*\\s*=\\s*\"[^\"]*\"", Pattern.CASE_INSENSITIVE);
-
-
-    public static final Pattern META_INCLUDE_TAG_PATTERN =
-            Pattern.compile("<\\s*meta[\\s,\\S]* ht-include\\s*=\\s*\"[^\"]*\"", Pattern.CASE_INSENSITIVE);
-
-    public static final Pattern INCLUDE_ATTRIBUTE_PATTERN =
-            Pattern.compile("ht-include\\s*=\\s*\"[^\"]*\"", Pattern.CASE_INSENSITIVE);
-
-
-    public static final Pattern CONTENT_VARIABLE_PATTERN =
-            Pattern.compile("@[a-z,_,$][a-z,0-9,_,$]*", Pattern.CASE_INSENSITIVE);
 
     /**
      * string literal regex from stack overflow.
@@ -226,12 +199,6 @@ public final class HtmlUtils {
         } else {
             throw new IllegalArgumentException("the line passed does not start with an html tag");
         }
-    }
-
-    public static boolean
-    isMetaIncludeTag(String tags) {
-        return META_INCLUDE_TAG_PATTERN.matcher(tags)
-                .find();
     }
 
 }

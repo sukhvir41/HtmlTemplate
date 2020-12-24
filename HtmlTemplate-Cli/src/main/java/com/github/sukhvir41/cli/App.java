@@ -16,9 +16,8 @@
 
 package com.github.sukhvir41.cli;
 
-import org.apache.commons.lang3.StringUtils;
-import com.github.sukhvir41.template.HtmlTemplate;
-import com.github.sukhvir41.utils.HtStringUtils;
+import com.github.sukhvir41.core.TemplateGenerator;
+import com.github.sukhvir41.utils.StringUtils;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -43,11 +42,11 @@ public final class App {
     }
 
     private void createTemplate(String packageName, Path templateFile) {
-        var htmlTemplate = new HtmlTemplate();
+        var htmlTemplate = new TemplateGenerator();
         var classString = htmlTemplate.setTemplate(templateFile, packageName)
                 .render();
 
-        var outputPath = getOutputFilePath(packageName, HtStringUtils.getClassNameFromFile(templateFile.getFileName().toString()));
+        var outputPath = getOutputFilePath(packageName, StringUtils.getClassNameFromFile(templateFile.getFileName().toString()));
         createDirectory(outputPath);
         createFile(outputPath);
         writeToFile(outputPath, classString);
@@ -112,14 +111,14 @@ public final class App {
                 .normalize()
                 .toString();
 
-        var outputFilePathString = StringUtils.removeStart(absolutePathString, sourceAbsolutePath);
-        if (StringUtils.isBlank(settings.getPackageName())) {
+        var outputFilePathString = org.apache.commons.lang3.StringUtils.removeStart(absolutePathString, sourceAbsolutePath);
+        if (org.apache.commons.lang3.StringUtils.isBlank(settings.getPackageName())) {
             outputFilePathString = settings.getPath().getFileName().toString() + outputFilePathString;
         } else {
             outputFilePathString = settings.getPackageName() + File.separator + outputFilePathString;
         }
 
-        return StringUtils.replace(outputFilePathString, File.separator, ".");
+        return org.apache.commons.lang3.StringUtils.replace(outputFilePathString, File.separator, ".");
     }
 
 

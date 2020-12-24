@@ -16,7 +16,8 @@
 
 package com.github.sukhvir41.tags;
 
-import com.github.sukhvir41.template.TemplateClass;
+import com.github.sukhvir41.core.ClassGenerator;
+import com.github.sukhvir41.newCore.TemplateClassGenerator;
 import com.github.sukhvir41.utils.HtmlUtils;
 
 public interface HtmlTag {
@@ -27,23 +28,19 @@ public interface HtmlTag {
 
 
     /**
-     * this gets called before the html tag gets appended to the org.org.ht.template
+     * This gets called for all opening tags once.
+     * eg. &lt;html&gt; is an opening tag.
      *
-     * @param templateClass the org.org.ht.template
+     * @param classGenerator the org.org.ht.template
      */
-    void processOpeningTag(TemplateClass templateClass);
-
-    /**
-     * process the html tag. Only gets called once after processOpeningTag or on its own.
-     */
-    void processTag(TemplateClass templateClass);
+    void processOpeningTag(TemplateClassGenerator classGenerator);
 
     /**
      * When a respective closing tag is found, This function gets called.
      *
-     * @param templateClass org.org.ht.template class
+     * @param classGenerator org.org.ht.template class
      */
-    void processClosingTag(TemplateClass templateClass);
+    void processClosingTag(TemplateClassGenerator classGenerator);
 
     /**
      * returns the name of the html tag.

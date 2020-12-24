@@ -1,0 +1,5 @@
+/build/
+/buildSrc/build/
+/HtmlTemplate-Cli/build/
+/HtmlTemplate-Core/build/
+/HtmlTemplate-GradlePlugin/build/

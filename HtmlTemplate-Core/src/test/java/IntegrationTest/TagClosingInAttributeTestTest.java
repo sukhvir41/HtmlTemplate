@@ -16,7 +16,8 @@
 
 package IntegrationTest;
 
-import com.github.sukhvir41.template.HtmlTemplate;
+import com.github.sukhvir41.TestUtils;
+import com.github.sukhvir41.core.TemplateGenerator;
 import org.joor.Reflect;
 import org.junit.Assert;
 
@@ -32,11 +33,11 @@ public class TagClosingInAttributeTestTest extends TestUtils {
     }
 
 
-    @org.junit.Test
+    //@org.junit.Test
     public void testMethod() throws URISyntaxException {
 
         var file = TestUtils.getFile(getFilePath());
-        var htmlTemplate = new HtmlTemplate();
+        var htmlTemplate = new TemplateGenerator();
 
         var theClass = Reflect.compile(getClassName(), htmlTemplate.setTemplate(file)
                 .renderReflection());

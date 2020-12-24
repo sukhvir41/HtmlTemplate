@@ -16,18 +16,23 @@
 
 package com.github.sukhvir41.tags;
 
-import com.github.sukhvir41.template.TemplateClass;
+import com.github.sukhvir41.newCore.TemplateClassGenerator;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import static org.junit.Assert.assertEquals;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(IfHtmlTag.class)
 public class MetaImportHtmlTagTest {
 
     @Rule
@@ -37,15 +42,15 @@ public class MetaImportHtmlTagTest {
     private ArgumentCaptor<String> importCapture;
 
     @Mock
-    private TemplateClass templateClass;
+    private TemplateClassGenerator classGenerator;
 
     @Test
     public void singleImportTest() {
-        var importTag = new MetaImportHtmlTag("<meta ht-import=\"java.nio.file.Path\"");
-        importTag.processOpeningTag(templateClass);
-        importTag.processClosingTag(templateClass);
+        MetaImportHtmlTag importTag = new MetaImportHtmlTag("<meta ht-import=\"java.nio.file.Path\">");
+        importTag.processOpeningTag(classGenerator);
+        importTag.processClosingTag(classGenerator);
 
-        Mockito.verify(templateClass)
+        Mockito.verify(classGenerator)
                 .addImportStatement(importCapture.capture());
 
         assertEquals("java.nio.file.Path", importCapture.getValue());
@@ -53,11 +58,11 @@ public class MetaImportHtmlTagTest {
 
     @Test
     public void multipleImportTest() {
-        var importTag = new MetaImportHtmlTag("<meta ht-import=\"java.nio.file.Path, java.nio.file.Paths\"");
-        importTag.processOpeningTag(templateClass);
-        importTag.processClosingTag(templateClass);
+        MetaImportHtmlTag importTag = new MetaImportHtmlTag("<meta ht-import=\"java.nio.file.Path, java.nio.file.Paths\">");
+        importTag.processOpeningTag(classGenerator);
+        importTag.processClosingTag(classGenerator);
 
-        Mockito.verify(templateClass, Mockito.times(2))
+        Mockito.verify(classGenerator, Mockito.times(2))
                 .addImportStatement(importCapture.capture());
 
         var importList = importCapture.getAllValues();

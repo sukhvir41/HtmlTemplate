@@ -16,13 +16,14 @@
 
 package com.github.sukhvir41.tags;
 
-import com.github.sukhvir41.processors.Code;
-import com.github.sukhvir41.template.TemplateClass;
+import com.github.sukhvir41.newCore.TemplateClassGenerator;
+import com.github.sukhvir41.parsers.Code;
+import com.github.sukhvir41.core.ClassGenerator;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-final class ElseIfHtmlTag extends RegularHtmlTag {
+public final class ElseIfHtmlTag extends RegularHtmlTag {
 
     public static final Pattern ELSEIF_ATTRIBUTE_PATTERN =
             Pattern.compile("ht-elseIf\\s*=\\s*\"[^\"]*\"", Pattern.CASE_INSENSITIVE);
@@ -36,18 +37,20 @@ final class ElseIfHtmlTag extends RegularHtmlTag {
                 .find();
     }
 
-    ElseIfHtmlTag(String htmlString) {
+    public ElseIfHtmlTag(String htmlString) {
         super(htmlString);
     }
 
     @Override
-    public void processOpeningTag(TemplateClass templateClass) {
+    public void processOpeningTag(TemplateClassGenerator classGenerator) {
         var matcher = ELSEIF_ATTRIBUTE_PATTERN.matcher(this.htmlString);
         if (matcher.find()) {
             String ifCondition = Code.parse(getIfCondition(matcher));
-            templateClass.addCode(OPENING_LEFT_PART_CODE + ifCondition + OPENING_RIGHT_PART_CODE);
-            templateClass.incrementFunctionIndentation();
+            classGenerator.addCode(OPENING_LEFT_PART_CODE + ifCondition + OPENING_RIGHT_PART_CODE);
+            classGenerator.incrementRenderFunctionIndentation();
         }
+
+        processTag(classGenerator);
     }
 
     private String getIfCondition(Matcher matcher) {
@@ -61,23 +64,23 @@ final class ElseIfHtmlTag extends RegularHtmlTag {
     }
 
     @Override
-    public void processClosingTag(TemplateClass templateClass) {
-        templateClass.decrementFunctionIndentation();
-        templateClass.addCode(CLOSING_CODE);
+    public void processClosingTag(TemplateClassGenerator classGenerator) {
+        classGenerator.decrementRenderFunctionIndentation();
+        classGenerator.addCode(CLOSING_CODE);
     }
 
-    @Override
-    public void processTag(TemplateClass templateClass) {
-        var matcher = ELSEIF_ATTRIBUTE_PATTERN.matcher(this.htmlString);
-        if (matcher.find()) {
-            var leftPart = this.htmlString.substring(0, matcher.start())
+
+    private void processTag(TemplateClassGenerator classGenerator) {
+        Matcher elseIfAttributeMatcher = ELSEIF_ATTRIBUTE_PATTERN.matcher(this.htmlString);
+        if (elseIfAttributeMatcher.find()) {
+            var leftPart = this.htmlString.substring(0, elseIfAttributeMatcher.start())
                     .trim();
-            var rightPart = this.htmlString.substring(matcher.end());
+            var rightPart = this.htmlString.substring(elseIfAttributeMatcher.end());
             new DynamicAttributeHtmlTag(leftPart + rightPart)
-                    .processTag(templateClass);
+                    .processOpeningTag(classGenerator);
         } else {
             new DynamicAttributeHtmlTag(this.htmlString)
-                    .processTag(templateClass);
+                    .processOpeningTag(classGenerator);
         }
     }
 }

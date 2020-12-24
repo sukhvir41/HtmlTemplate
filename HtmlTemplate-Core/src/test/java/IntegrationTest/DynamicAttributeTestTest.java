@@ -16,16 +16,16 @@
 
 package IntegrationTest;
 
-import com.github.sukhvir41.template.HtmlTemplate;
+import com.github.sukhvir41.TestUtils;
+import com.github.sukhvir41.core.TemplateGenerator;
 import org.joor.Reflect;
 import org.junit.Assert;
-import org.junit.Test;
 
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URISyntaxException;
 
-import static IntegrationTest.TestUtils.strip;
+import static com.github.sukhvir41.TestUtils.strip;
 
 public class DynamicAttributeTestTest {
 
@@ -34,11 +34,11 @@ public class DynamicAttributeTestTest {
     private String className = "DynamicAttributeTest";
     private String testName = "DynamicAttributeTest";
 
-    @Test
+    //@Test
     public void testMethod() throws URISyntaxException {
 
         var file = TestUtils.getFile(fileName);
-        var htmlTemplate = new HtmlTemplate();
+        var htmlTemplate = new TemplateGenerator();
 
         var classString = htmlTemplate.setTemplate(file)
                 .renderReflection();

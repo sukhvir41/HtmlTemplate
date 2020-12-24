@@ -16,188 +16,67 @@
 
 package com.github.sukhvir41.template;
 
-import com.github.sukhvir41.processors.HtmlProcessorData;
-import com.github.sukhvir41.processors.HtmlProcessors;
-import com.github.sukhvir41.tags.HtmlTag;
-import com.github.sukhvir41.processors.HtmlLineProcessor;
-import com.github.sukhvir41.utils.HtStringUtils;
-import com.github.sukhvir41.utils.HtmlUtils;
+import org.joor.Reflect;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.Optional;
+import java.io.Writer;
+import java.util.Collections;
+import java.util.Map;
 
-public final class HtmlTemplate {
+public class HtmlTemplate {
 
+    private Reflect templateClass;
 
-    private final Deque<HtmlTag> tagsStack = new ArrayDeque<>();
-
-    // org.org.ht.template class being generated
-    private TemplateClass templateClass;
-
-    private HtmlProcessors processor = HtmlProcessors.REGULAR;
-
-    private Path file;
-
-
-    public void setProcessor(HtmlProcessors processor) {
-        this.processor = processor;
+    HtmlTemplate(Reflect templateClass) {
+        this.templateClass = templateClass;
     }
 
-    public HtmlProcessors getProcessor() {
-        return processor;
+    public String render(Map<String, Object> parameters) {
+        Reflect instance = Reflect.on(getTemplateInstance());
+        renderImpl(instance, parameters);
+        return instance
+                .call("render")
+                .get();
     }
 
-    int getTagsStackSize() {
-        return tagsStack.size();
-    }
-
-    public HtmlTemplate setTemplate(Path template) {
-        this.file = template;
-        var className = HtStringUtils.getClassNameFromFile(file.getFileName().toString());
-        templateClass = new TemplateClass(className, this);
-        return this;
-    }
-
-    public HtmlTemplate setTemplate(Path template, String packageName) {
-        this.file = template;
-        var className = HtStringUtils.getClassNameFromFile(file.getFileName().toString());
-        templateClass = new TemplateClass(packageName, className, this);
-        return this;
-    }
-
-
-    private TemplateClass getTemplateClass() {
-        return this.templateClass;
+    public void render(Map<String, Object> parameters, Writer writer) {
+        Reflect instance = Reflect.on(getTemplateInstance());
+        renderImpl(instance, parameters);
+        instance
+                .call("render", writer);
     }
 
     public String render() {
-        try {
-            readFile(file);
-            printIncompleteTags();
-            return getTemplateClass().generateClass();
-        } catch (IOException e) {
-            return "";
+        return this.render(Collections.emptyMap());
+    }
+
+    public void render(Writer writer) {
+        this.render(Collections.emptyMap(), writer);
+    }
+
+    private void renderImpl(Reflect instance, Map<String, Object> parameters) {
+        Map<String, Reflect> instanceFields = instance.fields();
+        parameters.forEach((name, value) -> setParameterValue(instance, instanceFields, name, value));
+    }
+
+    private HtTemplate getTemplateInstance() {
+        return templateClass.call("getInstance")
+                .get();
+    }
+
+    private void setParameterValue(Reflect templateInstance, Map<String, Reflect> instanceFields, String name, Object value) {
+        Reflect field = instanceFields.get(name);
+        if (field != null) {
+            verifyType(field, name, value);
+            templateInstance.call(name, value);
         }
     }
 
-    public String renderReflection() {
-        try {
-            readFile(file);
-            printIncompleteTags();
-            return getTemplateClass().generateReflectionClass();
-        } catch (IOException e) {
-            return "";
+    private void verifyType(Reflect field, String name, Object value) {
+        Class<?> valueClass = Reflect.on(value)
+                .type();
+
+        if (!valueClass.equals(field.type())) {
+            throw new IllegalArgumentException("Type does not match for parameter " + name + ". Expected: " + field.type().toString() + " Received: " + valueClass.getName());
         }
     }
-
-    private void readFile(Path file) throws IOException {
-        try (BufferedReader reader = Files.newBufferedReader(file)) {
-            read(reader);
-        }
-    }
-
-
-    private void printIncompleteTags() {
-        if (tagsStack.size() > 0) {
-            var htmlTag = tagsStack.pop();
-            System.err.println("the tag " + htmlTag.getName() + " is left open");
-        }
-    }
-
-
-    /**
-     * starts reading the file and uses the specified processor to process the line.
-     *
-     * @throws IOException
-     */
-    private void read(BufferedReader reader) throws IOException {
-
-        HtmlLineProcessor lineProcessor = new HtmlLineProcessor();
-        String line;
-
-        while ((line = reader.readLine()) != null) {
-            lineProcessor.setLine(line);
-            while (lineProcessor.hasNextSection()) {
-                String section = lineProcessor.getNextSection()
-                        .trim();
-
-                if (processor == HtmlProcessors.REGULAR) {
-                    if (HtmlUtils.isMetaIncludeTag(section)) {
-                        readTemplate(section);
-                    } else {
-                        processSection(section);
-                    }
-                } else {
-                    processSection(section);
-                }
-            }
-            lineProcessor.carryForwardUnprocessedString();
-        }
-    }
-
-    private void readTemplate(String section) {
-        Path filePath = Paths.get(getFilePathFromTemplateMetaTag(section));
-        try {
-            if (filePath.isAbsolute()) {
-                readFile(filePath);
-            } else {
-                readFile(file.toAbsolutePath()
-                        .getParent()
-                        .resolve(filePath));
-            }
-        } catch (IOException e) {
-            System.err.println("Problem in reading file \"" + filePath + "\" tag \"" + section + "\"");
-            e.printStackTrace();
-        }
-    }
-
-
-    private String getFilePathFromTemplateMetaTag(String section) {
-        try {
-            var matcher = HtmlUtils.INCLUDE_ATTRIBUTE_PATTERN.matcher(section);
-            if (matcher.find()) {
-                var htTemplateAttribute = section.substring(matcher.start(), matcher.end());
-                return htTemplateAttribute.substring(htTemplateAttribute.indexOf("\"") + 1, htTemplateAttribute.length() - 1);
-            } else return "";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "";
-        }
-
-
-    }
-
-    private void processSection(String section) {
-        processor.process(
-                HtmlProcessorData.builder()
-                        .setHtml(section)
-                        .setTemplateClass(this.templateClass)
-                        .setHtmlTemplate(this)
-                        .build()
-        );
-    }
-
-
-    public HtmlTag removeFromTagStack() {
-        return this.tagsStack.removeLast();
-    }
-
-    public void addToTagStack(HtmlTag htmlTag) {
-        this.tagsStack.add(htmlTag);
-    }
-
-    public Optional<HtmlTag> peekTagStack() {
-        try {
-            return Optional.ofNullable(this.tagsStack.peekLast());
-        } catch (Exception e) {
-            return Optional.empty();
-        }
-    }
-
 }

@@ -16,10 +16,10 @@
 
 package IntegrationTest;
 
-import com.github.sukhvir41.template.HtmlTemplate;
+import com.github.sukhvir41.TestUtils;
+import com.github.sukhvir41.core.TemplateGenerator;
 import org.joor.Reflect;
 import org.junit.Assert;
-import org.junit.Test;
 
 import java.io.StringWriter;
 import java.io.Writer;
@@ -27,12 +27,12 @@ import java.net.URISyntaxException;
 
 public class DynamicContentTestTest {
 
-    @Test
+    //@Test
     public void nameTest() throws URISyntaxException {
 
         var file = TestUtils.getFile("DynamicContentTest.html");
 
-        var htmlTemplate = new HtmlTemplate();
+        var htmlTemplate = new TemplateGenerator();
         var theClassString = htmlTemplate.setTemplate(file)
                 .renderReflection();
 
