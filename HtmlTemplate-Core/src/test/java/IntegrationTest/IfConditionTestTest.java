@@ -17,35 +17,23 @@
 package IntegrationTest;
 
 import com.github.sukhvir41.TestUtils;
-import com.github.sukhvir41.core.TemplateGenerator;
-import org.joor.Reflect;
+import com.github.sukhvir41.template.HtmlTemplateLoader;
 import org.junit.Assert;
+import org.junit.Test;
 
-import java.io.StringWriter;
-import java.io.Writer;
 import java.net.URISyntaxException;
+import java.util.Map;
 
 public class IfConditionTestTest {
-    //@Test
+    @Test
     public void testTrue() throws URISyntaxException {
 
         var file = TestUtils.getFile("IfConditionTest.html");
 
-        var htmlTemplate = new TemplateGenerator();
-        var theClassString = htmlTemplate.setTemplate(file)
-                .renderReflection();
+        var output = HtmlTemplateLoader.load(file)
+                .render(Map.of("isThisTrue", true));
 
-        var theClass = Reflect.compile("IfConditionTest", theClassString);
-
-
-        Writer writer = new StringWriter();
-        var instance = theClass.call("getInstance");
-        instance.call("isThisTrue", true);
-        instance.call("render", writer);
-
-        var output = TestUtils.strip(writer.toString());
-
-        Assert.assertEquals("If condition test true", output, TestUtils.strip(getExpectedOutputTrue()));
+        Assert.assertEquals("If condition test true", TestUtils.strip(getExpectedOutputTrue()), TestUtils.strip(output));
 
     }
 
@@ -73,26 +61,15 @@ public class IfConditionTestTest {
 
     }
 
-   // @Test
+    @Test
     public void testFalse() throws URISyntaxException {
 
         var file = TestUtils.getFile("IfConditionTest.html");
 
-        var htmlTemplate = new TemplateGenerator();
-        var theClassString = htmlTemplate.setTemplate(file)
-                .renderReflection();
+        var output = HtmlTemplateLoader.load(file)
+                .render(Map.of("isThisTrue", false));
 
-        var theClass = Reflect.compile("IfConditionTest", theClassString);
-
-
-        Writer writer = new StringWriter();
-        var instance = theClass.call("getInstance");
-        instance.call("isThisTrue", false);
-        instance.call("render", writer);
-
-        var output = TestUtils.strip(writer.toString());
-
-        Assert.assertEquals("If condition test false", TestUtils.strip(getExpectedOutputFalse()), output);
+        Assert.assertEquals("If condition test false", TestUtils.strip(getExpectedOutputFalse()), TestUtils.strip(output));
 
     }
 

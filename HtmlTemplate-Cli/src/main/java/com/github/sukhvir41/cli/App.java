@@ -16,7 +16,6 @@
 
 package com.github.sukhvir41.cli;
 
-import com.github.sukhvir41.core.TemplateGenerator;
 import com.github.sukhvir41.utils.StringUtils;
 
 import java.io.File;
@@ -42,14 +41,14 @@ public final class App {
     }
 
     private void createTemplate(String packageName, Path templateFile) {
-        var htmlTemplate = new TemplateGenerator();
-        var classString = htmlTemplate.setTemplate(templateFile, packageName)
-                .render();
-
-        var outputPath = getOutputFilePath(packageName, StringUtils.getClassNameFromFile(templateFile.getFileName().toString()));
-        createDirectory(outputPath);
-        createFile(outputPath);
-        writeToFile(outputPath, classString);
+//        var htmlTemplate = new TemplateGenerator();
+//        var classString = htmlTemplate.setTemplate(templateFile, packageName)
+//                .render();
+//
+//        var outputPath = getOutputFilePath(packageName, StringUtils.getClassNameFromFile(templateFile.getFileName().toString()));
+//        createDirectory(outputPath);
+//        createFile(outputPath);
+//        writeToFile(outputPath, classString);
     }
 
     private void writeToFile(Path path, String content) {

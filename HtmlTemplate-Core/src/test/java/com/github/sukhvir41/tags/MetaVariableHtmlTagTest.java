@@ -16,7 +16,6 @@
 
 package com.github.sukhvir41.tags;
 
-import com.github.sukhvir41.core.ClassGenerator;
 import com.github.sukhvir41.newCore.TemplateClassGenerator;
 import org.junit.Rule;
 import org.junit.Test;

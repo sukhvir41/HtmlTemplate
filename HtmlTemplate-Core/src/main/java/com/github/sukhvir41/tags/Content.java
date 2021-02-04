@@ -16,18 +16,11 @@
 
 package com.github.sukhvir41.tags;
 
-import com.github.sukhvir41.core.ClassGenerator;
 import com.github.sukhvir41.newCore.Template;
 import com.github.sukhvir41.newCore.TemplateClassGenerator;
-import com.github.sukhvir41.newCore.VariableInfo;
 import com.github.sukhvir41.parsers.Code;
-import com.github.sukhvir41.core.IllegalSyntaxException;
+import com.github.sukhvir41.newCore.IllegalSyntaxException;
 import org.apache.commons.lang3.StringUtils;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.BiFunction;
 
 import static com.github.sukhvir41.utils.StringUtils.findIndex;
 

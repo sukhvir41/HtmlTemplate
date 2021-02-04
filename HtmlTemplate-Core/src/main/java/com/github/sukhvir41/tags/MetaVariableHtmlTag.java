@@ -16,12 +16,11 @@
 
 package com.github.sukhvir41.tags;
 
-import com.github.sukhvir41.core.IllegalSyntaxException;
+import com.github.sukhvir41.newCore.IllegalSyntaxException;
 import com.github.sukhvir41.newCore.TemplateClassGenerator;
 import com.github.sukhvir41.utils.HtmlUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.lang.invoke.SwitchPoint;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -102,6 +101,8 @@ public class MetaVariableHtmlTag implements HtmlTag {
                 return "Double";
             case "char":
                 return "Character";
+            case "boolean":
+                return "Boolean";
             default:
                 return type;
         }

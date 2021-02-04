@@ -65,18 +65,35 @@ public class HtmlTemplate {
 
     private void setParameterValue(Reflect templateInstance, Map<String, Reflect> instanceFields, String name, Object value) {
         Reflect field = instanceFields.get(name);
+        Object fieldValue = value;
         if (field != null) {
-            verifyType(field, name, value);
-            templateInstance.call(name, value);
+            if (!isTypeVerified(field, value)) {
+                fieldValue = tryCastingValue(field, name, value);
+            }
+            templateInstance.call(name, fieldValue);
+
+
         }
     }
 
-    private void verifyType(Reflect field, String name, Object value) {
+
+    private boolean isTypeVerified(Reflect field, Object value) {
         Class<?> valueClass = Reflect.on(value)
                 .type();
 
-        if (!valueClass.equals(field.type())) {
-            throw new IllegalArgumentException("Type does not match for parameter " + name + ". Expected: " + field.type().toString() + " Received: " + valueClass.getName());
-        }
+        return valueClass.equals(field.type());
     }
+
+    private Object tryCastingValue(Reflect field, String fieldName, Object value) {
+        try {
+            return field.type().cast(value);
+        } catch (Exception e) {
+            Class<?> valueClass = Reflect.on(value)
+                    .type();
+            throw new IllegalArgumentException("Type does not match for parameter " + fieldName + ". Expected: " + field.type().toString() + " Received: "
+                    + valueClass.getName() + ". Casting to Type " + field.type().toString() + " also failed.");
+        }
+
+    }
+
 }

@@ -17,33 +17,24 @@
 package IntegrationTest;
 
 import com.github.sukhvir41.TestUtils;
-import com.github.sukhvir41.core.TemplateGenerator;
-import org.joor.Reflect;
+import com.github.sukhvir41.template.HtmlTemplateLoader;
 import org.junit.Assert;
+import org.junit.Test;
 
-import java.io.StringWriter;
-import java.io.Writer;
 import java.net.URISyntaxException;
+import java.util.Map;
 
 public class IfElseConditionTestTest {
 
-    //@Test
+    @Test
     public void testTrue() throws URISyntaxException {
 
         var file = TestUtils.getFile("IfElseConditionTest.html");
 
-        var htmlTemplate = new TemplateGenerator();
-        var theClassString = htmlTemplate.setTemplate(file)
-                .renderReflection();
-
-        var theClass = Reflect.compile("IfElseConditionTest", theClassString);
-
-        Writer writer = new StringWriter();
-        var instance = theClass.call("getInstance");
-        instance.call("show", true);
-        instance.call("render", writer);
-
-        var output = TestUtils.strip(writer.toString());
+        var output = TestUtils.strip(
+                HtmlTemplateLoader.load(file)
+                        .render(Map.of("show", true))
+        );
 
         Assert.assertEquals("If condition test true", TestUtils.strip(getExpectedOutputTrue()), output);
 
@@ -72,24 +63,15 @@ public class IfElseConditionTestTest {
 
     }
 
-    //@Test
+    @Test
     public void testFalse() throws URISyntaxException {
 
         var file = TestUtils.getFile("IfElseConditionTest.html");
 
-        var htmlTemplate = new TemplateGenerator();
-        var theClassString = htmlTemplate.setTemplate(file)
-                .renderReflection();
-
-        var theClass = Reflect.compile("IfElseConditionTest", theClassString);
-
-
-        Writer writer = new StringWriter();
-        var instance = theClass.call("getInstance");
-        instance.call("show", false);
-        instance.call("render", writer);
-
-        var output = TestUtils.strip(writer.toString());
+        var output = TestUtils.strip(
+                HtmlTemplateLoader.load(file)
+                        .render(Map.of("show", false))
+        );
 
         Assert.assertEquals("If condition test false", output, TestUtils.strip(getExpectedOutputFalse()));
 

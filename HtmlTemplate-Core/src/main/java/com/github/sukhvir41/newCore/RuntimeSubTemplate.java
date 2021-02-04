@@ -40,10 +40,6 @@ public final class RuntimeSubTemplate extends Template {
         parentTemplate.setDepth(parentTemplate.getDepth() - 1);
     }
 
-//    @Override
-//    public HtmlTag parseSection(String section) {
-//        return parentTemplate.parseSection(section);
-//    }
 
     @Override
     public HtmlTag parseSection(String section) {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.sukhvir41.core;
+package com.github.sukhvir41.newCore;
 
 import java.util.Optional;
 

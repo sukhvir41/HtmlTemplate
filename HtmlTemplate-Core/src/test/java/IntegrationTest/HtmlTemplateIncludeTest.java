@@ -17,15 +17,11 @@
 package IntegrationTest;
 
 import com.github.sukhvir41.TestUtils;
-import com.github.sukhvir41.core.TemplateGenerator;
 import com.github.sukhvir41.template.HtmlTemplate;
 import com.github.sukhvir41.template.HtmlTemplateLoader;
-import org.joor.Reflect;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.io.StringWriter;
-import java.io.Writer;
 import java.net.URISyntaxException;
 import java.util.Map;
 

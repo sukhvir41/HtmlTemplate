@@ -18,7 +18,6 @@ package com.github.sukhvir41.tags;
 
 import static org.junit.Assert.*;
 
-import com.github.sukhvir41.core.ClassGenerator;
 import com.github.sukhvir41.newCore.TemplateClassGenerator;
 import org.junit.Before;
 import org.junit.Rule;

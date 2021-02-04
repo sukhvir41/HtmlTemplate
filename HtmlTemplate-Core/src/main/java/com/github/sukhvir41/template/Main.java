@@ -16,15 +16,7 @@
 
 package com.github.sukhvir41.template;
 
-import com.github.sukhvir41.newCore.TemplateReader;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 public class Main {
-
-    public static void main(String[] args) {
-
-    }
 }
+
+
