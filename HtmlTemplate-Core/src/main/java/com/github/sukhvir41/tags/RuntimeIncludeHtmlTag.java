@@ -16,9 +16,9 @@
 
 package com.github.sukhvir41.tags;
 
-import com.github.sukhvir41.newCore.RuntimeSubTemplate;
-import com.github.sukhvir41.newCore.Template;
-import com.github.sukhvir41.newCore.TemplateClassGenerator;
+import com.github.sukhvir41.core.RuntimeSubTemplate;
+import com.github.sukhvir41.core.Template;
+import com.github.sukhvir41.core.TemplateClassGenerator;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;

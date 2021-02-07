@@ -16,7 +16,7 @@
 
 package com.github.sukhvir41.tags;
 
-import com.github.sukhvir41.newCore.TemplateClassGenerator;
+import com.github.sukhvir41.core.TemplateClassGenerator;
 import com.github.sukhvir41.parsers.Code;
 
 import java.util.regex.Matcher;

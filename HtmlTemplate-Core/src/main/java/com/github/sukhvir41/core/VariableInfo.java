@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.sukhvir41.newCore;
+package com.github.sukhvir41.core;
 
 import org.apache.commons.lang3.StringUtils;
 

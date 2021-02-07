@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.sukhvir41.newCore;
-
-import com.github.sukhvir41.utils.StringUtils;
+package com.github.sukhvir41.core;
 
 import java.nio.file.Files;
 import java.nio.file.Path;

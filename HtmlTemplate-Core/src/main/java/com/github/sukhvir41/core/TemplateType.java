@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.sukhvir41.newCore;
+package com.github.sukhvir41.core;
 
 public enum TemplateType {
     RUN_TIME,

@@ -16,8 +16,8 @@
 
 package com.github.sukhvir41.parsers.htmlParsers;
 
-import com.github.sukhvir41.newCore.Template;
-import com.github.sukhvir41.newCore.TemplateClassGenerator;
+import com.github.sukhvir41.core.Template;
+import com.github.sukhvir41.core.TemplateClassGenerator;
 
 public final class HtmlParserData {
 

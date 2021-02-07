@@ -17,7 +17,7 @@
 package com.github.sukhvir41.tags;
 
 import com.github.sukhvir41.TestUtils;
-import com.github.sukhvir41.newCore.*;
+import com.github.sukhvir41.core.*;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -31,7 +31,6 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 
 

@@ -16,7 +16,6 @@
 
 package com.github.sukhvir41.core;
 
-import com.github.sukhvir41.newCore.*;
 import org.joor.Reflect;
 import org.junit.Assert;
 import org.junit.Test;

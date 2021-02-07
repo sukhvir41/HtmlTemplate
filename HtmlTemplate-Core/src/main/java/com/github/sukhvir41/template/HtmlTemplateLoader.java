@@ -16,9 +16,9 @@
 
 package com.github.sukhvir41.template;
 
-import com.github.sukhvir41.newCore.Template;
-import com.github.sukhvir41.newCore.TemplateFactory;
-import com.github.sukhvir41.newCore.TemplateType;
+import com.github.sukhvir41.core.Template;
+import com.github.sukhvir41.core.TemplateFactory;
+import com.github.sukhvir41.core.TemplateType;
 import org.joor.Reflect;
 
 import java.nio.file.Path;

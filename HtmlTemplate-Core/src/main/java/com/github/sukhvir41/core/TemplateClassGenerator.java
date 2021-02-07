@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package com.github.sukhvir41.newCore;
+package com.github.sukhvir41.core;
 
 import com.github.sukhvir41.tags.HtmlTag;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public abstract class TemplateClassGenerator {
 

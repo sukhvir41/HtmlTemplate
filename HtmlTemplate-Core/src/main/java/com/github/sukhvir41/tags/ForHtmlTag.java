@@ -16,9 +16,9 @@
 
 package com.github.sukhvir41.tags;
 
-import com.github.sukhvir41.newCore.TemplateClassGenerator;
+import com.github.sukhvir41.core.TemplateClassGenerator;
 import com.github.sukhvir41.parsers.Code;
-import com.github.sukhvir41.newCore.IllegalSyntaxException;
+import com.github.sukhvir41.core.IllegalSyntaxException;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

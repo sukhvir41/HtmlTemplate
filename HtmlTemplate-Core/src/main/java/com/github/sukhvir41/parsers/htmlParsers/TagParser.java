@@ -16,8 +16,7 @@
 
 package com.github.sukhvir41.parsers.htmlParsers;
 
-import com.github.sukhvir41.newCore.Template;
-import com.github.sukhvir41.tags.Content;
+import com.github.sukhvir41.core.Template;
 import com.github.sukhvir41.tags.HtmlTag;
 import org.apache.commons.lang3.StringUtils;
 

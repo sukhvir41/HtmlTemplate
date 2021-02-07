@@ -16,10 +16,6 @@
 
 package com.github.sukhvir41.core;
 
-import com.github.sukhvir41.newCore.CompileTimeTemplate;
-import com.github.sukhvir41.newCore.RuntimeTemplate;
-import com.github.sukhvir41.newCore.TemplateFactory;
-import com.github.sukhvir41.newCore.TemplateType;
 import org.junit.Assert;
 import org.junit.Test;
 

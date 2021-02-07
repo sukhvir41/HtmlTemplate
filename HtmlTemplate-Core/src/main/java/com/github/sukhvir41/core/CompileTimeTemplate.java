@@ -14,28 +14,19 @@
  * limitations under the License.
  */
 
-package com.github.sukhvir41.newCore;
+package com.github.sukhvir41.core;
 
-import java.util.Optional;
+import com.github.sukhvir41.tags.HtmlTag;
 
-public class IllegalSyntaxException extends RuntimeException {
+import java.nio.file.Path;
 
-    private Exception exception;
-
-    public IllegalSyntaxException(String message) {
-        super(message);
+public final class CompileTimeTemplate extends Template {
+    public CompileTimeTemplate(Path file) {
+        super(file, " ", "", null);
     }
-
-    public IllegalSyntaxException(String message, Exception e) {
-        super(message);
-        this.exception = e;
-    }
-
 
     @Override
-    public void printStackTrace() {
-        super.printStackTrace();
-        Optional.of(exception)
-                .ifPresent(Exception::printStackTrace);
+    public HtmlTag parseSection(String section) {
+        return null;
     }
 }

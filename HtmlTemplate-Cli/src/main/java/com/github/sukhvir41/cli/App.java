@@ -31,6 +31,7 @@ public final class App {
     }
 
     public void createHtmlTemplateClass() {
+        //todo: fix for single file to behave like runtime but for multi file behave like compile time.
         if (Files.isRegularFile(settings.getPath())) {
             createTemplate(settings.getPackageName(), settings.getPath());
         } else {

@@ -14,19 +14,23 @@
  * limitations under the License.
  */
 
-package com.github.sukhvir41.newCore;
+package com.github.sukhvir41.core;
 
-import com.github.sukhvir41.tags.HtmlTag;
+import java.util.function.Function;
 
-import java.nio.file.Path;
+class SettingOptions<RETURN> {
 
-public final class CompileTimeTemplate extends Template {
-    public CompileTimeTemplate(Path file) {
-        super(file, " ", "", null);
+    public static final SettingOptions<Boolean> SUPPRESS_NULL_EXCEPTIONS = new SettingOptions<>((Object param) -> Boolean.valueOf(String.valueOf(param)));
+    public static final SettingOptions<String> TEMPLATE_FOLDER_PATH = new SettingOptions<>(String::valueOf);
+
+    private final Function<Object, RETURN> caster;
+
+    private SettingOptions(Function<Object, RETURN> caster) {
+        this.caster = caster;
     }
 
-    @Override
-    public HtmlTag parseSection(String section) {
-        return null;
+    public Function<Object, RETURN> getCaster() {
+        return caster;
     }
 }
+

@@ -16,8 +16,8 @@
 
 package com.github.sukhvir41.tags;
 
-import com.github.sukhvir41.newCore.IllegalSyntaxException;
-import com.github.sukhvir41.newCore.TemplateClassGenerator;
+import com.github.sukhvir41.core.IllegalSyntaxException;
+import com.github.sukhvir41.core.TemplateClassGenerator;
 import com.github.sukhvir41.utils.HtmlUtils;
 
 import java.util.regex.Pattern;
