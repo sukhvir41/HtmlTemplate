@@ -16,6 +16,8 @@
 
 package com.github.sukhvir41.core;
 
+import com.github.sukhvir41.core.statements.PlainStringRenderBodyStatement;
+import com.github.sukhvir41.tags.HtmlTag;
 import org.joor.Reflect;
 import org.junit.Assert;
 import org.junit.Test;
@@ -31,12 +33,12 @@ public class RuntimeTemplateClassGeneratorTest {
         classGenerator.addVariable("String", "greeting");
 
         classGenerator.appendPlainHtml("<html>");
-        classGenerator.addTagToStack(null);
+        classGenerator.addTagToStack(new DummyHtmlTag());
         classGenerator.appendPlainHtml("<h1>");
-        classGenerator.addTagToStack(null);
+        classGenerator.addTagToStack(new DummyHtmlTag());
         classGenerator.appendPlainHtmlIndentation();
         classGenerator
-                .addCode(classGenerator.getWriterVariableName() + ".append(content(() -> String.valueOf(greeting())));");
+                .addCode(new PlainStringRenderBodyStatement(classGenerator.getWriterVariableName() + ".append(content(() -> String.valueOf(greeting())));"));
         classGenerator.removeFromTagStack();
         classGenerator.appendPlainHtmlNewLine();
 
@@ -76,16 +78,16 @@ public class RuntimeTemplateClassGeneratorTest {
         classGenerator.addVariable("String", "greetingParent");
 
         classGenerator.appendPlainHtml("<html>");
-        classGenerator.addTagToStack(null);
+        classGenerator.addTagToStack(new DummyHtmlTag());
         classGenerator.appendPlainHtml("<h1>");
-        classGenerator.addTagToStack(null);
+        classGenerator.addTagToStack(new DummyHtmlTag());
         classGenerator.appendPlainHtmlIndentation();
         classGenerator
-                .addCode(classGenerator.getWriterVariableName() + ".append(content(() -> String.valueOf(greetingParent())));");
+                .addCode(new PlainStringRenderBodyStatement(classGenerator.getWriterVariableName() + ".append(content(() -> String.valueOf(greetingParent())));"));
         classGenerator.appendPlainHtmlNewLine();
         classGenerator.appendPlainHtmlIndentation();
         classGenerator
-                .addCode(classGenerator.getWriterVariableName() + ".append(content(() -> String.valueOf(greetingChild())));");
+                .addCode(new PlainStringRenderBodyStatement(classGenerator.getWriterVariableName() + ".append(content(() -> String.valueOf(greetingChild())));"));
 
         Template subTemplate = new RuntimeSubTemplate(null, parentTemplate);
         classGenerator.addSubTemplateVariables(subTemplate, "String", "greetingChild");
@@ -100,7 +102,6 @@ public class RuntimeTemplateClassGeneratorTest {
 
 
         String generatedClass = classGenerator.render();
-        System.out.println(generatedClass);
         Reflect compiledClass = Reflect.compile("com.github.sukhvir41.core.test.TestClass", generatedClass);
 
         Reflect instance = compiledClass.call("getInstance");
@@ -109,7 +110,6 @@ public class RuntimeTemplateClassGeneratorTest {
         instance.call("greetingChild", "Hello World!");
 
         Reflect renderedString = instance.call("render");
-        System.out.println(renderedString.toString());
         Assert.assertEquals("<html>\n" +
                 "\t<h1>\n" +
                 "\t\tHello Universe!\n" +
@@ -117,5 +117,38 @@ public class RuntimeTemplateClassGeneratorTest {
                 "\t</h1>\n" +
                 "</html>\n", renderedString.toString());
 
+    }
+
+    private static class DummyHtmlTag implements HtmlTag {
+
+        @Override
+        public void processOpeningTag(TemplateClassGenerator classGenerator) {
+
+        }
+
+        @Override
+        public void processClosingTag(TemplateClassGenerator classGenerator) {
+
+        }
+
+        @Override
+        public String getName() {
+            return null;
+        }
+
+        @Override
+        public boolean isClosingTag() {
+            return false;
+        }
+
+        @Override
+        public boolean isSelfClosing() {
+            return false;
+        }
+
+        @Override
+        public boolean isDocTypeTag() {
+            return false;
+        }
     }
 }

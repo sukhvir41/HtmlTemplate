@@ -17,6 +17,7 @@
 package com.github.sukhvir41.tags;
 
 import com.github.sukhvir41.core.TemplateClassGenerator;
+import com.github.sukhvir41.core.statements.PlainStringRenderBodyStatement;
 import org.apache.commons.lang3.StringUtils;
 import com.github.sukhvir41.parsers.Code;
 import com.github.sukhvir41.utils.HtmlUtils;
@@ -77,7 +78,11 @@ public final class DynamicAttributeHtmlTag extends RegularHtmlTag {
         var code = Code.parse(attributeValue);
 
         classGenerator.appendPlainHtml(actualAttributeName + " = \"", false, false);
-        classGenerator.addCode(classGenerator.getWriterVariableName() + ATTRIBUTE_LEFT_PART_CODE + code + ATTRIBUTE_RIGHT_PART_CODE);
+        classGenerator.addCode(
+                new PlainStringRenderBodyStatement(
+                        classGenerator.getWriterVariableName() + ATTRIBUTE_LEFT_PART_CODE + code + ATTRIBUTE_RIGHT_PART_CODE
+                )
+        );
         classGenerator.appendPlainHtml("\" ", false, false);
 
         var remainingPart = htmlString.substring(matcher.end());

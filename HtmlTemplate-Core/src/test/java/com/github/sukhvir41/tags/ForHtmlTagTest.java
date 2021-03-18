@@ -17,6 +17,7 @@
 package com.github.sukhvir41.tags;
 
 import com.github.sukhvir41.core.TemplateClassGenerator;
+import com.github.sukhvir41.core.statements.RenderBodyStatement;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -38,7 +39,7 @@ public class ForHtmlTagTest {
     public MockitoRule rule = MockitoJUnit.rule();
 
     @Captor
-    private ArgumentCaptor<String> addCodeCapture;
+    private ArgumentCaptor<RenderBodyStatement> addCodeCapture;
 
     @Mock
     public TemplateClassGenerator templateClass;
@@ -72,8 +73,8 @@ public class ForHtmlTagTest {
 
 
         var codes = addCodeCapture.getAllValues();
-        assertEquals("forEach(names(), (name) -> {", codes.get(0));
-        assertEquals("});", codes.get(1));
+        assertEquals("forEach(names(), (name) -> {", codes.get(0).getStatement());
+        assertEquals("});", codes.get(1).getStatement());
 
         PowerMockito.verifyNew(DynamicAttributeHtmlTag.class)
                 .withArguments("<h1 test=\"test\" test=\"test\">");
@@ -95,8 +96,9 @@ public class ForHtmlTagTest {
 
 
         var codes = addCodeCapture.getAllValues();
-        assertEquals("forEach(names(), (index, name) -> {", codes.get(0));
-        assertEquals("});", codes.get(1));
+        assertEquals("forEach(names(), (index, name) -> {", codes.get(0).getStatement());
+
+        assertEquals("});", codes.get(1).getStatement());
 
         PowerMockito.verifyNew(DynamicAttributeHtmlTag.class)
                 .withArguments("<h1 >");
@@ -117,8 +119,8 @@ public class ForHtmlTagTest {
 
 
         var codes = addCodeCapture.getAllValues();
-        assertEquals("forEach(names(), (index, key, value) -> {", codes.get(0));
-        assertEquals("});", codes.get(1));
+        assertEquals("forEach(names(), (index, key, value) -> {", codes.get(0).getStatement());
+        assertEquals("});", codes.get(1).getStatement());
 
         PowerMockito.verifyNew(DynamicAttributeHtmlTag.class)
                 .withArguments("<h1>");

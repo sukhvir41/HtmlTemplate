@@ -18,11 +18,13 @@ package com.github.sukhvir41.tags;
 
 import com.github.sukhvir41.core.Template;
 import com.github.sukhvir41.core.TemplateClassGenerator;
+import com.github.sukhvir41.core.statements.PlainStringRenderBodyStatement;
 import com.github.sukhvir41.parsers.Code;
 import com.github.sukhvir41.core.IllegalSyntaxException;
 import org.apache.commons.lang3.StringUtils;
 
 import static com.github.sukhvir41.utils.StringUtils.findIndex;
+import static com.github.sukhvir41.utils.StringUtils.getIndentations;
 
 public final class Content implements HtmlTag {
 
@@ -134,11 +136,21 @@ public final class Content implements HtmlTag {
 
 
     private void addCode(String code, TemplateClassGenerator classGenerator) {
-        classGenerator.addCode(classGenerator.getWriterVariableName() + ESCAPED_VARIABLE_LEFT_PART_CODE + code + ESCAPED_VARIABLE_RIGHT_PART_CODE);
+        classGenerator.addCode(
+                new PlainStringRenderBodyStatement(
+                        classGenerator.getWriterVariableName() +
+                                ESCAPED_VARIABLE_LEFT_PART_CODE +
+                                code +
+                                ESCAPED_VARIABLE_RIGHT_PART_CODE
+                )
+        );
+
     }
 
     private void addUnescapedCode(String code, TemplateClassGenerator classGenerator) {
-        classGenerator.addCode(classGenerator.getWriterVariableName() + UNESCAPED_VARIABLE_LEFT_PART_CODE + code + UNESCAPED_VARIABLE_RIGHT_PART_CODE);
+        classGenerator.addCode(new PlainStringRenderBodyStatement(
+                classGenerator.getWriterVariableName() + UNESCAPED_VARIABLE_LEFT_PART_CODE + code + UNESCAPED_VARIABLE_RIGHT_PART_CODE
+        ));
     }
 
     @Override

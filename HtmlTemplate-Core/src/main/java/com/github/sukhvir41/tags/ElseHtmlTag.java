@@ -17,6 +17,7 @@
 package com.github.sukhvir41.tags;
 
 import com.github.sukhvir41.core.TemplateClassGenerator;
+import com.github.sukhvir41.core.statements.PlainStringRenderBodyStatement;
 import org.apache.commons.lang3.StringUtils;
 
 public final class ElseHtmlTag extends RegularHtmlTag {
@@ -35,7 +36,7 @@ public final class ElseHtmlTag extends RegularHtmlTag {
 
     @Override
     public void processOpeningTag(TemplateClassGenerator classGenerator) {
-        classGenerator.addCode(OPENING_CODE);
+        classGenerator.addCode(new PlainStringRenderBodyStatement(OPENING_CODE));
         classGenerator.incrementRenderFunctionIndentation();
         processTag(classGenerator);
     }
@@ -43,7 +44,7 @@ public final class ElseHtmlTag extends RegularHtmlTag {
     @Override
     public void processClosingTag(TemplateClassGenerator classGenerator) {
         classGenerator.decrementRenderFunctionIndentation();
-        classGenerator.addCode(CLOSING_CODE);
+        classGenerator.addCode(new PlainStringRenderBodyStatement(CLOSING_CODE));
     }
 
 

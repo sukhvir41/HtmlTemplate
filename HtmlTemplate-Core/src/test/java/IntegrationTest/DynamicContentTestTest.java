@@ -17,14 +17,24 @@
 package IntegrationTest;
 
 import com.github.sukhvir41.TestUtils;
+import com.github.sukhvir41.core.SettingsManager;
 import com.github.sukhvir41.template.HtmlTemplateLoader;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
+import java.lang.reflect.Field;
 import java.net.URISyntaxException;
 import java.util.Map;
 
 public class DynamicContentTestTest {
+
+    @Before
+    public void before() throws NoSuchFieldException, IllegalAccessException {
+        Field field = SettingsManager.class.getDeclaredField("settings");
+        field.setAccessible(true);
+        field.set(null, null);
+    }
 
     @Test
     public void nameTest() throws URISyntaxException {

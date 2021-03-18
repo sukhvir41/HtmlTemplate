@@ -30,6 +30,7 @@ public class VariableInfo {
     public VariableInfo(String name, String value) {
         this.name = name;
         this.value = value;
+        this.mappedName = this.getName() + "_" + this.getStrippedUUID();
     }
 
     public void setType(String type) {
@@ -53,11 +54,6 @@ public class VariableInfo {
     }
 
     public String getMappedName() {
-
-        if (StringUtils.isBlank(this.mappedName)) {
-            this.mappedName = this.getName() + "_" + this.getStrippedUUID();
-        }
-
         return this.mappedName;
     }
 

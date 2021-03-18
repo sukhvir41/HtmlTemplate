@@ -16,12 +16,20 @@
 
 package com.github.sukhvir41.core;
 
+import com.github.sukhvir41.utils.LogManager;
+import org.apache.commons.lang3.StringUtils;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
 
 public final class TemplateFactory {
 
-    public static Template getTemplate(Path file, TemplateType type) {
+    public static Template getTemplate(Path file, TemplateType type, Map<SettingOptions<?>, Object> settings) {
+        return getTemplate(file, type, "", settings);
+    }
+
+    public static Template getTemplate(Path file, TemplateType type, String packageName, Map<SettingOptions<?>, Object> settings) {
 
         validateFile(file);
 
@@ -29,15 +37,31 @@ public final class TemplateFactory {
             throw new IllegalArgumentException("Please provide template type");
         }
 
+        if (settings == null) {
+            throw new IllegalArgumentException("Please provide settings");
+        }
+
+        SettingsManager.load(settings);
+
         switch (type) {
             case RUN_TIME:
-                return new RuntimeTemplate(file);
+                LogManager.getLogger()
+                        .info("runtime template mode selected");
+                if (StringUtils.isBlank(packageName)) {
+                    return new RuntimeTemplate(file);
+                } else {
+                    return new RuntimeTemplate(file, packageName);
+                }
+
             case COMPILE_TIME:
+                LogManager.getLogger()
+                        .info("compile time template mode selected");
                 return null;
             default:
                 throw new IllegalArgumentException("Please provide template type");
         }
     }
+
 
     private static void validateFile(Path file) {
         if (file == null) {

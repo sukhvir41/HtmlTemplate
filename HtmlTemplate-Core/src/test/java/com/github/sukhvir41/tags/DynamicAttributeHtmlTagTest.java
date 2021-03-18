@@ -17,6 +17,7 @@
 package com.github.sukhvir41.tags;
 
 import com.github.sukhvir41.core.TemplateClassGenerator;
+import com.github.sukhvir41.core.statements.RenderBodyStatement;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -36,7 +37,7 @@ public class DynamicAttributeHtmlTagTest {
     private ArgumentCaptor<String> addPlainHtmlCapture;
 
     @Captor
-    private ArgumentCaptor<String> addCodeCapture;
+    private ArgumentCaptor<RenderBodyStatement> addCodeCapture;
 
     @Captor
     private ArgumentCaptor<Boolean> appendIndentationCapture;
@@ -97,8 +98,8 @@ public class DynamicAttributeHtmlTagTest {
                 .addCode(addCodeCapture.capture());
 
         var codes = addCodeCapture.getAllValues();
-        assertEquals("testWriter.append(content(() -> String.valueOf(testValue())));", codes.get(0));
-        assertEquals("testWriter.append(content(() -> String.valueOf(test1Value())));", codes.get(1));
+        assertEquals("testWriter.append(content(() -> String.valueOf(testValue())));", codes.get(0).getStatement());
+        assertEquals("testWriter.append(content(() -> String.valueOf(test1Value())));", codes.get(1).getStatement());
 
 
     }

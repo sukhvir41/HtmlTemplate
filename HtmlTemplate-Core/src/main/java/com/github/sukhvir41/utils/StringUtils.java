@@ -78,5 +78,15 @@ public interface StringUtils {
         return getClassNameFromFile(fileName);
     }
 
+    static String getIndentations(int count) {
+        var builder = new StringBuilder();
+
+        for (int i = 0; i < count; i++) {
+            builder.append("\t");
+        }
+
+        return builder.toString();
+    }
+
 
 }

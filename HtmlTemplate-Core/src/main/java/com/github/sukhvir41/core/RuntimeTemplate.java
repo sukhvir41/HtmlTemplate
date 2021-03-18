@@ -33,6 +33,14 @@ public final class RuntimeTemplate extends Template {
                 new RuntimeTemplateClassGenerator(PACKAGE_NAME, StringUtils.getClassNameFromFile(file)));
     }
 
+    public RuntimeTemplate(Path file, String packageName) {
+        super(file,
+                packageName,
+                StringUtils.getClassNameFromFile(file),
+                new RuntimeTemplateClassGenerator(packageName, StringUtils.getClassNameFromFile(file)));
+    }
+
+
     @Override
     public HtmlTag parseSection(String section) {
         if (HtmlUtils.isHtmlTagAtStart(section)) {

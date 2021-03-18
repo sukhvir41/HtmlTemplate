@@ -19,6 +19,7 @@ package com.github.sukhvir41.core;
 import com.github.sukhvir41.parsers.htmlParsers.HtmlParserData;
 import com.github.sukhvir41.parsers.htmlParsers.HtmlParsers;
 import com.github.sukhvir41.tags.HtmlTag;
+import com.github.sukhvir41.utils.LogManager;
 import org.apache.commons.lang3.StringUtils;
 
 import java.nio.file.Path;
@@ -48,8 +49,12 @@ public abstract class Template {
     }
 
     public void readAndProcessTemplateFile() {
+        LogManager.getLogger()
+                .info("reading template file");
         TemplateReader.read(file, (section) -> {
             if (StringUtils.isNotBlank(section)) {
+                LogManager.getLogger()
+                        .fine("process section: " + section);
                 processSection(section);
             }
         });

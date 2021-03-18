@@ -40,13 +40,13 @@ public class AppTest {
     @Rule
     public TemporaryFolder tempOutputFolder = new TemporaryFolder();
 
-    private Settings settings;
-    private Path testFolder;
-    private Path testFolder2;
-    private Path outputPath;
+    @Test
+    public void testMultipleFilesGenerated() throws IOException {
+        Settings settings;
+        Path testFolder;
+        Path testFolder2;
+        Path outputPath;
 
-    @Before
-    public void init() throws IOException {
         testFolder = Paths.get(tempFolder.newFolder("test").toURI());
         //creating files in test Folder
         Files.createFile(testFolder.resolve("test1.html"));
@@ -72,10 +72,7 @@ public class AppTest {
                 .set("outputPath", outputPath)
                 .call("setLoggingLevel");
 
-    }
 
-    @Test
-    public void testFilesGenerated() {
         var app = new App(settings);
         app.createHtmlTemplateClass();
 
@@ -83,6 +80,31 @@ public class AppTest {
         assertTrue(Files.exists(outputPath.resolve("test").resolve("test1.java")));
         assertTrue(Files.exists(outputPath.resolve("test").resolve("test2.java")));
         assertTrue(Files.exists(outputPath.resolve("test").resolve("testFolder2").resolve("test3.java")));
+
+
+    }
+
+    @Test
+    public void testSingleFile() throws IOException {
+        Path testFile = Paths.get(tempFolder.newFile("test.html").toURI());
+        Path outputPath = Paths.get(tempOutputFolder.newFolder("output").toURI());
+
+        System.out.println(outputPath.normalize().toString() + "!!!!!!!!!");
+
+        Settings settings = new Settings();
+        Reflect.on(settings)
+                .set("path", testFile)
+                .set("packageName", "")
+                .set("verboseOutputRequested", false)
+                .set("quiteOutputRequested", false)
+                .set("filePattern", Pattern.compile("[\\s,\\S]*\\.html"))
+                .set("filesToIgnore", new HashSet<String>())
+                .set("outputPath", outputPath)
+                .call("setLoggingLevel");
+
+        var app = new App(settings);
+        app.createHtmlTemplateClass();
+        assertTrue(Files.exists(outputPath.resolve("test.java")));
 
 
     }

@@ -16,11 +16,16 @@
 
 package com.github.sukhvir41.core;
 
+import com.github.sukhvir41.core.statements.PlainStringRenderBodyStatement;
+import com.github.sukhvir41.core.statements.RenderBodyStatement;
 import com.github.sukhvir41.tags.HtmlTag;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 
 import java.util.*;
+import java.util.function.BiFunction;
+
+import static com.github.sukhvir41.utils.StringUtils.getIndentations;
 
 public abstract class TemplateClassGenerator {
 
@@ -34,7 +39,7 @@ public abstract class TemplateClassGenerator {
 
     private final String writerVariableName;
 
-    private final Deque<HtmlTag> tagStack = new LinkedList<>();
+    private final Deque<HtmlTag> tagStack = new ArrayDeque<>();
 
     // classes to be imported
     private final Set<String> imports = new HashSet<>();
@@ -45,7 +50,9 @@ public abstract class TemplateClassGenerator {
     // variables name, type
     private final Map<String, String> variables = new HashMap<>();
 
-    private final StringBuilder renderFunctionBody = new StringBuilder();
+    //private final StringBuilder renderFunctionBody = new StringBuilder();
+    private final Deque<RenderBodyStatement> renderFunctionBody = new ArrayDeque<>();
+
 
     private int renderFunctionIndentation = 2;
 
@@ -67,14 +74,17 @@ public abstract class TemplateClassGenerator {
 
     private StringBuilder computeAbsentPlainHtmlVariable(int variableName) {
 
-        this.renderFunctionBody
-                .append(getIndentations(renderFunctionIndentation))
-                .append(getWriterVariableName())
-                .append(".append(")
-                .append(PLAIN_HTML_VARIABLE_PREFIX)
-                .append(variableName)
-                .append(");")
-                .append(BREAK_LINE);
+        renderFunctionBody.add(new PlainStringRenderBodyStatement(
+                new StringBuilder()
+                        .append(getIndentations(renderFunctionIndentation))
+                        .append(getWriterVariableName())
+                        .append(".append(")
+                        .append(PLAIN_HTML_VARIABLE_PREFIX)
+                        .append(variableName)
+                        .append(");")
+                        .append(BREAK_LINE)
+                        .toString()
+        ));
 
         return new StringBuilder();
     }
@@ -100,17 +110,9 @@ public abstract class TemplateClassGenerator {
     }
 
     protected StringBuilder getRenderFunctionBody() {
-        return renderFunctionBody;
-    }
-
-    protected String getIndentations(int count) {
-        var builder = new StringBuilder();
-
-        for (int i = 0; i < count; i++) {
-            builder.append("\t");
-        }
-
-        return builder.toString();
+        return renderFunctionBody.stream()
+                .map(RenderBodyStatement::getStatement)
+                .reduce(new StringBuilder(), StringBuilder::append, StringBuilder::append);
     }
 
     public void addImportStatement(String importPath) {
@@ -157,11 +159,9 @@ public abstract class TemplateClassGenerator {
                 .append(getIndentations(this.tagStack.size()));
     }
 
-    public void addCode(String javaCode) {
-        this.renderFunctionBody
-                .append(getIndentations(renderFunctionIndentation))
-                .append(javaCode)
-                .append(BREAK_LINE);
+    public void addCode(RenderBodyStatement renderBodyStatement) {
+
+        this.renderFunctionBody.add(new JavaCodeRenderBodyStatement(this, renderBodyStatement));
 
         if (plainHtmlVariables.containsKey(variableCount)) {
             ++this.variableCount;
@@ -171,7 +171,6 @@ public abstract class TemplateClassGenerator {
 
     public void addVariable(String type, String name) {
         if (StringUtils.isNoneBlank(name, type)) {
-            System.out.println("add varibale" + type + "   " + name);
             this.variables.put(name.trim(), type.trim());
         }
     }
@@ -187,6 +186,7 @@ public abstract class TemplateClassGenerator {
     public void decrementRenderFunctionIndentation() {
         --this.renderFunctionIndentation;
     }
+
 
     public Map<String, String> getVariableMappings(Template template) {
         return getMappedVariables()
@@ -212,4 +212,26 @@ public abstract class TemplateClassGenerator {
     public abstract Map<Template, List<VariableInfo>> getMappedVariables();
 
     public abstract void addSubTemplateVariables(Template template, String type, String name);
+
+    protected static class JavaCodeRenderBodyStatement implements RenderBodyStatement {
+
+        private final TemplateClassGenerator classGenerator;
+        private final RenderBodyStatement renderBodyStatement;
+        private final String indentation;
+
+
+        public JavaCodeRenderBodyStatement(TemplateClassGenerator classGenerator, RenderBodyStatement renderBodyStatement) {
+            this.classGenerator = classGenerator;
+            this.renderBodyStatement = renderBodyStatement;
+            this.indentation = getIndentations(classGenerator.renderFunctionIndentation);
+        }
+
+
+        @Override
+        public String getStatement() {
+            return indentation +
+                    renderBodyStatement.getStatement() +
+                    BREAK_LINE;
+        }
+    }
 }

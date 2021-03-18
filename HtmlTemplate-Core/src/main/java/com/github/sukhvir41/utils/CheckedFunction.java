@@ -14,11 +14,22 @@
  * limitations under the License.
  */
 
-package com.github.sukhvir41.template;
+package com.github.sukhvir41.utils;
 
-import java.util.Hashtable;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
-public class Main  {
+@FunctionalInterface
+public interface CheckedFunction<T, R> {
+
+    static <T, R> Function<T, R> wrapFunction(CheckedFunction<T, R> checkedFunction) {
+        return (T t) -> {
+            try {
+                return checkedFunction.apply(t);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        };
+    }
+
+    R apply(T t) throws Exception;
 }
-

@@ -17,6 +17,7 @@
 package com.github.sukhvir41.tags;
 
 import com.github.sukhvir41.core.TemplateClassGenerator;
+import com.github.sukhvir41.core.statements.RenderBodyStatement;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -36,7 +37,7 @@ public class ContentTest {
     private ArgumentCaptor<String> addPlainHtmlCapture;
 
     @Captor
-    private ArgumentCaptor<String> addCodeCapture;
+    private ArgumentCaptor<RenderBodyStatement> addCodeCapture;
 
     @Captor
     private ArgumentCaptor<Boolean> appendIndentationCapture;
@@ -49,7 +50,7 @@ public class ContentTest {
     public void plainTest() {
         TemplateClassGenerator classGenerator = Mockito.mock(TemplateClassGenerator.class);
 
-        var content = new Content(" some content ",null);
+        var content = new Content(" some content ", null);
         content.processOpeningTag(classGenerator);
 
         Mockito.verify(classGenerator)
@@ -67,7 +68,7 @@ public class ContentTest {
                 .thenReturn("testWriter");
 
 
-        var content = new Content(" content1 {{ \"some content2\" }} content3 {{ \"<h1> content4 </h1>\" }}",null);
+        var content = new Content(" content1 {{ \"some content2\" }} content3 {{ \"<h1> content4 </h1>\" }}", null);
         content.processOpeningTag(classGenerator);
 
         //testing plain content part
@@ -88,8 +89,8 @@ public class ContentTest {
         Mockito.verify(classGenerator, Mockito.times(2))
                 .addCode(addCodeCapture.capture());
         var addedCodes = addCodeCapture.getAllValues();
-        assertEquals("testWriter.append(content(() -> String.valueOf(\"some content2\")));", addedCodes.get(0));
-        assertEquals("testWriter.append(content(() -> String.valueOf(\"<h1> content4 </h1>\")));", addedCodes.get(1));
+        assertEquals("testWriter.append(content(() -> String.valueOf(\"some content2\")));", addedCodes.get(0).getStatement());
+        assertEquals("testWriter.append(content(() -> String.valueOf(\"<h1> content4 </h1>\")));", addedCodes.get(1).getStatement());
 
         //testing new line added at end
         Mockito.verify(classGenerator)
@@ -103,7 +104,7 @@ public class ContentTest {
         Mockito.when(classGenerator.getWriterVariableName())
                 .thenReturn("testWriter");
 
-        var content = new Content(" content1 {{ \"some content2\" }} content3 {{{ \"<h1> content4 </h1>\" }}}",null);
+        var content = new Content(" content1 {{ \"some content2\" }} content3 {{{ \"<h1> content4 </h1>\" }}}", null);
         content.processOpeningTag(classGenerator);
 
         //testing plain content part
@@ -124,8 +125,8 @@ public class ContentTest {
         Mockito.verify(classGenerator, Mockito.times(2))
                 .addCode(addCodeCapture.capture());
         var addedCodes = addCodeCapture.getAllValues();
-        assertEquals("testWriter.append(content(() -> String.valueOf(\"some content2\")));", addedCodes.get(0));
-        assertEquals("testWriter.append(unescapedContent(() -> String.valueOf(\"<h1> content4 </h1>\")));", addedCodes.get(1));
+        assertEquals("testWriter.append(content(() -> String.valueOf(\"some content2\")));", addedCodes.get(0).getStatement());
+        assertEquals("testWriter.append(unescapedContent(() -> String.valueOf(\"<h1> content4 </h1>\")));", addedCodes.get(1).getStatement());
 
         //testing new line added at end
         Mockito.verify(classGenerator)

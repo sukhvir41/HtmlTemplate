@@ -16,6 +16,11 @@
 
 package com.github.sukhvir41.cli;
 
+import com.github.sukhvir41.core.SettingsManager;
+import com.github.sukhvir41.core.Template;
+import com.github.sukhvir41.core.TemplateFactory;
+import com.github.sukhvir41.core.TemplateType;
+import com.github.sukhvir41.template.HtmlTemplateLoader;
 import com.github.sukhvir41.utils.StringUtils;
 
 import java.io.File;
@@ -33,7 +38,7 @@ public final class App {
     public void createHtmlTemplateClass() {
         //todo: fix for single file to behave like runtime but for multi file behave like compile time.
         if (Files.isRegularFile(settings.getPath())) {
-            createTemplate(settings.getPackageName(), settings.getPath());
+            createSingleFileTemplate(settings.getPath());
         } else {
             settings.getTemplateFiles()
                     .parallelStream()
@@ -41,7 +46,20 @@ public final class App {
         }
     }
 
+    private void createSingleFileTemplate(Path templateFile) {
+        String packageName = settings.getPackageName();
+        Template template = TemplateFactory.getTemplate(templateFile, TemplateType.RUN_TIME, packageName, SettingsManager.getDefaultSettings());
+        template.readAndProcessTemplateFile();
+        String templateCode = template.render();
+        var outputPath = getOutputFilePath(packageName, StringUtils.getClassNameFromFile(templateFile.getFileName().toString()));
+        createDirectory(outputPath);
+        createFile(outputPath);
+        writeToFile(outputPath, templateCode);
+    }
+
     private void createTemplate(String packageName, Path templateFile) {
+
+
 //        var htmlTemplate = new TemplateGenerator();
 //        var classString = htmlTemplate.setTemplate(templateFile, packageName)
 //                .render();

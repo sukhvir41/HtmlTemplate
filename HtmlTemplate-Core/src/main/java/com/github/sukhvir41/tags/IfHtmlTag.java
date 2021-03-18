@@ -17,6 +17,7 @@
 package com.github.sukhvir41.tags;
 
 import com.github.sukhvir41.core.TemplateClassGenerator;
+import com.github.sukhvir41.core.statements.PlainStringRenderBodyStatement;
 import com.github.sukhvir41.parsers.Code;
 
 import java.util.regex.Matcher;
@@ -42,7 +43,7 @@ public final class IfHtmlTag extends RegularHtmlTag {
         var matcher = IF_ATTRIBUTE_PATTERN.matcher(this.htmlString);
         if (matcher.find()) {
             String ifCondition = Code.parse(getIfCondition(matcher));
-            classGenerator.addCode("if(condition( () -> " + ifCondition + " )){");
+            classGenerator.addCode(new PlainStringRenderBodyStatement("if(condition( () -> " + ifCondition + " )){"));
             classGenerator.incrementRenderFunctionIndentation();
         }
         processTag(classGenerator);
@@ -77,7 +78,7 @@ public final class IfHtmlTag extends RegularHtmlTag {
     @Override
     public void processClosingTag(TemplateClassGenerator classGenerator) {
         classGenerator.decrementRenderFunctionIndentation();
-        classGenerator.addCode("}");
+        classGenerator.addCode(new PlainStringRenderBodyStatement("}"));
     }
 
 }

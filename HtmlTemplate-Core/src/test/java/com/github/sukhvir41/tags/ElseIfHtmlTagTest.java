@@ -17,6 +17,7 @@
 package com.github.sukhvir41.tags;
 
 import com.github.sukhvir41.core.TemplateClassGenerator;
+import com.github.sukhvir41.core.statements.RenderBodyStatement;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -38,7 +39,7 @@ public class ElseIfHtmlTagTest {
     public MockitoRule rule = MockitoJUnit.rule();
 
     @Captor
-    private ArgumentCaptor<String> addCodeCapture;
+    private ArgumentCaptor<RenderBodyStatement> addCodeCapture;
 
     @Mock
     private DynamicAttributeHtmlTag dynamicAttributeHtmlTag;
@@ -66,7 +67,7 @@ public class ElseIfHtmlTagTest {
 
         Mockito.verify(templateClass)
                 .addCode(addCodeCapture.capture());
-        assertEquals("else if (condition(() -> test())) {", addCodeCapture.getValue());
+        assertEquals("else if (condition(() -> test())) {", addCodeCapture.getValue().getStatement());
 
         Mockito.verify(templateClass)
                 .incrementRenderFunctionIndentation();
@@ -89,7 +90,7 @@ public class ElseIfHtmlTagTest {
 
         Mockito.verify(templateClass)
                 .addCode(addCodeCapture.capture());
-        assertEquals("}", addCodeCapture.getValue());
+        assertEquals("}", addCodeCapture.getValue().getStatement());
 
     }
 }

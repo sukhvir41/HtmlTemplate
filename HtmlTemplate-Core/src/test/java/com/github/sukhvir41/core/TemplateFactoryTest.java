@@ -16,7 +16,10 @@
 
 package com.github.sukhvir41.core;
 
+import org.joor.Reflect;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -25,10 +28,16 @@ import java.nio.file.Paths;
 
 public class TemplateFactoryTest {
 
+    @After
+    public void beforeTest() {
+        Reflect.onClass(SettingsManager.class)
+                .set("settings", null);
+    }
+
     @Test
     public void allNullInputs() {
         try {
-            TemplateFactory.getTemplate(null, null);
+            TemplateFactory.getTemplate(null, null, null);
         } catch (Exception e) {
             Assert.assertEquals("Please provide template file", e.getMessage());
             Assert.assertEquals(IllegalArgumentException.class, e.getClass());
@@ -38,7 +47,7 @@ public class TemplateFactoryTest {
     @Test
     public void nonExistingFile() {
         try {
-            TemplateFactory.getTemplate(Paths.get("someFile.html"), null);
+            TemplateFactory.getTemplate(Paths.get("someFile.html"), null, null);
         } catch (Exception e) {
             Assert.assertEquals("Template file not found : someFile.html", e.getMessage());
             Assert.assertEquals(IllegalArgumentException.class, e.getClass());
@@ -49,7 +58,7 @@ public class TemplateFactoryTest {
     public void nullTemplateType() {
         try {
             var tempFile = Files.createTempFile("", "test.html");
-            TemplateFactory.getTemplate(tempFile, null);
+            TemplateFactory.getTemplate(tempFile, null, null);
         } catch (Exception e) {
             Assert.assertEquals("Please provide template type", e.getMessage());
             Assert.assertEquals(IllegalArgumentException.class, e.getClass());
@@ -57,14 +66,27 @@ public class TemplateFactoryTest {
     }
 
     @Test
+    public void nullSettings() {
+        try {
+            var tempFile = Files.createTempFile("", "test.html");
+            TemplateFactory.getTemplate(tempFile, TemplateType.RUN_TIME, null);
+        } catch (Exception e) {
+            Assert.assertEquals("Please provide settings", e.getMessage());
+            Assert.assertEquals(IllegalArgumentException.class, e.getClass());
+        }
+    }
+
+
+    @Test
     public void runTimeTemplateType() throws IOException {
         try {
             var tempFile = Files.createTempFile("", "test.html");
-            var template = TemplateFactory.getTemplate(tempFile, TemplateType.RUN_TIME);
+            var template = TemplateFactory.getTemplate(tempFile, TemplateType.RUN_TIME, SettingsManager.getDefaultSettings());
 
             Assert.assertEquals(RuntimeTemplate.class, template.getClass());
 
         } catch (Exception e) {
+            e.printStackTrace();
             Assert.fail("error in runtime template instantiation");
         }
     }
@@ -73,7 +95,7 @@ public class TemplateFactoryTest {
     public void compileTimeTemplateType() throws IOException {
         try {
             var tempFile = Files.createTempFile("", "test.html");
-            var template = TemplateFactory.getTemplate(tempFile, TemplateType.COMPILE_TIME);
+            var template = TemplateFactory.getTemplate(tempFile, TemplateType.COMPILE_TIME, SettingsManager.getDefaultSettings());
 
             Assert.assertEquals(CompileTimeTemplate.class, template.getClass());
         } catch (Exception e) {

@@ -17,6 +17,8 @@
 package com.github.sukhvir41.core;
 
 
+import com.github.sukhvir41.utils.LogManager;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -32,6 +34,8 @@ public class SettingsManager {
             if (settings == null) {
                 settings = new HashMap<>(getDefaultSettings());
                 settings.putAll(theSettings);
+                LogManager.setLoggerLevel(getSetting(LOGGING_LEVEL).get());
+                LogManager.getLogger().config("settings and log level set. Log level " + settings.get(LOGGING_LEVEL));
             } else {
                 throw new IllegalStateException("Can not change settings once set");
             }
@@ -58,9 +62,9 @@ public class SettingsManager {
     public static Map<SettingOptions<?>, Object> getDefaultSettings() {
         return Map.of(
                 SUPPRESS_NULL_EXCEPTIONS, true,
-                TEMPLATE_FOLDER_PATH, ""
+                TEMPLATE_FOLDER_PATH, "",
+                LOGGING_LEVEL, "OFF"
         );
     }
-
 }
 

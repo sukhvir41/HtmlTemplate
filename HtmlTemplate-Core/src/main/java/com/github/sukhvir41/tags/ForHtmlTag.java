@@ -17,6 +17,7 @@
 package com.github.sukhvir41.tags;
 
 import com.github.sukhvir41.core.TemplateClassGenerator;
+import com.github.sukhvir41.core.statements.PlainStringRenderBodyStatement;
 import com.github.sukhvir41.parsers.Code;
 import com.github.sukhvir41.core.IllegalSyntaxException;
 
@@ -60,7 +61,7 @@ public final class ForHtmlTag extends RegularHtmlTag {
                     .map(String::trim)
                     .collect(Collectors.joining(", "));
 
-            classGenerator.addCode("forEach(" + collection + ", (" + variables + ") -> {");
+            classGenerator.addCode(new PlainStringRenderBodyStatement("forEach(" + collection + ", (" + variables + ") -> {"));
             classGenerator.incrementRenderFunctionIndentation();
 
         }
@@ -95,6 +96,6 @@ public final class ForHtmlTag extends RegularHtmlTag {
     @Override
     public void processClosingTag(TemplateClassGenerator classGenerator) {
         classGenerator.decrementRenderFunctionIndentation();
-        classGenerator.addCode("});");
+        classGenerator.addCode(new PlainStringRenderBodyStatement("});"));
     }
 }

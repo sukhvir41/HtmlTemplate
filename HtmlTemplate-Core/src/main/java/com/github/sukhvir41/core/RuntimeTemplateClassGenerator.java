@@ -20,6 +20,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 
+import static com.github.sukhvir41.utils.StringUtils.getIndentations;
+
 public class RuntimeTemplateClassGenerator extends TemplateClassGenerator {
 
     // key -> template being included using ht-include tag

@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package com.github.sukhvir41.template;
+package com.github.sukhvir41.core.statements;
 
-import java.util.Hashtable;
-import java.util.concurrent.ConcurrentHashMap;
+public interface RenderBodyStatement {
 
-public class Main  {
+    String getStatement();
+
 }
-
