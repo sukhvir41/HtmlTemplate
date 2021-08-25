@@ -16,7 +16,7 @@
 
 package com.github.sukhvir41.tags;
 
-import com.github.sukhvir41.core.TemplateClassGenerator;
+import com.github.sukhvir41.core.classgenerator.TemplateClassGeneratorOLD;
 import com.github.sukhvir41.core.statements.PlainStringRenderBodyStatement;
 import com.github.sukhvir41.parsers.Code;
 
@@ -42,10 +42,10 @@ public final class ElseIfHtmlTag extends RegularHtmlTag {
     }
 
     @Override
-    public void processOpeningTag(TemplateClassGenerator classGenerator) {
+    public void processOpeningTag(TemplateClassGeneratorOLD classGenerator) {
         var matcher = ELSEIF_ATTRIBUTE_PATTERN.matcher(this.htmlString);
         if (matcher.find()) {
-            String ifCondition = Code.parse(getIfCondition(matcher));
+            String ifCondition = Code.parseForFunction(getIfCondition(matcher));
             classGenerator.addCode(new PlainStringRenderBodyStatement(OPENING_LEFT_PART_CODE + ifCondition + OPENING_RIGHT_PART_CODE));
             classGenerator.incrementRenderFunctionIndentation();
         }
@@ -64,13 +64,13 @@ public final class ElseIfHtmlTag extends RegularHtmlTag {
     }
 
     @Override
-    public void processClosingTag(TemplateClassGenerator classGenerator) {
+    public void processClosingTag(TemplateClassGeneratorOLD classGenerator) {
         classGenerator.decrementRenderFunctionIndentation();
         classGenerator.addCode(new PlainStringRenderBodyStatement(CLOSING_CODE));
     }
 
 
-    private void processTag(TemplateClassGenerator classGenerator) {
+    private void processTag(TemplateClassGeneratorOLD classGenerator) {
         Matcher elseIfAttributeMatcher = ELSEIF_ATTRIBUTE_PATTERN.matcher(this.htmlString);
         if (elseIfAttributeMatcher.find()) {
             var leftPart = this.htmlString.substring(0, elseIfAttributeMatcher.start())

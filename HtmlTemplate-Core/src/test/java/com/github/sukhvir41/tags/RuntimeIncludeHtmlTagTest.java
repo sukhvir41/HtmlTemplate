@@ -18,6 +18,9 @@ package com.github.sukhvir41.tags;
 
 import com.github.sukhvir41.TestUtils;
 import com.github.sukhvir41.core.*;
+import com.github.sukhvir41.core.classgenerator.TemplateClassGeneratorOLD;
+import com.github.sukhvir41.core.template.RuntimeSubTemplate;
+import com.github.sukhvir41.core.template.Template;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -42,7 +45,7 @@ public class RuntimeIncludeHtmlTagTest {
     public MockitoRule rule = MockitoJUnit.rule();
 
     @Mock
-    public TemplateClassGenerator classGenerator;
+    public TemplateClassGeneratorOLD classGenerator;
 
     @Mock
     public RuntimeSubTemplate subTemplate;
@@ -66,6 +69,9 @@ public class RuntimeIncludeHtmlTagTest {
         Path path = TestUtils.getFile("SimpleTest1.html");
         Mockito.when(runtimeTemplate.getFile())
                 .thenReturn(path);
+
+        Mockito.when(runtimeTemplate.getRootTemplate())
+                .thenReturn(runtimeTemplate);
     }
 
     @Test

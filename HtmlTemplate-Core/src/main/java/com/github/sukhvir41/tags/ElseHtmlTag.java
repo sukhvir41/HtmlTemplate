@@ -16,7 +16,7 @@
 
 package com.github.sukhvir41.tags;
 
-import com.github.sukhvir41.core.TemplateClassGenerator;
+import com.github.sukhvir41.core.classgenerator.TemplateClassGeneratorOLD;
 import com.github.sukhvir41.core.statements.PlainStringRenderBodyStatement;
 import org.apache.commons.lang3.StringUtils;
 
@@ -35,20 +35,20 @@ public final class ElseHtmlTag extends RegularHtmlTag {
     }
 
     @Override
-    public void processOpeningTag(TemplateClassGenerator classGenerator) {
+    public void processOpeningTag(TemplateClassGeneratorOLD classGenerator) {
         classGenerator.addCode(new PlainStringRenderBodyStatement(OPENING_CODE));
         classGenerator.incrementRenderFunctionIndentation();
         processTag(classGenerator);
     }
 
     @Override
-    public void processClosingTag(TemplateClassGenerator classGenerator) {
+    public void processClosingTag(TemplateClassGeneratorOLD classGenerator) {
         classGenerator.decrementRenderFunctionIndentation();
         classGenerator.addCode(new PlainStringRenderBodyStatement(CLOSING_CODE));
     }
 
 
-    private void processTag(TemplateClassGenerator classGenerator) {
+    private void processTag(TemplateClassGeneratorOLD classGenerator) {
 
         int startIndex = this.htmlString.indexOf(HT_ELSE);
 

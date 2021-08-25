@@ -16,7 +16,7 @@
 
 package com.github.sukhvir41.tags;
 
-import com.github.sukhvir41.core.TemplateClassGenerator;
+import com.github.sukhvir41.core.classgenerator.TemplateClassGeneratorOLD;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -40,7 +40,7 @@ public class MetaVariableHtmlTagTest {
     private ArgumentCaptor<String> nameCaptor;
 
     @Mock
-    private TemplateClassGenerator classGenerator;
+    private TemplateClassGeneratorOLD classGenerator;
 
     @Test
     public void testSingleVariable() {
@@ -68,7 +68,7 @@ public class MetaVariableHtmlTagTest {
 
         assertEquals("String", typeList.get(0).trim());
         assertEquals("name", nameList.get(0).trim());
-        assertEquals("Integer", typeList.get(1).trim());
+        assertEquals("int", typeList.get(1).trim());
         assertEquals("age", nameList.get(1).trim());
     }
 

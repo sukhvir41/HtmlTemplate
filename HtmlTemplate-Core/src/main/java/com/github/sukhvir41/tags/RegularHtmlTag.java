@@ -16,7 +16,7 @@
 
 package com.github.sukhvir41.tags;
 
-import com.github.sukhvir41.core.TemplateClassGenerator;
+import com.github.sukhvir41.core.classgenerator.TemplateClassGeneratorOLD;
 import com.github.sukhvir41.utils.HtmlUtils;
 
 public class RegularHtmlTag implements HtmlTag {
@@ -50,12 +50,12 @@ public class RegularHtmlTag implements HtmlTag {
     }
 
     @Override
-    public void processOpeningTag(TemplateClassGenerator classGenerator) {
+    public void processOpeningTag(TemplateClassGeneratorOLD classGenerator) {
         classGenerator.appendPlainHtml(this.htmlString);
     }
 
     @Override
-    public void processClosingTag(TemplateClassGenerator classGenerator) {
+    public void processClosingTag(TemplateClassGeneratorOLD classGenerator) {
         // does nothing
     }
 

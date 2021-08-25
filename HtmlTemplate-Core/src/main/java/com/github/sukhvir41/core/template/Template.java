@@ -14,47 +14,48 @@
  * limitations under the License.
  */
 
-package com.github.sukhvir41.core;
+package com.github.sukhvir41.core.template;
 
+import com.github.sukhvir41.core.classgenerator.TemplateClassGeneratorOLD;
+import com.github.sukhvir41.core.settings.Settings;
 import com.github.sukhvir41.parsers.htmlParsers.HtmlParserData;
 import com.github.sukhvir41.parsers.htmlParsers.HtmlParsers;
 import com.github.sukhvir41.tags.HtmlTag;
-import com.github.sukhvir41.utils.LogManager;
 import org.apache.commons.lang3.StringUtils;
 
 import java.nio.file.Path;
+import java.util.Objects;
 
 public abstract class Template {
 
     private final Path file;
     private int depth;
-    private String packageName;
-    private String className;
 
-    private TemplateClassGenerator classGenerator;
+    private final TemplateClassGeneratorOLD classGenerator;
+    private final Settings settings;
     private HtmlParsers htmlParser = HtmlParsers.TAG;
 
-    protected Template(Path file, String packageName, String className, TemplateClassGenerator classGenerator) {
+    protected Template(Path file, TemplateClassGeneratorOLD classGenerator, Settings settings) {
         this.file = file;
         this.classGenerator = classGenerator;
-        this.packageName = packageName;
-        this.className = className;
         this.depth = 0;
+        this.settings = settings;
     }
 
-    protected Template(Path file, TemplateClassGenerator classGenerator, int depth) {
+    protected Template(Path file, TemplateClassGeneratorOLD classGenerator, int depth, Settings settings) {
         this.file = file;
         this.classGenerator = classGenerator;
         this.depth = depth;
+        this.settings = settings;
     }
 
     public void readAndProcessTemplateFile() {
-        LogManager.getLogger()
+        settings.getLogger()
                 .info("reading template file");
         TemplateReader.read(file, (section) -> {
             if (StringUtils.isNotBlank(section)) {
-                LogManager.getLogger()
-                        .fine("process section: " + section);
+                settings.getLogger()
+                        .info("process section: " + section);
                 processSection(section);
             }
         });
@@ -74,10 +75,6 @@ public abstract class Template {
         return this.classGenerator.render();
     }
 
-    public final String getFullClassName() {
-        return packageName + "." + className;
-    }
-
     public final void setHtmlParser(HtmlParsers htmlParser) {
         this.htmlParser = htmlParser;
     }
@@ -86,7 +83,7 @@ public abstract class Template {
         this.depth = depth;
     }
 
-    public final TemplateClassGenerator getClassGenerator() {
+    public final TemplateClassGeneratorOLD getClassGenerator() {
         return this.classGenerator;
     }
 
@@ -110,6 +107,29 @@ public abstract class Template {
         return true;
     }
 
+    public Settings getSettings() {
+        return settings;
+    }
+
+    public abstract String getFullyQualifiedName();
+
     public abstract HtmlTag parseSection(String section);
 
+    public abstract Template getRootTemplate();
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Template template = (Template) o;
+
+        return Objects.equals(file, template.file);
+    }
+
+    @Override
+    public int hashCode() {
+        return file != null ? file.hashCode() : 0;
+    }
 }

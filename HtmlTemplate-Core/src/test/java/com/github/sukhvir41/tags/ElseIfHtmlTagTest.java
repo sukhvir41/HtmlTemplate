@@ -16,7 +16,7 @@
 
 package com.github.sukhvir41.tags;
 
-import com.github.sukhvir41.core.TemplateClassGenerator;
+import com.github.sukhvir41.core.classgenerator.TemplateClassGeneratorOLD;
 import com.github.sukhvir41.core.statements.RenderBodyStatement;
 import org.junit.Before;
 import org.junit.Rule;
@@ -45,7 +45,7 @@ public class ElseIfHtmlTagTest {
     private DynamicAttributeHtmlTag dynamicAttributeHtmlTag;
 
     @Mock
-    private TemplateClassGenerator templateClass;
+    private TemplateClassGeneratorOLD templateClass;
 
     @Before
     public void beforeTest() throws Exception {

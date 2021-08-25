@@ -18,7 +18,7 @@ package com.github.sukhvir41.tags;
 
 import static org.junit.Assert.*;
 
-import com.github.sukhvir41.core.TemplateClassGenerator;
+import com.github.sukhvir41.core.classgenerator.TemplateClassGeneratorOLD;
 import com.github.sukhvir41.core.statements.RenderBodyStatement;
 import org.junit.Before;
 import org.junit.Rule;
@@ -42,7 +42,7 @@ public class IfHtmlTagTest {
     private ArgumentCaptor<RenderBodyStatement> addCodeCapture;
 
     @Mock
-    public TemplateClassGenerator classGenerator;
+    public TemplateClassGeneratorOLD classGenerator;
 
     @Mock
     public DynamicAttributeHtmlTag dynamicAttributeHtmlTag;

@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-package com.github.sukhvir41.core;
+package com.github.sukhvir41.core.classgenerator;
 
+import com.github.sukhvir41.core.VariableInfo;
 import com.github.sukhvir41.core.statements.PlainStringRenderBodyStatement;
 import com.github.sukhvir41.core.statements.RenderBodyStatement;
+import com.github.sukhvir41.core.template.Template;
 import com.github.sukhvir41.tags.HtmlTag;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 
 import java.util.*;
-import java.util.function.BiFunction;
 
 import static com.github.sukhvir41.utils.StringUtils.getIndentations;
 
-public abstract class TemplateClassGenerator {
+public abstract class TemplateClassGeneratorOLD {
 
     protected static final String PLAIN_HTML_VARIABLE_PREFIX = "PLAIN_HTML_";
     protected static final String SUPER_CLASS = "com.github.sukhvir41.template.HtTemplate";
@@ -58,7 +59,7 @@ public abstract class TemplateClassGenerator {
 
     private int variableCount = 0;
 
-    public TemplateClassGenerator(String packageName, String className) {
+    public TemplateClassGeneratorOLD(String packageName, String className) {
         this.packageName = packageName;
         this.className = className;
 
@@ -102,7 +103,7 @@ public abstract class TemplateClassGenerator {
     }
 
     protected Map<Integer, StringBuilder> getPlainHtmlVariables() {
-        return plainHtmlVariables;
+        return  plainHtmlVariables;
     }
 
     protected Map<String, String> getVariables() {
@@ -215,12 +216,12 @@ public abstract class TemplateClassGenerator {
 
     protected static class JavaCodeRenderBodyStatement implements RenderBodyStatement {
 
-        private final TemplateClassGenerator classGenerator;
+        private final TemplateClassGeneratorOLD classGenerator;
         private final RenderBodyStatement renderBodyStatement;
         private final String indentation;
 
 
-        public JavaCodeRenderBodyStatement(TemplateClassGenerator classGenerator, RenderBodyStatement renderBodyStatement) {
+        public JavaCodeRenderBodyStatement(TemplateClassGeneratorOLD classGenerator, RenderBodyStatement renderBodyStatement) {
             this.classGenerator = classGenerator;
             this.renderBodyStatement = renderBodyStatement;
             this.indentation = getIndentations(classGenerator.renderFunctionIndentation);

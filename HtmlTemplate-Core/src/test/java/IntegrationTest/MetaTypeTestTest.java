@@ -17,7 +17,7 @@
 package IntegrationTest;
 
 import com.github.sukhvir41.TestUtils;
-import com.github.sukhvir41.core.SettingsManager;
+import com.github.sukhvir41.core.settings.SettingsManager;
 import com.github.sukhvir41.template.HtmlTemplateLoader;
 import org.junit.Assert;
 import org.junit.Before;
@@ -33,14 +33,6 @@ public class MetaTypeTestTest {
 
     String getFilePath() {
         return "MetaTypeTest.html";
-    }
-
-    @Before
-    public void before() throws NoSuchFieldException, IllegalAccessException {
-        //https://stackoverflow.com/a/26235213/4803757
-        Field field = SettingsManager.class.getDeclaredField("settings");
-        field.setAccessible(true);
-        field.set(null, null);
     }
 
     @Test

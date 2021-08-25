@@ -16,15 +16,16 @@
 
 package com.github.sukhvir41.tags;
 
-import com.github.sukhvir41.core.Template;
-import com.github.sukhvir41.core.TemplateClassGenerator;
+import com.github.sukhvir41.core.template.Template;
+import com.github.sukhvir41.core.classgenerator.TemplateClassGeneratorOLD;
 import com.github.sukhvir41.core.statements.PlainStringRenderBodyStatement;
 import com.github.sukhvir41.parsers.Code;
 import com.github.sukhvir41.core.IllegalSyntaxException;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.function.Function;
+
 import static com.github.sukhvir41.utils.StringUtils.findIndex;
-import static com.github.sukhvir41.utils.StringUtils.getIndentations;
 
 public final class Content implements HtmlTag {
 
@@ -42,15 +43,17 @@ public final class Content implements HtmlTag {
 
     private final String content;
     private final Template template;
+    private final Function<String, String> codeParser;
     private boolean isFirstLeftPart = true;
 
-    public Content(String content, Template instantiatingTemplate) {
+    public Content(String content, Template instantiatingTemplate, Function<String, String> codeParser) {
         this.content = content;
         this.template = instantiatingTemplate;
+        this.codeParser = codeParser;
     }
 
     @Override
-    public void processOpeningTag(TemplateClassGenerator classGenerator) {
+    public void processOpeningTag(TemplateClassGeneratorOLD classGenerator) {
         if (containsDynamicContent()) {
             processDynamicContent(content, classGenerator);//process left to right
         } else {
@@ -64,12 +67,12 @@ public final class Content implements HtmlTag {
         return content.contains(ESCAPED_CONTENT_START);
     }
 
-    private void processDynamicContent(String content, TemplateClassGenerator classGenerator) {
+    private void processDynamicContent(String content, TemplateClassGeneratorOLD classGenerator) {
 
         int escapedStartIndex = content.indexOf(ESCAPED_CONTENT_START);
         int unescapedStartIndex = content.indexOf(UNESCAPED_CONTENT_START);
 
-        if (unescapedStartIndex > -1 && unescapedStartIndex <= escapedStartIndex) { // is unescaped brackets before escaped brackets
+        if (unescapedStartIndex > -1 && unescapedStartIndex <= escapedStartIndex) { // is unescaped brackets before escaped brackets or have the same start
             processUnescapedDynamicContent(unescapedStartIndex, content, classGenerator);
         } else if (escapedStartIndex > -1) {
             processEscapedDynamicContent(escapedStartIndex, content, classGenerator);
@@ -82,7 +85,7 @@ public final class Content implements HtmlTag {
         }
     }
 
-    private void processEscapedDynamicContent(int escapedContentStart, String content, TemplateClassGenerator classGenerator) {
+    private void processEscapedDynamicContent(int escapedContentStart, String content, TemplateClassGeneratorOLD classGenerator) {
         processLeftPart(escapedContentStart, content, classGenerator);
 
         int endIndex = findIndex(escapedContentStart, ESCAPED_CONTENT_END, content);
@@ -95,7 +98,7 @@ public final class Content implements HtmlTag {
                 .substring(escapedContentStart + ESCAPED_CONTENT_START.length(), endIndex)
                 .trim();
 
-        addCode(Code.parse(theCode, classGenerator.getVariableMappings(template)), classGenerator);
+        addCode(this.codeParser.apply(theCode), classGenerator);
 
         var remainingContent = content.substring(endIndex + ESCAPED_CONTENT_END.length());
 
@@ -103,7 +106,7 @@ public final class Content implements HtmlTag {
     }
 
 
-    private void processUnescapedDynamicContent(int unescapedContentStart, String content, TemplateClassGenerator classGenerator) {
+    private void processUnescapedDynamicContent(int unescapedContentStart, String content, TemplateClassGeneratorOLD classGenerator) {
         processLeftPart(unescapedContentStart, content, classGenerator);
 
         int endIndex = findIndex(unescapedContentStart, UNESCAPED_CONTENT_END, content);
@@ -116,7 +119,7 @@ public final class Content implements HtmlTag {
                 .substring(unescapedContentStart + UNESCAPED_CONTENT_START.length(), endIndex)
                 .trim();
 
-        addUnescapedCode(Code.parse(theCode, classGenerator.getVariableMappings(template)), classGenerator);
+        addUnescapedCode(this.codeParser.apply(theCode), classGenerator);
 
         var remainingContent = content.substring(endIndex + UNESCAPED_CONTENT_END.length());
 
@@ -124,7 +127,7 @@ public final class Content implements HtmlTag {
     }
 
 
-    private void processLeftPart(int dynamicStartIndex, String content, TemplateClassGenerator classGenerator) {
+    private void processLeftPart(int dynamicStartIndex, String content, TemplateClassGeneratorOLD classGenerator) {
         var plaintHtmlLeft = StringUtils.left(content, dynamicStartIndex);
         if (StringUtils.isBlank(plaintHtmlLeft)) { //if staring of with {{ dynamic content}} or {{{ dynamic content }}}
             classGenerator.appendPlainHtmlIndentation();
@@ -135,7 +138,7 @@ public final class Content implements HtmlTag {
     }
 
 
-    private void addCode(String code, TemplateClassGenerator classGenerator) {
+    private void addCode(String code, TemplateClassGeneratorOLD classGenerator) {
         classGenerator.addCode(
                 new PlainStringRenderBodyStatement(
                         classGenerator.getWriterVariableName() +
@@ -147,14 +150,14 @@ public final class Content implements HtmlTag {
 
     }
 
-    private void addUnescapedCode(String code, TemplateClassGenerator classGenerator) {
+    private void addUnescapedCode(String code, TemplateClassGeneratorOLD classGenerator) {
         classGenerator.addCode(new PlainStringRenderBodyStatement(
                 classGenerator.getWriterVariableName() + UNESCAPED_VARIABLE_LEFT_PART_CODE + code + UNESCAPED_VARIABLE_RIGHT_PART_CODE
         ));
     }
 
     @Override
-    public void processClosingTag(TemplateClassGenerator classGenerator) {
+    public void processClosingTag(TemplateClassGeneratorOLD classGenerator) {
         //do nothing
     }
 

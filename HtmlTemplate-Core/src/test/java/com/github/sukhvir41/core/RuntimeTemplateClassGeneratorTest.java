@@ -16,37 +16,54 @@
 
 package com.github.sukhvir41.core;
 
+import com.github.sukhvir41.core.classgenerator.RuntimeClassGenerator;
+import com.github.sukhvir41.core.classgenerator.RuntimeTemplateClassGeneratorOLD;
+import com.github.sukhvir41.core.classgenerator.TemplateClassGenerator;
+import com.github.sukhvir41.core.classgenerator.TemplateClassGeneratorOLD;
 import com.github.sukhvir41.core.statements.PlainStringRenderBodyStatement;
+import com.github.sukhvir41.core.template.RuntimeSubTemplate;
+import com.github.sukhvir41.core.template.RuntimeTemplate;
+import com.github.sukhvir41.core.template.Template;
 import com.github.sukhvir41.tags.HtmlTag;
 import org.joor.Reflect;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.mockito.Mockito;
+
+import java.io.IOException;
+import java.nio.file.Path;
 
 public class RuntimeTemplateClassGeneratorTest {
 
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
+
     @Test
     public void onlyWithNormalVariables() {
-        RuntimeTemplateClassGenerator classGenerator =
-                new RuntimeTemplateClassGenerator("com.github.sukhvir41.core.test", "TestClass");
+        RuntimeClassGenerator classGenerator =
+                new RuntimeClassGenerator("com.github.sukhvir41.core.test", "TestClass");
 
-        classGenerator.addVariable("String", "greeting");
+        Template template = Mockito.mock(Template.class);
+        Mockito.when(template.getRootTemplate()).thenReturn(template);
 
-        classGenerator.appendPlainHtml("<html>");
-        classGenerator.addTagToStack(new DummyHtmlTag());
-        classGenerator.appendPlainHtml("<h1>");
-        classGenerator.addTagToStack(new DummyHtmlTag());
-        classGenerator.appendPlainHtmlIndentation();
+        classGenerator.addVariable(template, "String", "greeting");
+
+        classGenerator.appendPlainHtml(template, "<html>");
+        classGenerator.addHtmlTag(new DummyHtmlTag());
+        classGenerator.appendPlainHtml(template, "<h1>");
+        classGenerator.addHtmlTag(new DummyHtmlTag());
+        classGenerator.appendPlainHtmlIndentation(template);
         classGenerator
-                .addCode(new PlainStringRenderBodyStatement(classGenerator.getWriterVariableName() + ".append(content(() -> String.valueOf(greeting())));"));
-        classGenerator.removeFromTagStack();
-        classGenerator.appendPlainHtmlNewLine();
+                .addStatement(template, new PlainStringRenderBodyStatement(classGenerator.getWriterVariableName() + ".append(content(() -> String.valueOf(greeting())));"));
+        classGenerator.popHtmlTag();
+        classGenerator.appendPlainHtmlNewLine(template);
 
-        classGenerator.appendPlainHtml("</h1>");
+        classGenerator.appendPlainHtml(template, "</h1>");
 
-        classGenerator.removeFromTagStack();
-        classGenerator.appendPlainHtml("</html>");
-
+        classGenerator.popHtmlTag();
+        classGenerator.appendPlainHtml(template, "</html>");
 
         String generatedClass = classGenerator.render();
 
@@ -68,40 +85,52 @@ public class RuntimeTemplateClassGeneratorTest {
     }
 
     @Test
-    public void with1levelDeep1SubTemplate() {
+    public void with1levelDeep1SubTemplate() throws IOException {
 
         Template parentTemplate = Mockito.mock(RuntimeTemplate.class);
 
+        Mockito.when(parentTemplate.getRootTemplate())
+                .thenReturn(parentTemplate);
+
+        Path file = folder.newFile("TestClass").toPath();
+
         TemplateClassGenerator classGenerator =
-                new RuntimeTemplateClassGenerator("com.github.sukhvir41.core.test", "TestClass");
+                new RuntimeClassGenerator("com.github.sukhvir41.core.test", "TestClass");
 
-        classGenerator.addVariable("String", "greetingParent");
+        classGenerator.addVariable(parentTemplate, "String", "greetingParent");
+        classGenerator.addVariable(parentTemplate, "String", "greetingChild");
 
-        classGenerator.appendPlainHtml("<html>");
-        classGenerator.addTagToStack(new DummyHtmlTag());
-        classGenerator.appendPlainHtml("<h1>");
-        classGenerator.addTagToStack(new DummyHtmlTag());
-        classGenerator.appendPlainHtmlIndentation();
+        classGenerator.appendPlainHtml(parentTemplate, "<html>");
+        classGenerator.addHtmlTag(new DummyHtmlTag());
+        classGenerator.appendPlainHtml(parentTemplate, "<h1>");
+        classGenerator.addHtmlTag(new DummyHtmlTag());
+        classGenerator.appendPlainHtmlIndentation(parentTemplate);
         classGenerator
-                .addCode(new PlainStringRenderBodyStatement(classGenerator.getWriterVariableName() + ".append(content(() -> String.valueOf(greetingParent())));"));
-        classGenerator.appendPlainHtmlNewLine();
-        classGenerator.appendPlainHtmlIndentation();
+                .addStatement(parentTemplate, new PlainStringRenderBodyStatement(classGenerator.getWriterVariableName() + ".append(content(() -> String.valueOf(greetingParent())));"));
+        classGenerator.appendPlainHtmlNewLine(parentTemplate);
+        classGenerator.appendPlainHtmlIndentation(parentTemplate);
+
+        Template subTemplate = new RuntimeSubTemplate(file, parentTemplate);
+        classGenerator.addStatement(parentTemplate, new PlainStringRenderBodyStatement(
+                subTemplate.getFullyQualifiedName() + "(" + classGenerator.getWriterVariableName() + ",greetingChild());"
+        ));
         classGenerator
-                .addCode(new PlainStringRenderBodyStatement(classGenerator.getWriterVariableName() + ".append(content(() -> String.valueOf(greetingChild())));"));
+                .addStatement(subTemplate, new PlainStringRenderBodyStatement(classGenerator.getWriterVariableName() + ".append(content(() -> String.valueOf(greetingChild)));"));
 
-        Template subTemplate = new RuntimeSubTemplate(null, parentTemplate);
-        classGenerator.addSubTemplateVariables(subTemplate, "String", "greetingChild");
 
-        classGenerator.removeFromTagStack();
-        classGenerator.appendPlainHtmlNewLine();
+        classGenerator.addVariable(subTemplate, "String", "greetingChild");
 
-        classGenerator.appendPlainHtml("</h1>");
+        classGenerator.popHtmlTag();
+        classGenerator.appendPlainHtmlNewLine(parentTemplate);
 
-        classGenerator.removeFromTagStack();
-        classGenerator.appendPlainHtml("</html>");
+        classGenerator.appendPlainHtml(parentTemplate, "</h1>");
+
+        classGenerator.popHtmlTag();
+        classGenerator.appendPlainHtml(parentTemplate, "</html>");
 
 
         String generatedClass = classGenerator.render();
+        System.out.println(generatedClass);
         Reflect compiledClass = Reflect.compile("com.github.sukhvir41.core.test.TestClass", generatedClass);
 
         Reflect instance = compiledClass.call("getInstance");
@@ -122,12 +151,12 @@ public class RuntimeTemplateClassGeneratorTest {
     private static class DummyHtmlTag implements HtmlTag {
 
         @Override
-        public void processOpeningTag(TemplateClassGenerator classGenerator) {
+        public void processOpeningTag(TemplateClassGeneratorOLD classGenerator) {
 
         }
 
         @Override
-        public void processClosingTag(TemplateClassGenerator classGenerator) {
+        public void processClosingTag(TemplateClassGeneratorOLD classGenerator) {
 
         }
 

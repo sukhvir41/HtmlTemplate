@@ -17,7 +17,7 @@
 package com.github.sukhvir41.tags;
 
 import com.github.sukhvir41.core.IllegalSyntaxException;
-import com.github.sukhvir41.core.TemplateClassGenerator;
+import com.github.sukhvir41.core.classgenerator.TemplateClassGeneratorOLD;
 import com.github.sukhvir41.utils.HtmlUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -48,7 +48,7 @@ public class MetaVariableHtmlTag implements HtmlTag {
     }
 
     @Override
-    public void processOpeningTag(TemplateClassGenerator classGenerator) {
+    public void processOpeningTag(TemplateClassGeneratorOLD classGenerator) {
         String variablesString = extractVariablesString();
         Map<String, String> variables = getVariables(variablesString);
         addVariables(classGenerator, variables);
@@ -78,44 +78,21 @@ public class MetaVariableHtmlTag implements HtmlTag {
             } else {
                 Map<String, String> variables = new HashMap<>();
                 for (int i = 0; i < variableParts.length; i += 2) {
-                    variables.put(variableParts[i + 1].trim(), covertFromPrimitiveToObjectType(variableParts[i].trim()));
+                    variables.put(variableParts[i + 1].trim(), variableParts[i].trim());
                 }
                 return variables;
             }
         }
     }
 
-    private String covertFromPrimitiveToObjectType(String type) {
-        switch (type) {
-            case "byte":
-                return "Byte";
-            case "short":
-                return "Short";
-            case "int":
-                return "Integer";
-            case "long":
-                return "Long";
-            case "float":
-                return "Float";
-            case "double":
-                return "Double";
-            case "char":
-                return "Character";
-            case "boolean":
-                return "Boolean";
-            default:
-                return type;
-        }
-    }
-
-    protected void addVariables(TemplateClassGenerator classGenerator, Map<String, String> variables) {
+    protected void addVariables(TemplateClassGeneratorOLD classGenerator, Map<String, String> variables) {
         variables.forEach((name, type) -> classGenerator.addVariable(type, name));
     }
 
 
     @Override
 
-    public void processClosingTag(TemplateClassGenerator classGenerator) {
+    public void processClosingTag(TemplateClassGeneratorOLD classGenerator) {
     }
 
     @Override

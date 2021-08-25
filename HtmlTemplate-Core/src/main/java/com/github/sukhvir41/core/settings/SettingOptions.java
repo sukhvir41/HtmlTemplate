@@ -14,19 +14,26 @@
  * limitations under the License.
  */
 
-package com.github.sukhvir41.core;
+package com.github.sukhvir41.core.settings;
 
 import com.github.sukhvir41.utils.CheckedFunction;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.function.Function;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
-class SettingOptions<RETURN> {
 
-    public static final SettingOptions<Boolean> SUPPRESS_NULL_EXCEPTIONS = new SettingOptions<>((Object param) -> Boolean.valueOf(String.valueOf(param)));
-    public static final SettingOptions<String> TEMPLATE_FOLDER_PATH = new SettingOptions<>(String::valueOf);
-    public static final SettingOptions<Level> LOGGING_LEVEL = new SettingOptions<>(CheckedFunction.wrapFunction((Object param) -> Level.parse(param.toString())));
+public class SettingOptions<RETURN> {
+
+    public static final SettingOptions<Boolean> SUPPRESS_NULL_EXCEPTIONS =
+            new SettingOptions<>((Object param) -> Boolean.valueOf(String.valueOf(param)));
+    public static final SettingOptions<String> TEMPLATE_FOLDER_PATH =
+            new SettingOptions<>(String::valueOf);
+    public static final SettingOptions<Level> LOGGING_LEVEL =
+            new SettingOptions<>(CheckedFunction.wrapFunction((Object param) -> Level.parse(param.toString())));
+    public static final SettingOptions<Path> ROOT_FOLDER =
+            new SettingOptions<>(CheckedFunction.wrapFunction((Object param) -> Paths.get(param.toString())));
 
     private final Function<Object, RETURN> caster;
 

@@ -30,7 +30,7 @@ public final class Code {
     public static final Pattern CONTENT_VARIABLE_PATTERN =
             Pattern.compile("@[a-z,_,$][a-z,0-9,_,$]*", Pattern.CASE_INSENSITIVE);
 
-    public static String parse(String theCode, Map<String, String> mappedVariables) {
+    public static String parseForFunction(String theCode) {
         var variableMatcher = CONTENT_VARIABLE_PATTERN.matcher(theCode);
         int findIndex = 0;
         String newCode = theCode;
@@ -41,24 +41,37 @@ public final class Code {
                 continue;
             }
 
-            newCode = replaceWithMethod(theCode, variableMatcher, newCode, mappedVariables);
+            newCode = replaceVariableAndAppend(theCode, variableMatcher, newCode, "()");
             findIndex = variableMatcher.end();
         }
 
         return newCode.trim();
     }
 
-    public static String parse(String theCode) {
-        return parse(theCode, Collections.emptyMap());
+    public static String parseForVariable(String theCode) {
+        var variableMatcher = CONTENT_VARIABLE_PATTERN.matcher(theCode);
+        int findIndex = 0;
+        String newCode = theCode;
+        while (variableMatcher.find(findIndex)) {
+
+            if (isVariableInString(theCode, variableMatcher.start())) {
+                findIndex = theCode.indexOf("\"", variableMatcher.end());
+                continue;
+            }
+
+            newCode = replaceVariableAndAppend(theCode, variableMatcher, newCode, "");
+            findIndex = variableMatcher.end();
+        }
+
+        return newCode.trim();
     }
 
-    // replace the variable with a method call of the variable name. eg @name -> name()
-    private static String replaceWithMethod(String theCode, Matcher variableMatcher, String newCode, Map<String, String> mappedVariables) {
+    // replace the variable the variable name. eg @name -> name + <appender>
+    private static String replaceVariableAndAppend(String theCode, Matcher variableMatcher, String newCode, String appender) {
         String htmlVariable = theCode.substring(variableMatcher.start(), variableMatcher.end());
         String variable = StringUtils.replaceOnce(htmlVariable, "@", "");
-        String mappedToVariable = mappedVariables.getOrDefault(variable, variable);
         newCode = StringUtils.replaceOnce(
-                newCode, htmlVariable, mappedToVariable + "()"
+                newCode, htmlVariable, variable + appender
         );
         return newCode;
     }

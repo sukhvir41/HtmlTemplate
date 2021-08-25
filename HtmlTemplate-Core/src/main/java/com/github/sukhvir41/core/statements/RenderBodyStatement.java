@@ -16,6 +16,7 @@
 
 package com.github.sukhvir41.core.statements;
 
+@FunctionalInterface
 public interface RenderBodyStatement {
 
     String getStatement();

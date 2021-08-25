@@ -16,23 +16,22 @@
 
 package com.github.sukhvir41.core;
 
-import org.joor.Reflect;
-import org.junit.After;
+import com.github.sukhvir41.core.settings.SettingOptions;
+import com.github.sukhvir41.core.settings.Settings;
+import com.github.sukhvir41.core.settings.SettingsManager;
+import com.github.sukhvir41.core.template.CompileTimeTemplate;
+import com.github.sukhvir41.core.template.RuntimeTemplate;
+import com.github.sukhvir41.core.template.TemplateFactory;
+import com.github.sukhvir41.core.template.TemplateType;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Map;
 
 public class TemplateFactoryTest {
-
-    @After
-    public void beforeTest() {
-        Reflect.onClass(SettingsManager.class)
-                .set("settings", null);
-    }
 
     @Test
     public void allNullInputs() {
@@ -81,7 +80,7 @@ public class TemplateFactoryTest {
     public void runTimeTemplateType() throws IOException {
         try {
             var tempFile = Files.createTempFile("", "test.html");
-            var template = TemplateFactory.getTemplate(tempFile, TemplateType.RUN_TIME, SettingsManager.getDefaultSettings());
+            var template = TemplateFactory.getTemplate(tempFile, TemplateType.RUN_TIME, SettingsManager.load());
 
             Assert.assertEquals(RuntimeTemplate.class, template.getClass());
 
@@ -95,10 +94,14 @@ public class TemplateFactoryTest {
     public void compileTimeTemplateType() throws IOException {
         try {
             var tempFile = Files.createTempFile("", "test.html");
-            var template = TemplateFactory.getTemplate(tempFile, TemplateType.COMPILE_TIME, SettingsManager.getDefaultSettings());
+
+            Settings settings = SettingsManager.load(Map.of(SettingOptions.ROOT_FOLDER, tempFile.getParent()));
+
+            var template = TemplateFactory.getTemplate(tempFile, TemplateType.COMPILE_TIME, settings);
 
             Assert.assertEquals(CompileTimeTemplate.class, template.getClass());
         } catch (Exception e) {
+            e.printStackTrace();
             Assert.fail("error in compile time template instantiation");
         }
     }

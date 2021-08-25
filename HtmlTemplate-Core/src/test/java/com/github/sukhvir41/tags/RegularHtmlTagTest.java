@@ -16,7 +16,7 @@
 
 package com.github.sukhvir41.tags;
 
-import com.github.sukhvir41.core.TemplateClassGenerator;
+import com.github.sukhvir41.core.classgenerator.TemplateClassGeneratorOLD;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -39,7 +39,7 @@ public class RegularHtmlTagTest {
     RegularHtmlTag regularHtmlTag = new RegularHtmlTag("<h1 attribute = \"value\" >");
 
     @Mock
-    private TemplateClassGenerator classGenerator;
+    private TemplateClassGeneratorOLD classGenerator;
 
     @Test
     public void testClosing() {

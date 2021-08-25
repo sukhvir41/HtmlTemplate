@@ -16,7 +16,7 @@
 
 package com.github.sukhvir41.tags;
 
-import com.github.sukhvir41.core.TemplateClassGenerator;
+import com.github.sukhvir41.core.classgenerator.TemplateClassGeneratorOLD;
 import com.github.sukhvir41.core.statements.PlainStringRenderBodyStatement;
 import com.github.sukhvir41.parsers.Code;
 import com.github.sukhvir41.core.IllegalSyntaxException;
@@ -45,7 +45,7 @@ public final class ForHtmlTag extends RegularHtmlTag {
     }
 
     @Override
-    public void processOpeningTag(TemplateClassGenerator classGenerator) {
+    public void processOpeningTag(TemplateClassGeneratorOLD classGenerator) {
         var matcher = FOR_ATTRIBUTE_PATTERN.matcher(this.htmlString);
         if (matcher.find()) {
             var forStatement = extractForStatement(matcher);
@@ -56,7 +56,7 @@ public final class ForHtmlTag extends RegularHtmlTag {
                 throw new IllegalSyntaxException("Error in org.ht-for.\nLine -> " + this.htmlString);
             }
 
-            var collection = Code.parse(forStatementParts[1].trim());
+            var collection = Code.parseForFunction(forStatementParts[1].trim());
             var variables = Stream.of(forStatementParts[0].trim().split(","))
                     .map(String::trim)
                     .collect(Collectors.joining(", "));
@@ -77,7 +77,7 @@ public final class ForHtmlTag extends RegularHtmlTag {
                 .replace("'", "\"");
     }
 
-    private void processTag(TemplateClassGenerator classGenerator) {
+    private void processTag(TemplateClassGeneratorOLD classGenerator) {
         var matcher = FOR_ATTRIBUTE_PATTERN.matcher(this.htmlString);
         if (matcher.find()) {
             var leftPart = this.htmlString.substring(0, matcher.start())
@@ -94,7 +94,7 @@ public final class ForHtmlTag extends RegularHtmlTag {
     }
 
     @Override
-    public void processClosingTag(TemplateClassGenerator classGenerator) {
+    public void processClosingTag(TemplateClassGeneratorOLD classGenerator) {
         classGenerator.decrementRenderFunctionIndentation();
         classGenerator.addCode(new PlainStringRenderBodyStatement("});"));
     }

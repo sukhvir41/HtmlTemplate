@@ -16,8 +16,8 @@
 
 package com.github.sukhvir41.tags;
 
-import com.github.sukhvir41.core.Template;
-import com.github.sukhvir41.core.TemplateClassGenerator;
+import com.github.sukhvir41.core.template.Template;
+import com.github.sukhvir41.core.classgenerator.TemplateClassGeneratorOLD;
 
 import java.util.Map;
 
@@ -31,7 +31,7 @@ public final class RuntimeSubTemplateMetaVariableHtmlTag extends MetaVariableHtm
     }
 
     @Override
-    public void processOpeningTag(TemplateClassGenerator classGenerator) {
+    public void processOpeningTag(TemplateClassGeneratorOLD classGenerator) {
         String variablesString = extractVariablesString();
         Map<String, String> variables = getVariables(variablesString);
 

@@ -17,7 +17,7 @@
 package IntegrationTest;
 
 import com.github.sukhvir41.TestUtils;
-import com.github.sukhvir41.core.SettingsManager;
+import com.github.sukhvir41.core.settings.SettingsManager;
 import com.github.sukhvir41.template.HtmlTemplate;
 import com.github.sukhvir41.template.HtmlTemplateLoader;
 import org.junit.Assert;
@@ -31,14 +31,6 @@ import java.util.Map;
 import static com.github.sukhvir41.TestUtils.strip;
 
 public class HtmlTemplateIncludeTest {
-
-    @Before
-    public void before() throws NoSuchFieldException, IllegalAccessException {
-        //https://stackoverflow.com/a/26235213/4803757
-        Field field = SettingsManager.class.getDeclaredField("settings");
-        field.setAccessible(true);
-        field.set(null, null);
-    }
 
     private final String expectedOutPut = "" +
             "<!DOCTYPE html>\n" +

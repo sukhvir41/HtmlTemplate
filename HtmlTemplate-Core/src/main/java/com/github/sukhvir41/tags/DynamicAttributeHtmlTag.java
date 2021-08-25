@@ -16,7 +16,7 @@
 
 package com.github.sukhvir41.tags;
 
-import com.github.sukhvir41.core.TemplateClassGenerator;
+import com.github.sukhvir41.core.classgenerator.TemplateClassGeneratorOLD;
 import com.github.sukhvir41.core.statements.PlainStringRenderBodyStatement;
 import org.apache.commons.lang3.StringUtils;
 import com.github.sukhvir41.parsers.Code;
@@ -38,11 +38,11 @@ public final class DynamicAttributeHtmlTag extends RegularHtmlTag {
 
 
     @Override
-    public void processOpeningTag(TemplateClassGenerator classGenerator) {
+    public void processOpeningTag(TemplateClassGeneratorOLD classGenerator) {
         processDynamicAttributes(classGenerator, this.htmlString);
     }
 
-    private void processDynamicAttributes(TemplateClassGenerator classGenerator, String htmlString) {
+    private void processDynamicAttributes(TemplateClassGeneratorOLD classGenerator, String htmlString) {
 
         var matcher = HtmlUtils.DYNAMIC_ATTRIBUTE
                 .matcher(htmlString);
@@ -58,14 +58,14 @@ public final class DynamicAttributeHtmlTag extends RegularHtmlTag {
 
     }
 
-    private void processLeftPart(TemplateClassGenerator classGenerator, String leftPart) {
+    private void processLeftPart(TemplateClassGeneratorOLD classGenerator, String leftPart) {
         if (StringUtils.isNotBlank(leftPart)) {
             classGenerator.appendPlainHtml(leftPart, isFirstLeftPart, false);
         }
         isFirstLeftPart = false;
     }
 
-    private void processDynamicAttribute(Matcher matcher, TemplateClassGenerator classGenerator, String htmlString) {
+    private void processDynamicAttribute(Matcher matcher, TemplateClassGeneratorOLD classGenerator, String htmlString) {
         var dynamicAttribute = htmlString.substring(matcher.start(), matcher.end());
 
         var attributeName = dynamicAttribute.substring(0, dynamicAttribute.indexOf("="));
@@ -75,7 +75,7 @@ public final class DynamicAttributeHtmlTag extends RegularHtmlTag {
                 .replace("\"", "")
                 .trim();
 
-        var code = Code.parse(attributeValue);
+        var code = Code.parseForFunction(attributeValue);
 
         classGenerator.appendPlainHtml(actualAttributeName + " = \"", false, false);
         classGenerator.addCode(

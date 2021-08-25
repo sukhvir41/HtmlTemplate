@@ -14,19 +14,9 @@
  * limitations under the License.
  */
 
-package com.github.sukhvir41.core;
+package com.github.sukhvir41.core.template;
 
-import com.github.sukhvir41.tags.HtmlTag;
-
-import java.nio.file.Path;
-
-public final class CompileTimeTemplate extends Template {
-    public CompileTimeTemplate(Path file) {
-        super(file, " ", "", null);
-    }
-
-    @Override
-    public HtmlTag parseSection(String section) {
-        return null;
-    }
+public enum TemplateType {
+    RUN_TIME,
+    COMPILE_TIME
 }

@@ -14,32 +14,57 @@
  * limitations under the License.
  */
 
-package com.github.sukhvir41.core;
+package com.github.sukhvir41.core.template;
 
+import com.github.sukhvir41.core.classgenerator.RuntimeTemplateClassGeneratorOLD;
+import com.github.sukhvir41.core.settings.Settings;
+import com.github.sukhvir41.parsers.Code;
 import com.github.sukhvir41.tags.*;
 import com.github.sukhvir41.utils.HtmlUtils;
+import com.github.sukhvir41.utils.StringUtils;
 
 import java.nio.file.Path;
+import java.util.UUID;
 
-public final class RuntimeSubTemplate extends Template {
+public final class RuntimeTemplate extends Template {
 
-    private Template parentTemplate;
+    private static final String DEFAULT_PACKAGE_NAME = "com.github.sukhvir41.runtimeTemplates";
 
-    public RuntimeSubTemplate(Path file, Template parentTemplate) {
-        super(file, parentTemplate.getClassGenerator(), parentTemplate.getDepth() + 1);
-        this.parentTemplate = parentTemplate;
-        parentTemplate.setDepth(parentTemplate.getDepth() + 1);
-        if (getDepth() > 99) {
-            throw new IllegalStateException("Reached Template depth");
-        }
+    private final String packageName;
+    private final String className;
+
+    public RuntimeTemplate(Path file, Settings settings) {
+        this(
+                file,
+                DEFAULT_PACKAGE_NAME,
+                StringUtils.getClassNameFromFile(file) + "_" + UUID.randomUUID().toString().replace("-", "_"),
+                settings
+        );
     }
+
+    public RuntimeTemplate(Path file, String packageName, Settings settings) {
+        this(
+                file,
+                packageName,
+                StringUtils.getClassNameFromFile(file) + "_" + UUID.randomUUID().toString().replace("-", "_"),
+                settings
+        );
+    }
+
+    private RuntimeTemplate(Path file, String packageName, String className, Settings settings) {
+        super(file,
+                new RuntimeTemplateClassGeneratorOLD(DEFAULT_PACKAGE_NAME, className),
+                settings
+        );
+        this.packageName = packageName;
+        this.className = className;
+    }
+
 
     @Override
-    public void readAndProcessTemplateFile() {
-        super.readAndProcessTemplateFile();
-        parentTemplate.setDepth(parentTemplate.getDepth() - 1);
+    public String getFullyQualifiedName() {
+        return this.packageName + "." + this.className;
     }
-
 
     @Override
     public HtmlTag parseSection(String section) {
@@ -50,8 +75,13 @@ public final class RuntimeSubTemplate extends Template {
                 return new RegularHtmlTag(section);
             }
         } else {
-            return new Content(section, this);
+            return new Content(section, this, Code::parseForFunction);
         }
+    }
+
+    @Override
+    public Template getRootTemplate() {
+        return this;
     }
 
     private boolean containsDynamicAttribute(String htmlString) {
@@ -64,10 +94,10 @@ public final class RuntimeSubTemplate extends Template {
             return new MetaImportHtmlTag(tagString);
 
         } else if (RuntimeIncludeHtmlTag.matches(tagString)) {
-            return new RuntimeIncludeHtmlTag(tagString, parentTemplate);
+            return new RuntimeIncludeHtmlTag(tagString, this);
 
-        } else if (RuntimeSubTemplateMetaVariableHtmlTag.matches(tagString)) {
-            return new RuntimeSubTemplateMetaVariableHtmlTag(tagString, this);
+        } else if (MetaVariableHtmlTag.matches(tagString)) {
+            return new MetaVariableHtmlTag(tagString);
 
         } else if (IfHtmlTag.matches(tagString)) {
             return new IfHtmlTag(tagString);
@@ -86,5 +116,4 @@ public final class RuntimeSubTemplate extends Template {
         }
 
     }
-
 }

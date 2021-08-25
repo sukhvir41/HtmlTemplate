@@ -16,7 +16,7 @@
 
 package com.github.sukhvir41.tags;
 
-import com.github.sukhvir41.core.TemplateClassGenerator;
+import com.github.sukhvir41.core.classgenerator.TemplateClassGeneratorOLD;
 import com.github.sukhvir41.core.statements.RenderBodyStatement;
 import org.junit.Rule;
 import org.junit.Test;
@@ -49,7 +49,7 @@ public class DynamicAttributeHtmlTagTest {
 
     @Test
     public void testClosing() {
-        TemplateClassGenerator templateClass = Mockito.mock(TemplateClassGenerator.class);
+        TemplateClassGeneratorOLD templateClass = Mockito.mock(TemplateClassGeneratorOLD.class);
 
         dynamicTag.processClosingTag(templateClass);
 
@@ -60,7 +60,7 @@ public class DynamicAttributeHtmlTagTest {
     @Test
     public void testOpeningTag() {
 
-        TemplateClassGenerator classGenerator = Mockito.mock(TemplateClassGenerator.class);
+        TemplateClassGeneratorOLD classGenerator = Mockito.mock(TemplateClassGeneratorOLD.class);
 
         Mockito.when(classGenerator.getWriterVariableName())
                 .thenReturn("testWriter");

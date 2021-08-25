@@ -16,11 +16,10 @@
 
 package com.github.sukhvir41.cli;
 
-import com.github.sukhvir41.core.SettingsManager;
-import com.github.sukhvir41.core.Template;
-import com.github.sukhvir41.core.TemplateFactory;
-import com.github.sukhvir41.core.TemplateType;
-import com.github.sukhvir41.template.HtmlTemplateLoader;
+import com.github.sukhvir41.core.settings.SettingsManager;
+import com.github.sukhvir41.core.template.Template;
+import com.github.sukhvir41.core.template.TemplateFactory;
+import com.github.sukhvir41.core.template.TemplateType;
 import com.github.sukhvir41.utils.StringUtils;
 
 import java.io.File;
@@ -48,7 +47,7 @@ public final class App {
 
     private void createSingleFileTemplate(Path templateFile) {
         String packageName = settings.getPackageName();
-        Template template = TemplateFactory.getTemplate(templateFile, TemplateType.RUN_TIME, packageName, SettingsManager.getDefaultSettings());
+        Template template = TemplateFactory.getTemplate(templateFile, TemplateType.RUN_TIME, packageName, SettingsManager.load());
         template.readAndProcessTemplateFile();
         String templateCode = template.render();
         var outputPath = getOutputFilePath(packageName, StringUtils.getClassNameFromFile(templateFile.getFileName().toString()));

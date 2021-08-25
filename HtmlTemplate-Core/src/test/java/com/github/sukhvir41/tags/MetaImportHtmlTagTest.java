@@ -16,7 +16,7 @@
 
 package com.github.sukhvir41.tags;
 
-import com.github.sukhvir41.core.TemplateClassGenerator;
+import com.github.sukhvir41.core.classgenerator.TemplateClassGeneratorOLD;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,7 +42,7 @@ public class MetaImportHtmlTagTest {
     private ArgumentCaptor<String> importCapture;
 
     @Mock
-    private TemplateClassGenerator classGenerator;
+    private TemplateClassGeneratorOLD classGenerator;
 
     @Test
     public void singleImportTest() {

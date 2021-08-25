@@ -19,41 +19,35 @@ package com.github.sukhvir41.parsers;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.Map;
 
 public class CodeTest {
 
     @Test
     public void simpleTest() {
-        var parsedCode = Code.parse("@name.contains(\"@someDomain.com\")");
-        Assert.assertEquals("name().contains(\"@someDomain.com\")", parsedCode);
+        var parsedFunctionCode = Code.parseForFunction("@name.contains(\"@someDomain.com\")");
+        Assert.assertEquals("name().contains(\"@someDomain.com\")", parsedFunctionCode);
+
+        var parsedVariableCode = Code.parseForVariable("@name.contains(\"@someDomain.com\")");
+        Assert.assertEquals("name.contains(\"@someDomain.com\")", parsedVariableCode);
     }
 
 
     @Test
     public void escapedTest() {
-        var parsedCode = Code.parse("@name.contains(\"\\\"@someDomain.com\\\"\")");
-        Assert.assertEquals("name().contains(\"\\\"@someDomain.com\\\"\")", parsedCode);
+        var parsedFunctionCode = Code.parseForFunction("@name.contains(\"\\\"@someDomain.com\\\"\")");
+        Assert.assertEquals("name().contains(\"\\\"@someDomain.com\\\"\")", parsedFunctionCode);
+
+        var parsedVariableCode = Code.parseForVariable("@name.contains(\"\\\"@someDomain.com\\\"\")");
+        Assert.assertEquals("name.contains(\"\\\"@someDomain.com\\\"\")", parsedVariableCode);
     }
 
-    @Test
-    public void mappedVariableTest() {
-        Map<String, String> mappedVariable = Map.of("name", "otherName");
-        var parsedCode = Code.parse("@name.contains(\"@someDomain.com\")", mappedVariable);
-        Assert.assertEquals("otherName().contains(\"@someDomain.com\")", parsedCode);
+    public void sameNameVariableTest() {
+        var parsedFunctionCode = Code.parseForFunction("@name.contains(\"@name.com\") + @name");
+        Assert.assertEquals("name().contains(\"@name.com\")+ name()", parsedFunctionCode);
+
+        var parsedVariableCode = Code.parseForVariable("@name.contains(\"@name.com\") + @name");
+        Assert.assertEquals("name.contains(\"@name.com\") + name", parsedVariableCode);
     }
 
-    @Test
-    public void twoMappedVariableTest() {
-        Map<String, String> mappedVariable = Map.of("name", "otherName", "age", "otherAge");
-        var parsedCode = Code.parse("@name.contains(\"@someDomain.com\") + @age", mappedVariable);
-        Assert.assertEquals("otherName().contains(\"@someDomain.com\") + otherAge()", parsedCode);
-    }
 
-    @Test
-    public void mixAndMatchCodeTest() {
-        Map<String, String> mappedVariable = Map.of("name", "otherName");
-        var parsedCode = Code.parse("@name.contains(\"@someDomain.com\") + @age", mappedVariable);
-        Assert.assertEquals("otherName().contains(\"@someDomain.com\") + age()", parsedCode);
-    }
 }

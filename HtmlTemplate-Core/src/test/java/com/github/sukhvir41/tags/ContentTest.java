@@ -16,8 +16,9 @@
 
 package com.github.sukhvir41.tags;
 
-import com.github.sukhvir41.core.TemplateClassGenerator;
+import com.github.sukhvir41.core.classgenerator.TemplateClassGeneratorOLD;
 import com.github.sukhvir41.core.statements.RenderBodyStatement;
+import com.github.sukhvir41.parsers.Code;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -48,9 +49,9 @@ public class ContentTest {
 
     @Test
     public void plainTest() {
-        TemplateClassGenerator classGenerator = Mockito.mock(TemplateClassGenerator.class);
+        TemplateClassGeneratorOLD classGenerator = Mockito.mock(TemplateClassGeneratorOLD.class);
 
-        var content = new Content(" some content ", null);
+        var content = new Content(" some content ", null, Code::parseForFunction);
         content.processOpeningTag(classGenerator);
 
         Mockito.verify(classGenerator)
@@ -62,13 +63,13 @@ public class ContentTest {
 
     @Test
     public void escapedCodeTest() {
-        TemplateClassGenerator classGenerator = Mockito.mock(TemplateClassGenerator.class);
+        TemplateClassGeneratorOLD classGenerator = Mockito.mock(TemplateClassGeneratorOLD.class);
 
         Mockito.when(classGenerator.getWriterVariableName())
                 .thenReturn("testWriter");
 
 
-        var content = new Content(" content1 {{ \"some content2\" }} content3 {{ \"<h1> content4 </h1>\" }}", null);
+        var content = new Content(" content1 {{ \"some content2\" }} content3 {{ \"<h1> content4 </h1>\" }}", null, Code::parseForFunction);
         content.processOpeningTag(classGenerator);
 
         //testing plain content part
@@ -99,12 +100,12 @@ public class ContentTest {
 
     @Test
     public void unescapedCodeTest() {
-        TemplateClassGenerator classGenerator = Mockito.mock(TemplateClassGenerator.class);
+        TemplateClassGeneratorOLD classGenerator = Mockito.mock(TemplateClassGeneratorOLD.class);
 
         Mockito.when(classGenerator.getWriterVariableName())
                 .thenReturn("testWriter");
 
-        var content = new Content(" content1 {{ \"some content2\" }} content3 {{{ \"<h1> content4 </h1>\" }}}", null);
+        var content = new Content(" content1 {{ \"some content2\" }} content3 {{{ \"<h1> content4 </h1>\" }}}", null, Code::parseForFunction);
         content.processOpeningTag(classGenerator);
 
         //testing plain content part

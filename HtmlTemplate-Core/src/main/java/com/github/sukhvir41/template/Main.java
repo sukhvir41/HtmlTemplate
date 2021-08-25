@@ -16,9 +16,11 @@
 
 package com.github.sukhvir41.template;
 
-import java.util.Hashtable;
-import java.util.concurrent.ConcurrentHashMap;
+public class Main {
 
-public class Main  {
+    public static void main(String[] args) {
+    }
 }
+
+
 

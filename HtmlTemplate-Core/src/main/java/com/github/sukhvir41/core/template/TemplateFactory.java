@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-package com.github.sukhvir41.core;
+package com.github.sukhvir41.core.template;
 
-import com.github.sukhvir41.utils.LogManager;
+import com.github.sukhvir41.core.settings.Settings;
 import org.apache.commons.lang3.StringUtils;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Map;
 
 public final class TemplateFactory {
 
-    public static Template getTemplate(Path file, TemplateType type, Map<SettingOptions<?>, Object> settings) {
+    public static Template getTemplate(Path file, TemplateType type, Settings settings) {
         return getTemplate(file, type, "", settings);
     }
 
-    public static Template getTemplate(Path file, TemplateType type, String packageName, Map<SettingOptions<?>, Object> settings) {
+    public static Template getTemplate(Path file, TemplateType type, String packageName, Settings settings) {
 
         validateFile(file);
 
@@ -41,22 +40,20 @@ public final class TemplateFactory {
             throw new IllegalArgumentException("Please provide settings");
         }
 
-        SettingsManager.load(settings);
-
         switch (type) {
             case RUN_TIME:
-                LogManager.getLogger()
+                settings.getLogger()
                         .info("runtime template mode selected");
                 if (StringUtils.isBlank(packageName)) {
-                    return new RuntimeTemplate(file);
+                    return new RuntimeTemplate(file, settings);
                 } else {
-                    return new RuntimeTemplate(file, packageName);
+                    return new RuntimeTemplate(file, packageName, settings);
                 }
 
             case COMPILE_TIME:
-                LogManager.getLogger()
+                settings.getLogger()
                         .info("compile time template mode selected");
-                return null;
+                return null;//new CompileTimeTemplate(file, packageName, settings);
             default:
                 throw new IllegalArgumentException("Please provide template type");
         }

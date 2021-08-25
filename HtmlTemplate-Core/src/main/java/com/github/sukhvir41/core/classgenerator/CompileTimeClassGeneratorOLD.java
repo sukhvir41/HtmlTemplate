@@ -14,47 +14,36 @@
  * limitations under the License.
  */
 
-package com.github.sukhvir41.core;
+package com.github.sukhvir41.core.classgenerator;
 
+import com.github.sukhvir41.core.VariableInfo;
+import com.github.sukhvir41.core.template.Template;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import static com.github.sukhvir41.utils.StringUtils.getIndentations;
 
-public class RuntimeTemplateClassGenerator extends TemplateClassGenerator {
-
-    // key -> template being included using ht-include tag
-    private final Map<Template, List<VariableInfo>> mappedVariables = new HashMap<>();
-
-
-    public RuntimeTemplateClassGenerator(String packageName, String className) {
+public class CompileTimeClassGeneratorOLD extends TemplateClassGeneratorOLD {
+    public CompileTimeClassGeneratorOLD(String packageName, String className) {
         super(packageName, className);
     }
 
     @Override
     public void addMappedVariables(Template template, List<VariableInfo> variables) {
-        this.mappedVariables.put(template, variables);
+
     }
 
     @Override
     public Map<Template, List<VariableInfo>> getMappedVariables() {
-        return this.mappedVariables;
+        return Collections.emptyMap();
     }
 
     @Override
     public void addSubTemplateVariables(Template template, String type, String name) {
-        if (StringUtils.isAnyBlank(type, name) || template == null) {
-            throw new IllegalArgumentException();
-        }
 
-        getMappedVariables()
-                .getOrDefault(template, Collections.emptyList())
-                .stream()
-                .filter(variableInfo -> variableInfo.getName().equals(name))
-                .findFirst()
-                .ifPresentOrElse(variableInfo -> variableInfo.setType(type),
-                        () -> super.addVariable(type, name));
     }
 
     @Override
@@ -72,13 +61,9 @@ public class RuntimeTemplateClassGenerator extends TemplateClassGenerator {
 
         //instance
         appendVariableDeclaration(classString);
-        appendMappedVariableDeclaration(classString);
 
         appendGetter(classString);
         appendSetter(classString);
-
-        appendMappedVariableGetter(classString);
-        appendMappedVariableSetter(classString);
 
         appendRenderImpl(classString);
 
@@ -166,23 +151,6 @@ public class RuntimeTemplateClassGenerator extends TemplateClassGenerator {
         classString.append(BREAK_LINE);
     }
 
-    private void appendMappedVariableDeclaration(StringBuilder classString) {
-        getMappedVariables()
-                .values()
-                .stream()
-                .flatMap(Collection::stream)
-                .forEach(variableInfo ->
-                        classString.append(getIndentations(1))
-                                .append("private ")
-                                .append(variableInfo.getType())
-                                .append(" ")
-                                .append(variableInfo.getMappedName())
-                                .append(";")
-                                .append(BREAK_LINE)
-                );
-        classString.append(BREAK_LINE);
-    }
-
     private void appendGetter(StringBuilder classString) {
         getVariables()
                 .forEach((name, type) ->
@@ -238,61 +206,6 @@ public class RuntimeTemplateClassGenerator extends TemplateClassGenerator {
 
     }
 
-    private void appendMappedVariableGetter(StringBuilder classString) {
-        getMappedVariables()
-                .values()
-                .stream()
-                .flatMap(Collection::stream)
-                .forEach(variableInfo ->
-                        classString.append(getIndentations(1))
-                                .append("private ")
-                                .append(variableInfo.getType())
-                                .append(" ")
-                                .append(variableInfo.getMappedName())
-                                .append("() {")
-                                .append(BREAK_LINE)
-                                .append(getIndentations(2))
-                                .append("return ")
-                                .append(variableInfo.getMappedName())
-                                .append(";")
-                                .append(BREAK_LINE)
-                                .append(getIndentations(1))
-                                .append("}")
-                                .append(BREAK_LINE)
-                                .append(BREAK_LINE)
-                );
-    }
-
-    private void appendMappedVariableSetter(StringBuilder classString) {
-        getMappedVariables()
-                .values()
-                .stream()
-                .flatMap(Collection::stream)
-                .forEach(variableInfo ->
-                        classString.append(getIndentations(1))
-                                .append("private void")
-                                .append(" ")
-                                .append(variableInfo.getMappedName())
-                                .append("(")
-                                .append(variableInfo.getType())
-                                .append(" ")
-                                .append(variableInfo.getMappedName())
-                                .append(") {")
-                                .append(BREAK_LINE)
-                                .append(getIndentations(2))
-                                .append("this.")
-                                .append(variableInfo.getMappedName())
-                                .append(" = ")
-                                .append(variableInfo.getMappedName())
-                                .append(";")
-                                .append(BREAK_LINE)
-                                .append(getIndentations(1))
-                                .append("}")
-                                .append(BREAK_LINE)
-                                .append(BREAK_LINE)
-                );
-    }
-
     private void appendRenderImpl(StringBuilder classString) {
         classString.append(getIndentations(1))
                 .append("@Override")
@@ -315,5 +228,4 @@ public class RuntimeTemplateClassGenerator extends TemplateClassGenerator {
     private void appendClosingClass(StringBuilder classString) {
         classString.append("}");
     }
-
 }

@@ -17,8 +17,8 @@
 package com.github.sukhvir41.tags;
 
 import com.github.sukhvir41.core.IllegalSyntaxException;
-import com.github.sukhvir41.core.Template;
-import com.github.sukhvir41.core.TemplateClassGenerator;
+import com.github.sukhvir41.core.template.Template;
+import com.github.sukhvir41.core.classgenerator.TemplateClassGeneratorOLD;
 import com.github.sukhvir41.core.VariableInfo;
 import com.github.sukhvir41.parsers.Code;
 import com.github.sukhvir41.utils.HtmlUtils;
@@ -54,29 +54,32 @@ abstract class IncludeHtmlTag implements HtmlTag {
     }
 
     @Override
-    public boolean isSelfClosing() {
+    public final boolean isSelfClosing() {
         return true;
     }
 
     @Override
-    public boolean isDocTypeTag() {
+    public final boolean isDocTypeTag() {
         return false;
     }
 
     @Override
-    public boolean isClosingTag() {
+    public final boolean isClosingTag() {
         return this.htmlString.charAt(this.htmlString.length() - 2) == '/';
     }
 
     @Override
-    public String getName() {
+    public final String getName() {
         return "meta";
     }
 
     @Override
-    public void processClosingTag(TemplateClassGenerator classGenerator) {
+    public final void processClosingTag(TemplateClassGeneratorOLD classGenerator) {
     }
 
+    /**
+     * @return the file path in the ht-include attribute
+     */
     protected String getFilePath() {
         var matcher = INCLUDE_ATTRIBUTE_PATTERN.matcher(this.htmlString);
         if (matcher.find()) {
@@ -95,12 +98,12 @@ abstract class IncludeHtmlTag implements HtmlTag {
         return this.htmlString;
     }
 
-    protected List<VariableInfo> getVariables(Template template, TemplateClassGenerator classGenerator) {
+    protected List<VariableInfo> getVariables(Template template, TemplateClassGeneratorOLD classGenerator) {
         return classGenerator.getMappedVariables()
                 .getOrDefault(template, getVariableImpl(classGenerator));
     }
 
-    private List<VariableInfo> getVariableImpl(TemplateClassGenerator classGenerator) {
+    private List<VariableInfo> getVariableImpl(TemplateClassGeneratorOLD classGenerator) {
         try {
             var matcher = VARIABLES_ATTRIBUTE_PATTERN.matcher(this.htmlString);
             if (matcher.find()) {
@@ -121,7 +124,7 @@ abstract class IncludeHtmlTag implements HtmlTag {
         return variables.substring(variables.indexOf("\"") + 1, variables.length() - 1);
     }
 
-    private List<VariableInfo> getVariablesMapping(String variables, TemplateClassGenerator classGenerator) {
+    private List<VariableInfo> getVariablesMapping(String variables, TemplateClassGeneratorOLD classGenerator) {
         var variableList = new ArrayList<VariableInfo>();
         String[] variablesParts = variables.split(",");
 
@@ -132,7 +135,7 @@ abstract class IncludeHtmlTag implements HtmlTag {
                 variableList.add(
                         new VariableInfo(
                                 variablesParts[i],
-                                Code.parse(variablesParts[i + 1], classGenerator.getVariableMappings(template))
+                                Code.parseForFunction(variablesParts[i + 1])
                         )
                 );
             }

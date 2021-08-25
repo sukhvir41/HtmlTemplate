@@ -16,9 +16,9 @@
 
 package com.github.sukhvir41.tags;
 
-import com.github.sukhvir41.core.RuntimeSubTemplate;
-import com.github.sukhvir41.core.Template;
-import com.github.sukhvir41.core.TemplateClassGenerator;
+import com.github.sukhvir41.core.template.RuntimeSubTemplate;
+import com.github.sukhvir41.core.template.Template;
+import com.github.sukhvir41.core.classgenerator.TemplateClassGeneratorOLD;
 import com.github.sukhvir41.core.statements.PlainStringRenderBodyStatement;
 
 import java.nio.file.Path;
@@ -32,7 +32,7 @@ public class RuntimeIncludeHtmlTag extends IncludeHtmlTag {
 
 
     @Override
-    public void processOpeningTag(TemplateClassGenerator classGenerator) {
+    public void processOpeningTag(TemplateClassGeneratorOLD classGenerator) {
         String filePath = getFilePath();
         Path file = getFile(filePath);
         Template subTemplate = new RuntimeSubTemplate(file, getTemplate());
@@ -52,7 +52,7 @@ public class RuntimeIncludeHtmlTag extends IncludeHtmlTag {
         }
     }
 
-    private void addMappedVariablesSetters(Template template, TemplateClassGenerator classGenerator) {
+    private void addMappedVariablesSetters(Template template, TemplateClassGeneratorOLD classGenerator) {
         getVariables(template, classGenerator)
                 .forEach(variableInfo -> classGenerator.addCode(new PlainStringRenderBodyStatement(variableInfo.getMappedName() + "(" + variableInfo.getValue() + ");")));
 
