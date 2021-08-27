@@ -16,8 +16,10 @@
 
 package com.github.sukhvir41.tags;
 
+import com.github.sukhvir41.core.classgenerator.TemplateClassGenerator;
 import com.github.sukhvir41.core.classgenerator.TemplateClassGeneratorOLD;
 import com.github.sukhvir41.core.statements.PlainStringRenderBodyStatement;
+import com.github.sukhvir41.core.template.Template;
 import org.apache.commons.lang3.StringUtils;
 import com.github.sukhvir41.parsers.Code;
 import com.github.sukhvir41.utils.HtmlUtils;
@@ -30,19 +32,19 @@ public final class DynamicAttributeHtmlTag extends RegularHtmlTag {
     private static final String ATTRIBUTE_LEFT_PART_CODE = ".append(content(() -> String.valueOf(";
     private static final String ATTRIBUTE_RIGHT_PART_CODE = ")));";
 
-    boolean isFirstLeftPart = true;
+    private boolean isFirstLeftPart = true;
 
-    public DynamicAttributeHtmlTag(String htmlString) {
-        super(htmlString);
+    public DynamicAttributeHtmlTag(String htmlString, Template instantiatingTemplate) {
+        super(htmlString, instantiatingTemplate);
     }
 
 
     @Override
-    public void processOpeningTag(TemplateClassGeneratorOLD classGenerator) {
+    public void processOpeningTag(TemplateClassGenerator classGenerator) {
         processDynamicAttributes(classGenerator, this.htmlString);
     }
 
-    private void processDynamicAttributes(TemplateClassGeneratorOLD classGenerator, String htmlString) {
+    private void processDynamicAttributes(TemplateClassGenerator classGenerator, String htmlString) {
 
         var matcher = HtmlUtils.DYNAMIC_ATTRIBUTE
                 .matcher(htmlString);
@@ -53,19 +55,19 @@ public final class DynamicAttributeHtmlTag extends RegularHtmlTag {
             processDynamicAttribute(matcher, classGenerator, htmlString);
 
         } else {
-            classGenerator.appendPlainHtml(htmlString, isFirstLeftPart, true);
+            classGenerator.appendPlainHtml(super.template, htmlString, isFirstLeftPart, true);
         }
 
     }
 
-    private void processLeftPart(TemplateClassGeneratorOLD classGenerator, String leftPart) {
+    private void processLeftPart(TemplateClassGenerator classGenerator, String leftPart) {
         if (StringUtils.isNotBlank(leftPart)) {
-            classGenerator.appendPlainHtml(leftPart, isFirstLeftPart, false);
+            classGenerator.appendPlainHtml(super.template, leftPart, isFirstLeftPart, false);
         }
         isFirstLeftPart = false;
     }
 
-    private void processDynamicAttribute(Matcher matcher, TemplateClassGeneratorOLD classGenerator, String htmlString) {
+    private void processDynamicAttribute(Matcher matcher, TemplateClassGenerator classGenerator, String htmlString) {
         var dynamicAttribute = htmlString.substring(matcher.start(), matcher.end());
 
         var attributeName = dynamicAttribute.substring(0, dynamicAttribute.indexOf("="));
@@ -77,13 +79,13 @@ public final class DynamicAttributeHtmlTag extends RegularHtmlTag {
 
         var code = Code.parseForFunction(attributeValue);
 
-        classGenerator.appendPlainHtml(actualAttributeName + " = \"", false, false);
-        classGenerator.addCode(
+        classGenerator.appendPlainHtml(super.template, actualAttributeName + " = \"", false, false);
+        classGenerator.addStatement(super.template,
                 new PlainStringRenderBodyStatement(
                         classGenerator.getWriterVariableName() + ATTRIBUTE_LEFT_PART_CODE + code + ATTRIBUTE_RIGHT_PART_CODE
                 )
         );
-        classGenerator.appendPlainHtml("\" ", false, false);
+        classGenerator.appendPlainHtml(super.template, "\" ", false, false);
 
         var remainingPart = htmlString.substring(matcher.end());
 

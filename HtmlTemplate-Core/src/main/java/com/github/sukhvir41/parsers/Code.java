@@ -56,11 +56,12 @@ public final class Code {
 
             if (isVariableInString(theCode, variableMatcher.start())) {
                 findIndex = theCode.indexOf("\"", variableMatcher.end());
-                continue;
+            } else {
+                newCode = replaceVariableAndAppend(theCode, variableMatcher, newCode, "");
+                findIndex = variableMatcher.end();
             }
 
-            newCode = replaceVariableAndAppend(theCode, variableMatcher, newCode, "");
-            findIndex = variableMatcher.end();
+
         }
 
         return newCode.trim();
@@ -77,7 +78,7 @@ public final class Code {
     }
 
     private static boolean isVariableInString(String theCode, int variableStartIndex) {
-        var stringMatcher = HtmlUtils.CONTENT_VARIABLE_STRING_PATTERN.matcher(theCode);
+        var stringMatcher = com.github.sukhvir41.utils.StringUtils.CONTENT_VARIABLE_STRING_PATTERN.matcher(theCode);
         var startIndex = 0;
 
         while (stringMatcher.find(startIndex)) {

@@ -17,6 +17,7 @@
 package com.github.sukhvir41.tags;
 
 import com.github.sukhvir41.core.IllegalSyntaxException;
+import com.github.sukhvir41.core.classgenerator.TemplateClassGenerator;
 import com.github.sukhvir41.core.classgenerator.TemplateClassGeneratorOLD;
 import com.github.sukhvir41.utils.HtmlUtils;
 
@@ -44,7 +45,7 @@ public final class MetaImportHtmlTag implements HtmlTag {
     }
 
     @Override
-    public void processOpeningTag(TemplateClassGeneratorOLD classGenerator) {
+    public void processOpeningTag(TemplateClassGenerator classGenerator) {
         var matcher = IMPORT_ATTRIBUTE_PATTERN.matcher(htmlString);
         try {
             if (matcher.find()) {
@@ -54,8 +55,8 @@ public final class MetaImportHtmlTag implements HtmlTag {
                         .trim();
 
                 var imports = importString.split(",");
-                for (int i = 0; i < imports.length; i++) {
-                    classGenerator.addImportStatement(imports[i].trim());
+                for (String anImport : imports) {
+                    classGenerator.addImport(anImport.trim());
                 }
             }
         } catch (Exception e) {
@@ -65,7 +66,7 @@ public final class MetaImportHtmlTag implements HtmlTag {
     }
 
     @Override
-    public void processClosingTag(TemplateClassGeneratorOLD classGenerator) {
+    public void processClosingTag(TemplateClassGenerator classGenerator) {
         // do nothing
     }
 

@@ -40,7 +40,7 @@ final class ScriptParser implements HtmlParser {
         } else {
             if (data.getTemplate().shouldAppendScript()) {
                 data.getClassGenerator()
-                        .appendPlainHtml(data.getSection());
+                        .appendPlainHtml(data.getTemplate(), data.getSection());
             }
 
             data.getTemplate()

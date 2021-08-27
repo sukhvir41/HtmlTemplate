@@ -16,9 +16,12 @@
 
 package com.github.sukhvir41.template;
 
+import com.github.sukhvir41.parsers.Code;
+
 public class Main {
 
     public static void main(String[] args) {
+        var parsedFunctionCode = Code.parseForFunction("@name.contains(\"@name.com\") + @name");
     }
 }
 

@@ -17,13 +17,16 @@
 package com.github.sukhvir41.tags;
 
 import com.github.sukhvir41.core.IllegalSyntaxException;
-import com.github.sukhvir41.core.template.Template;
-import com.github.sukhvir41.core.classgenerator.TemplateClassGeneratorOLD;
 import com.github.sukhvir41.core.VariableInfo;
+import com.github.sukhvir41.core.classgenerator.TemplateClassGenerator;
+import com.github.sukhvir41.core.template.Template;
 import com.github.sukhvir41.parsers.Code;
 import com.github.sukhvir41.utils.HtmlUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,8 +38,9 @@ abstract class IncludeHtmlTag implements HtmlTag {
     public static final Pattern VARIABLES_ATTRIBUTE_PATTERN =
             Pattern.compile("ht-variables\\s*=\\s*\"[^\"]*\"", Pattern.CASE_INSENSITIVE);
 
-    private String htmlString;
-    private Template template;
+    private final String htmlString;
+    private final Template template;
+    private final Function<String, String> codeParser;
 
 
     public static boolean matches(String section) {
@@ -48,9 +52,10 @@ abstract class IncludeHtmlTag implements HtmlTag {
         }
     }
 
-    IncludeHtmlTag(String htmlString, Template template) {
+    IncludeHtmlTag(String htmlString, Function<String, String> codeParser, Template template) {
         this.htmlString = htmlString;
         this.template = template;
+        this.codeParser = codeParser;
     }
 
     @Override
@@ -74,7 +79,7 @@ abstract class IncludeHtmlTag implements HtmlTag {
     }
 
     @Override
-    public final void processClosingTag(TemplateClassGeneratorOLD classGenerator) {
+    public final void processClosingTag(TemplateClassGenerator classGenerator) {
     }
 
     /**
@@ -86,7 +91,7 @@ abstract class IncludeHtmlTag implements HtmlTag {
             var htTemplateAttribute = this.htmlString.substring(matcher.start(), matcher.end());
             return htTemplateAttribute.substring(htTemplateAttribute.indexOf("\"") + 1, htTemplateAttribute.length() - 1);
         } else {
-            throw new IllegalStateException("");
+            throw new IllegalStateException("Couldn't find the file path. html string " + this.htmlString);
         }
     }
 
@@ -98,12 +103,11 @@ abstract class IncludeHtmlTag implements HtmlTag {
         return this.htmlString;
     }
 
-    protected List<VariableInfo> getVariables(Template template, TemplateClassGeneratorOLD classGenerator) {
-        return classGenerator.getMappedVariables()
-                .getOrDefault(template, getVariableImpl(classGenerator));
+    protected List<VariableInfo> getVariables(Template template, TemplateClassGenerator classGenerator) {
+        return null;
     }
 
-    private List<VariableInfo> getVariableImpl(TemplateClassGeneratorOLD classGenerator) {
+    private List<VariableInfo> getVariableImpl(TemplateClassGenerator classGenerator) {
         try {
             var matcher = VARIABLES_ATTRIBUTE_PATTERN.matcher(this.htmlString);
             if (matcher.find()) {
@@ -124,7 +128,7 @@ abstract class IncludeHtmlTag implements HtmlTag {
         return variables.substring(variables.indexOf("\"") + 1, variables.length() - 1);
     }
 
-    private List<VariableInfo> getVariablesMapping(String variables, TemplateClassGeneratorOLD classGenerator) {
+    private List<VariableInfo> getVariablesMapping(String variables, TemplateClassGenerator classGenerator) {
         var variableList = new ArrayList<VariableInfo>();
         String[] variablesParts = variables.split(",");
 
@@ -142,6 +146,24 @@ abstract class IncludeHtmlTag implements HtmlTag {
         }
 
         return variableList;
+    }
+
+    public static class PassedVariables {
+        private final String name;
+        private final String value;
+
+        public PassedVariables(String name, String value) {
+            this.name = name;
+            this.value = value;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getValue() {
+            return value;
+        }
     }
 
 }

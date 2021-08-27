@@ -16,18 +16,19 @@
 
 package com.github.sukhvir41.parsers.htmlParsers;
 
+import com.github.sukhvir41.core.classgenerator.TemplateClassGenerator;
 import com.github.sukhvir41.core.template.Template;
 import com.github.sukhvir41.core.classgenerator.TemplateClassGeneratorOLD;
 
 public final class HtmlParserData {
 
     private final String section;
-    private final TemplateClassGeneratorOLD classGenerator;
+    private final TemplateClassGenerator classGenerator;
     private final Template template;
 
 
     private HtmlParserData(String section,
-                           TemplateClassGeneratorOLD classGenerator,
+                           TemplateClassGenerator classGenerator,
                            Template template) {
         this.section = section;
         this.classGenerator = classGenerator;
@@ -39,7 +40,7 @@ public final class HtmlParserData {
         return section;
     }
 
-    public TemplateClassGeneratorOLD getClassGenerator() {
+    public TemplateClassGenerator getClassGenerator() {
         return classGenerator;
     }
 
@@ -55,7 +56,7 @@ public final class HtmlParserData {
     public static final class Builder {
 
         private String section;
-        private TemplateClassGeneratorOLD classGenerator;
+        private TemplateClassGenerator classGenerator;
         private Template template;
 
 
@@ -64,7 +65,7 @@ public final class HtmlParserData {
             return this;
         }
 
-        public Builder setClassGenerator(TemplateClassGeneratorOLD classGenerator) {
+        public Builder setClassGenerator(TemplateClassGenerator classGenerator) {
             this.classGenerator = classGenerator;
             return this;
         }

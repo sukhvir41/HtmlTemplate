@@ -16,6 +16,7 @@
 
 package com.github.sukhvir41.core.template;
 
+import com.github.sukhvir41.core.classgenerator.RuntimeClassGenerator;
 import com.github.sukhvir41.core.classgenerator.RuntimeTemplateClassGeneratorOLD;
 import com.github.sukhvir41.core.settings.Settings;
 import com.github.sukhvir41.parsers.Code;
@@ -53,7 +54,7 @@ public final class RuntimeTemplate extends Template {
 
     private RuntimeTemplate(Path file, String packageName, String className, Settings settings) {
         super(file,
-                new RuntimeTemplateClassGeneratorOLD(DEFAULT_PACKAGE_NAME, className),
+                new RuntimeClassGenerator(DEFAULT_PACKAGE_NAME, className),
                 settings
         );
         this.packageName = packageName;
@@ -72,7 +73,7 @@ public final class RuntimeTemplate extends Template {
             if (containsDynamicAttribute(section)) {
                 return parseDynamicHtml(section);
             } else {
-                return new RegularHtmlTag(section);
+                return new RegularHtmlTag(section, this);
             }
         } else {
             return new Content(section, this, Code::parseForFunction);
@@ -97,22 +98,22 @@ public final class RuntimeTemplate extends Template {
             return new RuntimeIncludeHtmlTag(tagString, this);
 
         } else if (MetaVariableHtmlTag.matches(tagString)) {
-            return new MetaVariableHtmlTag(tagString);
+            return new MetaVariableHtmlTag(tagString, this);
 
         } else if (IfHtmlTag.matches(tagString)) {
-            return new IfHtmlTag(tagString);
+            return new IfHtmlTag(tagString, this);
 
         } else if (ElseIfHtmlTag.matches(tagString)) {
-            return new ElseIfHtmlTag(tagString);
+            return new ElseIfHtmlTag(tagString, this);
 
         } else if (ElseHtmlTag.matches(tagString)) { // else tag check should be after else if check
-            return new ElseHtmlTag(tagString);
+            return new ElseHtmlTag(tagString, this);
 
         } else if (ForHtmlTag.matches(tagString)) {
-            return new ForHtmlTag(tagString);
+            return new ForHtmlTag(tagString, this);
 
         } else {
-            return new DynamicAttributeHtmlTag(tagString);
+            return new DynamicAttributeHtmlTag(tagString, this);
         }
 
     }

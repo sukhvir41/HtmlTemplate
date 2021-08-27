@@ -39,7 +39,7 @@ final class StyleParser implements HtmlParser {
         } else {
             if (data.getTemplate().shouldAppendStyle()) {
                 data.getClassGenerator()
-                        .appendPlainHtml(data.getSection());
+                        .appendPlainHtml(data.getTemplate(), data.getSection());
             }
 
             data.getTemplate()

@@ -17,7 +17,9 @@
 package com.github.sukhvir41.tags;
 
 import com.github.sukhvir41.core.IllegalSyntaxException;
+import com.github.sukhvir41.core.classgenerator.TemplateClassGenerator;
 import com.github.sukhvir41.core.classgenerator.TemplateClassGeneratorOLD;
+import com.github.sukhvir41.core.template.Template;
 import com.github.sukhvir41.utils.HtmlUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -32,7 +34,9 @@ public class MetaVariableHtmlTag implements HtmlTag {
     public static final Pattern TYPE_ATTRIBUTE_PATTERN =
             Pattern.compile("ht-variables\\s*=\\s*\"[^\"]*\"", Pattern.CASE_INSENSITIVE);
 
-    public String htmlString;
+    private final String htmlString;
+    private final Template template;
+
 
     public static boolean matches(String html) {
 
@@ -43,12 +47,13 @@ public class MetaVariableHtmlTag implements HtmlTag {
                         .find();
     }
 
-    public MetaVariableHtmlTag(String htmlString) {
+    public MetaVariableHtmlTag(String htmlString, Template instantiatingTemplate) {
         this.htmlString = htmlString;
+        this.template = instantiatingTemplate;
     }
 
     @Override
-    public void processOpeningTag(TemplateClassGeneratorOLD classGenerator) {
+    public void processOpeningTag(TemplateClassGenerator classGenerator) {
         String variablesString = extractVariablesString();
         Map<String, String> variables = getVariables(variablesString);
         addVariables(classGenerator, variables);
@@ -85,14 +90,14 @@ public class MetaVariableHtmlTag implements HtmlTag {
         }
     }
 
-    protected void addVariables(TemplateClassGeneratorOLD classGenerator, Map<String, String> variables) {
-        variables.forEach((name, type) -> classGenerator.addVariable(type, name));
+    protected void addVariables(TemplateClassGenerator classGenerator, Map<String, String> variables) {
+        variables.forEach((name, type) -> classGenerator.addVariable(this.template, type, name));
     }
 
 
     @Override
 
-    public void processClosingTag(TemplateClassGeneratorOLD classGenerator) {
+    public void processClosingTag(TemplateClassGenerator classGenerator) {
     }
 
     @Override

@@ -16,8 +16,10 @@
 
 package com.github.sukhvir41.tags;
 
+import com.github.sukhvir41.core.classgenerator.TemplateClassGenerator;
 import com.github.sukhvir41.core.classgenerator.TemplateClassGeneratorOLD;
 import com.github.sukhvir41.core.statements.RenderBodyStatement;
+import com.github.sukhvir41.core.template.Template;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -41,11 +43,17 @@ public class ElseIfHtmlTagTest {
     @Captor
     private ArgumentCaptor<RenderBodyStatement> addCodeCapture;
 
+    @Captor
+    private ArgumentCaptor<Template> instantiatingTemplateCapture;
+
     @Mock
     private DynamicAttributeHtmlTag dynamicAttributeHtmlTag;
 
     @Mock
-    private TemplateClassGeneratorOLD templateClass;
+    private TemplateClassGenerator templateClass;
+
+    @Mock
+    private Template template;
 
     @Before
     public void beforeTest() throws Exception {
@@ -53,7 +61,7 @@ public class ElseIfHtmlTagTest {
                 .processOpeningTag(templateClass);
 
         PowerMockito.whenNew(DynamicAttributeHtmlTag.class)
-                .withArguments(ArgumentMatchers.anyString())
+                .withArguments(ArgumentMatchers.anyString(), ArgumentMatchers.any(Template.class))
                 .thenReturn(dynamicAttributeHtmlTag);
     }
 
@@ -61,19 +69,19 @@ public class ElseIfHtmlTagTest {
     @Test
     public void testOpeningProcess() throws Exception {
 
-        ElseIfHtmlTag elseIfTag = new ElseIfHtmlTag("<h1 ht-elseIf = \"@test\">");
+        ElseIfHtmlTag elseIfTag = new ElseIfHtmlTag("<h1 ht-elseIf = \"@test\">", template);
 
         elseIfTag.processOpeningTag(templateClass);
 
         Mockito.verify(templateClass)
-                .addCode(addCodeCapture.capture());
+                .addStatement(instantiatingTemplateCapture.capture(), addCodeCapture.capture());
         assertEquals("else if (condition(() -> test())) {", addCodeCapture.getValue().getStatement());
 
         Mockito.verify(templateClass)
-                .incrementRenderFunctionIndentation();
+                .incrementRenderBodyIndentation(instantiatingTemplateCapture.capture());
 
         PowerMockito.verifyNew(DynamicAttributeHtmlTag.class)
-                .withArguments("<h1>");
+                .withArguments("<h1>", template);
 
         Mockito.verify(dynamicAttributeHtmlTag)
                 .processOpeningTag(templateClass);
@@ -82,14 +90,14 @@ public class ElseIfHtmlTagTest {
     @Test
     public void testClosingProcess() {
 
-        ElseIfHtmlTag elseIfTag = new ElseIfHtmlTag("<h1 ht-elseIf = \"@test\">");
+        ElseIfHtmlTag elseIfTag = new ElseIfHtmlTag("<h1 ht-elseIf = \"@test\">", template);
 
         elseIfTag.processClosingTag(templateClass);
         Mockito.verify(templateClass)
-                .decrementRenderFunctionIndentation();
+                .decrementRenderBodyIndentation(instantiatingTemplateCapture.capture());
 
         Mockito.verify(templateClass)
-                .addCode(addCodeCapture.capture());
+                .addStatement(instantiatingTemplateCapture.capture(), addCodeCapture.capture());
         assertEquals("}", addCodeCapture.getValue().getStatement());
 
     }

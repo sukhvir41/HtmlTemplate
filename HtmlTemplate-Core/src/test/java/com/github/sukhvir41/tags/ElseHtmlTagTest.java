@@ -16,8 +16,10 @@
 
 package com.github.sukhvir41.tags;
 
+import com.github.sukhvir41.core.classgenerator.TemplateClassGenerator;
 import com.github.sukhvir41.core.classgenerator.TemplateClassGeneratorOLD;
 import com.github.sukhvir41.core.statements.RenderBodyStatement;
+import com.github.sukhvir41.core.template.Template;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -45,7 +47,13 @@ public class ElseHtmlTagTest {
     public DynamicAttributeHtmlTag dynamicAttributeHtmlTag;
 
     @Mock
-    public TemplateClassGeneratorOLD classGenerator;
+    public TemplateClassGenerator classGenerator;
+
+    @Mock
+    public Template template;
+
+    @Captor
+    private ArgumentCaptor<Template> instantiatingTemplateCapture;
 
     @Before
     public void beforeTest() throws Exception {
@@ -53,25 +61,25 @@ public class ElseHtmlTagTest {
                 .processOpeningTag(classGenerator);
 
         PowerMockito.whenNew(DynamicAttributeHtmlTag.class)
-                .withArguments(ArgumentMatchers.anyString())
+                .withArguments(ArgumentMatchers.anyString(), ArgumentMatchers.any(Template.class))
                 .thenReturn(dynamicAttributeHtmlTag);
     }
 
     @Test
     public void testOpeningProcess() throws Exception {
-        ElseHtmlTag elseTag = new ElseHtmlTag("<h1 ht-else >");
+        ElseHtmlTag elseTag = new ElseHtmlTag("<h1 ht-else >", template);
 
         elseTag.processOpeningTag(classGenerator);
 
         Mockito.verify(classGenerator)
-                .addCode(addCodeCapture.capture());
+                .addStatement(instantiatingTemplateCapture.capture(), addCodeCapture.capture());
         assertEquals("else {", addCodeCapture.getValue().getStatement());
 
         Mockito.verify(classGenerator)
-                .incrementRenderFunctionIndentation();
+                .incrementRenderBodyIndentation(instantiatingTemplateCapture.capture());
 
         PowerMockito.verifyNew(DynamicAttributeHtmlTag.class)
-                .withArguments("<h1 >");
+                .withArguments("<h1 >", template);
 
         Mockito.verify(dynamicAttributeHtmlTag)
                 .processOpeningTag(classGenerator);
@@ -79,16 +87,16 @@ public class ElseHtmlTagTest {
 
     @Test
     public void testClosingProcess() {
-        ElseHtmlTag elseTag = new ElseHtmlTag("<h1 ht-else >");
+        ElseHtmlTag elseTag = new ElseHtmlTag("<h1 ht-else >", null);
 
         elseTag.processClosingTag(classGenerator);
 
         Mockito.verify(classGenerator)
-                .addCode(addCodeCapture.capture());
+                .addStatement(instantiatingTemplateCapture.capture(), addCodeCapture.capture());
         assertEquals("}", addCodeCapture.getValue().getStatement());
 
         Mockito.verify(classGenerator)
-                .decrementRenderFunctionIndentation();
+                .decrementRenderBodyIndentation(instantiatingTemplateCapture.capture());
 
     }
 

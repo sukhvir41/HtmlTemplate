@@ -25,7 +25,7 @@ final class CommentParser implements HtmlParser {
 
             if (data.getTemplate().shouldAppendComment()) {
                 data.getClassGenerator()
-                        .appendPlainHtml(data.getSection());
+                        .appendPlainHtml(data.getTemplate(), data.getSection());
             }
 
             data.getTemplate()
@@ -34,7 +34,7 @@ final class CommentParser implements HtmlParser {
         } else {
             if (data.getTemplate().shouldAppendComment()) {
                 data.getClassGenerator()
-                        .appendPlainHtml(data.getSection());
+                        .appendPlainHtml(data.getTemplate(), data.getSection());
             }
 
 

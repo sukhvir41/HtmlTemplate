@@ -16,6 +16,7 @@
 
 package com.github.sukhvir41.tags;
 
+import com.github.sukhvir41.core.classgenerator.TemplateClassGenerator;
 import com.github.sukhvir41.core.statements.RenderBodyStatement;
 import com.github.sukhvir41.core.template.CompileTimeSubTemplate;
 import com.github.sukhvir41.core.template.Template;
@@ -26,19 +27,20 @@ import java.nio.file.Paths;
 
 public class CompileTimeIncludeHtmlTag extends IncludeHtmlTag {
     public CompileTimeIncludeHtmlTag(String htmlString, Template template) {
-        super(htmlString, template);
+        super(htmlString, null, template);
     }
 
     @Override
-    public void processOpeningTag(TemplateClassGeneratorOLD classGenerator) {
+    public void processOpeningTag(TemplateClassGenerator classGenerator) {
         String filePath = getFilePath();
         Path file = getFile(filePath);
 
         Template subTemplate = new CompileTimeSubTemplate(file, getTemplate().getRootTemplate());
 
-        classGenerator.addMappedVariables(subTemplate, getVariables(subTemplate, classGenerator));
+        //todo: this needs to change
+        //classGenerator.addMappedVariables(subTemplate, getVariables(subTemplate, classGenerator));
 
-        if (getTemplate().getDepth() == 1){
+        if (getTemplate().getDepth() == 1) {
 
         }
 
@@ -56,9 +58,9 @@ public class CompileTimeIncludeHtmlTag extends IncludeHtmlTag {
     }
 
 
-    private static final class SubTemplateRenderInclude implements RenderBodyStatement{
+    private static final class SubTemplateRenderInclude implements RenderBodyStatement {
 
-        public SubTemplateRenderInclude(){
+        public SubTemplateRenderInclude() {
 
         }
 

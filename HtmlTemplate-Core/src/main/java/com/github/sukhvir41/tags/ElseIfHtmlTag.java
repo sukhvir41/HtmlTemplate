@@ -16,8 +16,10 @@
 
 package com.github.sukhvir41.tags;
 
+import com.github.sukhvir41.core.classgenerator.TemplateClassGenerator;
 import com.github.sukhvir41.core.classgenerator.TemplateClassGeneratorOLD;
 import com.github.sukhvir41.core.statements.PlainStringRenderBodyStatement;
+import com.github.sukhvir41.core.template.Template;
 import com.github.sukhvir41.parsers.Code;
 
 import java.util.regex.Matcher;
@@ -37,17 +39,17 @@ public final class ElseIfHtmlTag extends RegularHtmlTag {
                 .find();
     }
 
-    public ElseIfHtmlTag(String htmlString) {
-        super(htmlString);
+    public ElseIfHtmlTag(String htmlString, Template instantiatingTemplate) {
+        super(htmlString, instantiatingTemplate);
     }
 
     @Override
-    public void processOpeningTag(TemplateClassGeneratorOLD classGenerator) {
+    public void processOpeningTag(TemplateClassGenerator classGenerator) {
         var matcher = ELSEIF_ATTRIBUTE_PATTERN.matcher(this.htmlString);
         if (matcher.find()) {
             String ifCondition = Code.parseForFunction(getIfCondition(matcher));
-            classGenerator.addCode(new PlainStringRenderBodyStatement(OPENING_LEFT_PART_CODE + ifCondition + OPENING_RIGHT_PART_CODE));
-            classGenerator.incrementRenderFunctionIndentation();
+            classGenerator.addStatement(super.template, new PlainStringRenderBodyStatement(OPENING_LEFT_PART_CODE + ifCondition + OPENING_RIGHT_PART_CODE));
+            classGenerator.incrementRenderBodyIndentation(super.template);
         }
 
         processTag(classGenerator);
@@ -64,22 +66,22 @@ public final class ElseIfHtmlTag extends RegularHtmlTag {
     }
 
     @Override
-    public void processClosingTag(TemplateClassGeneratorOLD classGenerator) {
-        classGenerator.decrementRenderFunctionIndentation();
-        classGenerator.addCode(new PlainStringRenderBodyStatement(CLOSING_CODE));
+    public void processClosingTag(TemplateClassGenerator classGenerator) {
+        classGenerator.decrementRenderBodyIndentation(super.template);
+        classGenerator.addStatement(super.template, new PlainStringRenderBodyStatement(CLOSING_CODE));
     }
 
 
-    private void processTag(TemplateClassGeneratorOLD classGenerator) {
+    private void processTag(TemplateClassGenerator classGenerator) {
         Matcher elseIfAttributeMatcher = ELSEIF_ATTRIBUTE_PATTERN.matcher(this.htmlString);
         if (elseIfAttributeMatcher.find()) {
             var leftPart = this.htmlString.substring(0, elseIfAttributeMatcher.start())
                     .trim();
             var rightPart = this.htmlString.substring(elseIfAttributeMatcher.end());
-            new DynamicAttributeHtmlTag(leftPart + rightPart)
+            new DynamicAttributeHtmlTag(leftPart + rightPart, super.template)
                     .processOpeningTag(classGenerator);
         } else {
-            new DynamicAttributeHtmlTag(this.htmlString)
+            new DynamicAttributeHtmlTag(this.htmlString, super.template)
                     .processOpeningTag(classGenerator);
         }
     }

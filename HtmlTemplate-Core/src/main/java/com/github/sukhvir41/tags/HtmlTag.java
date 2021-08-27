@@ -16,6 +16,7 @@
 
 package com.github.sukhvir41.tags;
 
+import com.github.sukhvir41.core.classgenerator.TemplateClassGenerator;
 import com.github.sukhvir41.core.classgenerator.TemplateClassGeneratorOLD;
 import com.github.sukhvir41.utils.HtmlUtils;
 
@@ -32,14 +33,14 @@ public interface HtmlTag {
      *
      * @param classGenerator the org.org.ht.template
      */
-    void processOpeningTag(TemplateClassGeneratorOLD classGenerator);
+    void processOpeningTag(TemplateClassGenerator classGenerator);
 
     /**
      * When a respective closing tag is found, This function gets called.
      *
      * @param classGenerator org.org.ht.template class
      */
-    void processClosingTag(TemplateClassGeneratorOLD classGenerator);
+    void processClosingTag(TemplateClassGenerator classGenerator);
 
     /**
      * returns the name of the html tag.

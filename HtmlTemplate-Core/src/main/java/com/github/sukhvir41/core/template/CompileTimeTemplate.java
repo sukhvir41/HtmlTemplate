@@ -16,6 +16,7 @@
 
 package com.github.sukhvir41.core.template;
 
+import com.github.sukhvir41.core.classgenerator.CompileTimeClassGenerator;
 import com.github.sukhvir41.core.classgenerator.CompileTimeClassGeneratorOLD;
 import com.github.sukhvir41.core.settings.SettingOptions;
 import com.github.sukhvir41.core.settings.Settings;
@@ -33,7 +34,7 @@ public final class CompileTimeTemplate extends Template {
 
     public CompileTimeTemplate(Path file, String packageName, Settings settings) {
         super(file,
-                new CompileTimeClassGeneratorOLD(packageName, StringUtils.getClassNameFromFile(file)),
+                new CompileTimeClassGenerator(packageName, StringUtils.getClassNameFromFile(file)),
                 settings
         );
 
@@ -67,7 +68,7 @@ public final class CompileTimeTemplate extends Template {
             if (containsDynamicAttribute(section)) {
                 return parseDynamicHtml(section);
             } else {
-                return new RegularHtmlTag(section);
+                return new RegularHtmlTag(section, this);
             }
         } else {
             return new Content(section, this, Code::parseForFunction);
@@ -92,22 +93,22 @@ public final class CompileTimeTemplate extends Template {
             return new CompileTimeIncludeHtmlTag(tagString, this);
 
         } else if (MetaVariableHtmlTag.matches(tagString)) {
-            return new MetaVariableHtmlTag(tagString);
+            return new MetaVariableHtmlTag(tagString, this);
 
         } else if (IfHtmlTag.matches(tagString)) {
-            return new IfHtmlTag(tagString);
+            return new IfHtmlTag(tagString, this);
 
         } else if (ElseIfHtmlTag.matches(tagString)) {
-            return new ElseIfHtmlTag(tagString);
+            return new ElseIfHtmlTag(tagString, this);
 
         } else if (ElseHtmlTag.matches(tagString)) { // else tag check should be after else if check
-            return new ElseHtmlTag(tagString);
+            return new ElseHtmlTag(tagString, this);
 
         } else if (ForHtmlTag.matches(tagString)) {
-            return new ForHtmlTag(tagString);
+            return new ForHtmlTag(tagString, this);
 
         } else {
-            return new DynamicAttributeHtmlTag(tagString);
+            return new DynamicAttributeHtmlTag(tagString, this);
         }
 
     }

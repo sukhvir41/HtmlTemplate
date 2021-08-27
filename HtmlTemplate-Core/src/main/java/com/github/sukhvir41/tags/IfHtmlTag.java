@@ -16,8 +16,10 @@
 
 package com.github.sukhvir41.tags;
 
+import com.github.sukhvir41.core.classgenerator.TemplateClassGenerator;
 import com.github.sukhvir41.core.classgenerator.TemplateClassGeneratorOLD;
 import com.github.sukhvir41.core.statements.PlainStringRenderBodyStatement;
+import com.github.sukhvir41.core.template.Template;
 import com.github.sukhvir41.parsers.Code;
 
 import java.util.regex.Matcher;
@@ -34,17 +36,17 @@ public final class IfHtmlTag extends RegularHtmlTag {
     }
 
 
-    public IfHtmlTag(String htmlString) {
-        super(htmlString);
+    public IfHtmlTag(String htmlString, Template instantiatingTemplate) {
+        super(htmlString, instantiatingTemplate);
     }
 
     @Override
-    public void processOpeningTag(TemplateClassGeneratorOLD classGenerator) {
+    public void processOpeningTag(TemplateClassGenerator classGenerator) {
         var matcher = IF_ATTRIBUTE_PATTERN.matcher(this.htmlString);
         if (matcher.find()) {
             String ifCondition = Code.parseForFunction(getIfCondition(matcher));
-            classGenerator.addCode(new PlainStringRenderBodyStatement("if(condition( () -> " + ifCondition + " )){"));
-            classGenerator.incrementRenderFunctionIndentation();
+            classGenerator.addStatement(super.template, new PlainStringRenderBodyStatement("if(condition( () -> " + ifCondition + " )){"));
+            classGenerator.incrementRenderBodyIndentation(super.template);
         }
         processTag(classGenerator);
     }
@@ -59,26 +61,26 @@ public final class IfHtmlTag extends RegularHtmlTag {
                 .trim();
     }
 
-    public void processTag(TemplateClassGeneratorOLD classGenerator) {
+    public void processTag(TemplateClassGenerator classGenerator) {
         var matcher = IF_ATTRIBUTE_PATTERN.matcher(this.htmlString);
         if (matcher.find()) {
             var leftPart = this.htmlString.substring(0, matcher.start())
                     .trim();
             var rightPart = this.htmlString.substring(matcher.end());
             //templateClass.appendPlainHtml(leftPart + rightPart);
-            new DynamicAttributeHtmlTag(leftPart + rightPart)
+            new DynamicAttributeHtmlTag(leftPart + rightPart, super.template)
                     .processOpeningTag(classGenerator);
         } else {
             //templateClass.appendPlainHtml(this.htmlString);
-            new DynamicAttributeHtmlTag(this.htmlString)
+            new DynamicAttributeHtmlTag(this.htmlString, super.template)
                     .processOpeningTag(classGenerator);
         }
     }
 
     @Override
-    public void processClosingTag(TemplateClassGeneratorOLD classGenerator) {
-        classGenerator.decrementRenderFunctionIndentation();
-        classGenerator.addCode(new PlainStringRenderBodyStatement("}"));
+    public void processClosingTag(TemplateClassGenerator classGenerator) {
+        classGenerator.decrementRenderBodyIndentation(super.template);
+        classGenerator.addStatement(super.template, new PlainStringRenderBodyStatement("}"));
     }
 
 }

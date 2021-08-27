@@ -16,8 +16,10 @@
 
 package com.github.sukhvir41.tags;
 
+import com.github.sukhvir41.core.classgenerator.TemplateClassGenerator;
 import com.github.sukhvir41.core.classgenerator.TemplateClassGeneratorOLD;
 import com.github.sukhvir41.core.statements.PlainStringRenderBodyStatement;
+import com.github.sukhvir41.core.template.Template;
 import com.github.sukhvir41.parsers.Code;
 import com.github.sukhvir41.core.IllegalSyntaxException;
 
@@ -40,12 +42,12 @@ public final class ForHtmlTag extends RegularHtmlTag {
     }
 
 
-    public ForHtmlTag(String htmlString) {
-        super(htmlString);
+    public ForHtmlTag(String htmlString, Template instantiatingTemplate) {
+        super(htmlString, instantiatingTemplate);
     }
 
     @Override
-    public void processOpeningTag(TemplateClassGeneratorOLD classGenerator) {
+    public void processOpeningTag(TemplateClassGenerator classGenerator) {
         var matcher = FOR_ATTRIBUTE_PATTERN.matcher(this.htmlString);
         if (matcher.find()) {
             var forStatement = extractForStatement(matcher);
@@ -61,8 +63,8 @@ public final class ForHtmlTag extends RegularHtmlTag {
                     .map(String::trim)
                     .collect(Collectors.joining(", "));
 
-            classGenerator.addCode(new PlainStringRenderBodyStatement("forEach(" + collection + ", (" + variables + ") -> {"));
-            classGenerator.incrementRenderFunctionIndentation();
+            classGenerator.addStatement(super.template, new PlainStringRenderBodyStatement("forEach(" + collection + ", (" + variables + ") -> {"));
+            classGenerator.incrementRenderBodyIndentation(super.template);
 
         }
 
@@ -77,25 +79,25 @@ public final class ForHtmlTag extends RegularHtmlTag {
                 .replace("'", "\"");
     }
 
-    private void processTag(TemplateClassGeneratorOLD classGenerator) {
+    private void processTag(TemplateClassGenerator classGenerator) {
         var matcher = FOR_ATTRIBUTE_PATTERN.matcher(this.htmlString);
         if (matcher.find()) {
             var leftPart = this.htmlString.substring(0, matcher.start())
                     .trim();
             var rightPart = this.htmlString.substring(matcher.end());
 
-            new DynamicAttributeHtmlTag(leftPart + rightPart)
+            new DynamicAttributeHtmlTag(leftPart + rightPart, super.template)
                     .processOpeningTag(classGenerator);
         } else {
 
-            new DynamicAttributeHtmlTag(this.htmlString)
+            new DynamicAttributeHtmlTag(this.htmlString, super.template)
                     .processOpeningTag(classGenerator);
         }
     }
 
     @Override
-    public void processClosingTag(TemplateClassGeneratorOLD classGenerator) {
-        classGenerator.decrementRenderFunctionIndentation();
-        classGenerator.addCode(new PlainStringRenderBodyStatement("});"));
+    public void processClosingTag(TemplateClassGenerator classGenerator) {
+        classGenerator.decrementRenderBodyIndentation(super.template);
+        classGenerator.addStatement(super.template, new PlainStringRenderBodyStatement("});"));
     }
 }

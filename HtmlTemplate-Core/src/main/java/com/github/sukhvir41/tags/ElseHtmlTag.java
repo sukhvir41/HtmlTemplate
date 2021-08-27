@@ -16,8 +16,10 @@
 
 package com.github.sukhvir41.tags;
 
+import com.github.sukhvir41.core.classgenerator.TemplateClassGenerator;
 import com.github.sukhvir41.core.classgenerator.TemplateClassGeneratorOLD;
 import com.github.sukhvir41.core.statements.PlainStringRenderBodyStatement;
+import com.github.sukhvir41.core.template.Template;
 import org.apache.commons.lang3.StringUtils;
 
 public final class ElseHtmlTag extends RegularHtmlTag {
@@ -30,37 +32,37 @@ public final class ElseHtmlTag extends RegularHtmlTag {
         return StringUtils.containsIgnoreCase(string, HT_ELSE);
     }
 
-    public ElseHtmlTag(String htmlString) {
-        super(htmlString);
+    public ElseHtmlTag(String htmlString, Template instantiatingTemplate) {
+        super(htmlString, instantiatingTemplate);
     }
 
     @Override
-    public void processOpeningTag(TemplateClassGeneratorOLD classGenerator) {
-        classGenerator.addCode(new PlainStringRenderBodyStatement(OPENING_CODE));
-        classGenerator.incrementRenderFunctionIndentation();
+    public void processOpeningTag(TemplateClassGenerator classGenerator) {
+        classGenerator.addStatement(super.template, new PlainStringRenderBodyStatement(OPENING_CODE));
+        classGenerator.incrementRenderBodyIndentation(super.template);
         processTag(classGenerator);
     }
 
     @Override
-    public void processClosingTag(TemplateClassGeneratorOLD classGenerator) {
-        classGenerator.decrementRenderFunctionIndentation();
-        classGenerator.addCode(new PlainStringRenderBodyStatement(CLOSING_CODE));
+    public void processClosingTag(TemplateClassGenerator classGenerator) {
+        classGenerator.decrementRenderBodyIndentation(super.template);
+        classGenerator.addStatement(super.template, new PlainStringRenderBodyStatement(CLOSING_CODE));
     }
 
 
-    private void processTag(TemplateClassGeneratorOLD classGenerator) {
+    private void processTag(TemplateClassGenerator classGenerator) {
 
         int startIndex = this.htmlString.indexOf(HT_ELSE);
 
         if (startIndex == -1) {
-            new DynamicAttributeHtmlTag(this.htmlString)
+            new DynamicAttributeHtmlTag(this.htmlString, super.template)
                     .processOpeningTag(classGenerator);
         } else {
             int endIndex = startIndex + HT_ELSE.length();
             var leftPart = this.htmlString.substring(0, startIndex)
                     .trim();
             var rightPart = this.htmlString.substring(endIndex);
-            new DynamicAttributeHtmlTag(leftPart + rightPart)
+            new DynamicAttributeHtmlTag(leftPart + rightPart, super.template)
                     .processOpeningTag(classGenerator);
         }
 

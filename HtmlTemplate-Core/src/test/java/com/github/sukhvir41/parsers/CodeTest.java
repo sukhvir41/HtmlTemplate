@@ -41,9 +41,10 @@ public class CodeTest {
         Assert.assertEquals("name.contains(\"\\\"@someDomain.com\\\"\")", parsedVariableCode);
     }
 
+    @Test
     public void sameNameVariableTest() {
         var parsedFunctionCode = Code.parseForFunction("@name.contains(\"@name.com\") + @name");
-        Assert.assertEquals("name().contains(\"@name.com\")+ name()", parsedFunctionCode);
+        Assert.assertEquals("name().contains(\"@name.com\") + name()", parsedFunctionCode);
 
         var parsedVariableCode = Code.parseForVariable("@name.contains(\"@name.com\") + @name");
         Assert.assertEquals("name.contains(\"@name.com\") + name", parsedVariableCode);

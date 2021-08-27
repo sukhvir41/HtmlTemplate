@@ -63,7 +63,7 @@ public final class RuntimeSubTemplate extends Template {
             if (containsDynamicAttribute(section)) {
                 return parseDynamicHtml(section);
             } else {
-                return new RegularHtmlTag(section);
+                return new RegularHtmlTag(section, this);
             }
         } else {
             return new Content(section, this, Code::parseForVariable);
@@ -88,23 +88,23 @@ public final class RuntimeSubTemplate extends Template {
         } else if (RuntimeIncludeHtmlTag.matches(tagString)) {
             return new RuntimeIncludeHtmlTag(tagString, parentTemplate);
 
-        } else if (RuntimeSubTemplateMetaVariableHtmlTag.matches(tagString)) {
-            return new RuntimeSubTemplateMetaVariableHtmlTag(tagString, this);
+        } else if (MetaVariableHtmlTag.matches(tagString)) {
+            return new MetaVariableHtmlTag(tagString, this);
 
         } else if (IfHtmlTag.matches(tagString)) {
-            return new IfHtmlTag(tagString);
+            return new IfHtmlTag(tagString, this);
 
         } else if (ElseIfHtmlTag.matches(tagString)) {
-            return new ElseIfHtmlTag(tagString);
+            return new ElseIfHtmlTag(tagString, this);
 
         } else if (ElseHtmlTag.matches(tagString)) { // else tag check should be after else if check
-            return new ElseHtmlTag(tagString);
+            return new ElseHtmlTag(tagString, this);
 
         } else if (ForHtmlTag.matches(tagString)) {
-            return new ForHtmlTag(tagString);
+            return new ForHtmlTag(tagString, this);
 
         } else {
-            return new DynamicAttributeHtmlTag(tagString);
+            return new DynamicAttributeHtmlTag(tagString, this);
         }
 
     }

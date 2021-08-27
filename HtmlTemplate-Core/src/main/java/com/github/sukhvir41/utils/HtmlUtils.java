@@ -37,15 +37,6 @@ public final class HtmlUtils {
     public static final Pattern DYNAMIC_ATTRIBUTE =
             Pattern.compile("ht-[^=]*\\s*=\\s*\"[^\"]*\"", Pattern.CASE_INSENSITIVE);
 
-    /**
-     * string literal regex from stack overflow.
-     * https://stackoverflow.com/questions/171480/regex-grabbing-values-between-quotation-marks
-     * author: deadbug.
-     * regex taken from comment by: Aran-Fey.
-     */
-    public static final Pattern CONTENT_VARIABLE_STRING_PATTERN =
-            Pattern.compile("([\"])(?:\\\\.|[^\\\\])*?\\1", Pattern.CASE_INSENSITIVE);
-
     private static final String DOCTYPE = "!DOCTYPE";
 
 

@@ -16,12 +16,19 @@
 
 package com.github.sukhvir41.utils;
 
-import org.apache.commons.text.StringEscapeUtils;
-
 import java.nio.file.Path;
+import java.util.regex.Pattern;
 
 public interface StringUtils {
 
+    /**
+     * string literal regex from stack overflow.
+     * https://stackoverflow.com/questions/171480/regex-grabbing-values-between-quotation-marks
+     * author: deadbug.
+     * regex taken from comment by: Aran-Fey.
+     */
+    Pattern CONTENT_VARIABLE_STRING_PATTERN =
+            Pattern.compile("([\"])(?:\\\\.|[^\\\\])*?\\1", Pattern.CASE_INSENSITIVE);
 
     /**
      * <p>
@@ -42,14 +49,15 @@ public interface StringUtils {
             return -1;
         }
 
-        int searchStartIndex = Math.max(start, 0);
-        int index = content.indexOf(toSearch, searchStartIndex);
+        int searchStartIndex = Math.max(start, 0); // just in case the value of start is in negatives
 
+        //if can't find the content of the
+        int index = content.indexOf(toSearch, searchStartIndex);
         if (index == -1) {
             return -1;
         }
 
-        var stringVariableMatcher = HtmlUtils.CONTENT_VARIABLE_STRING_PATTERN
+        var stringVariableMatcher = CONTENT_VARIABLE_STRING_PATTERN
                 .matcher(content);
 
         while (stringVariableMatcher.find(searchStartIndex)) {

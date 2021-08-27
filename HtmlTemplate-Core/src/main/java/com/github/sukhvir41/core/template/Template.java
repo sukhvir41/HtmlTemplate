@@ -16,6 +16,7 @@
 
 package com.github.sukhvir41.core.template;
 
+import com.github.sukhvir41.core.classgenerator.TemplateClassGenerator;
 import com.github.sukhvir41.core.classgenerator.TemplateClassGeneratorOLD;
 import com.github.sukhvir41.core.settings.Settings;
 import com.github.sukhvir41.parsers.htmlParsers.HtmlParserData;
@@ -31,18 +32,18 @@ public abstract class Template {
     private final Path file;
     private int depth;
 
-    private final TemplateClassGeneratorOLD classGenerator;
+    private final TemplateClassGenerator classGenerator;
     private final Settings settings;
     private HtmlParsers htmlParser = HtmlParsers.TAG;
 
-    protected Template(Path file, TemplateClassGeneratorOLD classGenerator, Settings settings) {
+    protected Template(Path file, TemplateClassGenerator classGenerator, Settings settings) {
         this.file = file;
         this.classGenerator = classGenerator;
         this.depth = 0;
         this.settings = settings;
     }
 
-    protected Template(Path file, TemplateClassGeneratorOLD classGenerator, int depth, Settings settings) {
+    protected Template(Path file, TemplateClassGenerator classGenerator, int depth, Settings settings) {
         this.file = file;
         this.classGenerator = classGenerator;
         this.depth = depth;
@@ -83,7 +84,7 @@ public abstract class Template {
         this.depth = depth;
     }
 
-    public final TemplateClassGeneratorOLD getClassGenerator() {
+    public final TemplateClassGenerator getClassGenerator() {
         return this.classGenerator;
     }
 

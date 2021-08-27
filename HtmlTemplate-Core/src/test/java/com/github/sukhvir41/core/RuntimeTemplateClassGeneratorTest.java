@@ -151,12 +151,12 @@ public class RuntimeTemplateClassGeneratorTest {
     private static class DummyHtmlTag implements HtmlTag {
 
         @Override
-        public void processOpeningTag(TemplateClassGeneratorOLD classGenerator) {
+        public void processOpeningTag(TemplateClassGenerator classGenerator) {
 
         }
 
         @Override
-        public void processClosingTag(TemplateClassGeneratorOLD classGenerator) {
+        public void processClosingTag(TemplateClassGenerator classGenerator) {
 
         }
 
