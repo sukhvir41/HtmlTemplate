@@ -60,8 +60,11 @@ public class TemplateTest {
         Template rootTemplate = new RuntimeTemplate(file, SettingsManager.load());
 
         Template subTemplate = new RuntimeSubTemplate(file, rootTemplate);
+        Template subTemplate1 = new RuntimeSubTemplate(file, rootTemplate);
 
         Assert.assertNotEquals(subTemplate, rootTemplate);
+        Assert.assertEquals(subTemplate, subTemplate1);
     }
+
 
 }

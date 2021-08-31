@@ -75,7 +75,7 @@ public class TemplateClassGeneratorTest {
     }
 
     @Test
-    public void testTemplateClassGenerator_isTemplateFileProcessed() throws URISyntaxException {
+    public void testTemplateClassGenerator_getTemplate() throws URISyntaxException {
         String packageName = "testPackage";
         String className = "TestClass";
 
@@ -86,13 +86,13 @@ public class TemplateClassGeneratorTest {
                 .thenReturn(TestUtils.getFile("SimpleTest1.html"));
 
         // checking template is not processed
-        Assert.assertFalse(classGenerator.isTemplateFileProcessed(TestUtils.getFile("SimpleTest1.html")));
+        Assert.assertFalse(classGenerator.getTemplate(TestUtils.getFile("SimpleTest1.html")).isPresent());
 
         Reflect.on(classGenerator)
                 .field("templateDataMap")
                 .call("put", template, new TemplateData());
         // checking template is processed
-        Assert.assertTrue(classGenerator.isTemplateFileProcessed(TestUtils.getFile("SimpleTest1.html")));
+        Assert.assertTrue(classGenerator.getTemplate(TestUtils.getFile("SimpleTest1.html")).isPresent());
     }
 
     @Test

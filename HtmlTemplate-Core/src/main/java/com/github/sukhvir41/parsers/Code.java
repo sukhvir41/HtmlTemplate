@@ -19,66 +19,119 @@ package com.github.sukhvir41.parsers;
 import org.apache.commons.lang3.StringUtils;
 import com.github.sukhvir41.utils.HtmlUtils;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static com.github.sukhvir41.utils.StringUtils.CONTENT_VARIABLE_STRING_PATTERN;
+import static com.github.sukhvir41.utils.StringUtils.findIndex;
 
 public final class Code {
 
     public static final Pattern CONTENT_VARIABLE_PATTERN =
-            Pattern.compile("@[a-z,_,$][a-z,0-9,_,$]*", Pattern.CASE_INSENSITIVE);
+            Pattern.compile("@[a-z_$][a-z0-9_$]*", Pattern.CASE_INSENSITIVE);
 
     public static String parseForFunction(String theCode) {
-        var variableMatcher = CONTENT_VARIABLE_PATTERN.matcher(theCode);
-        int findIndex = 0;
-        String newCode = theCode;
-        while (variableMatcher.find(findIndex)) {
-
-            if (isVariableInString(theCode, variableMatcher.start())) {
-                findIndex = theCode.indexOf("\"", variableMatcher.end());
-                continue;
-            }
-
-            newCode = replaceVariableAndAppend(theCode, variableMatcher, newCode, "()");
-            findIndex = variableMatcher.end();
-        }
-
-        return newCode.trim();
+        return parserImpl(theCode, "()");
     }
 
     public static String parseForVariable(String theCode) {
-        var variableMatcher = CONTENT_VARIABLE_PATTERN.matcher(theCode);
-        int findIndex = 0;
-        String newCode = theCode;
-        while (variableMatcher.find(findIndex)) {
-
-            if (isVariableInString(theCode, variableMatcher.start())) {
-                findIndex = theCode.indexOf("\"", variableMatcher.end());
-            } else {
-                newCode = replaceVariableAndAppend(theCode, variableMatcher, newCode, "");
-                findIndex = variableMatcher.end();
-            }
-
-
-        }
-
-        return newCode.trim();
+        return parserImpl(theCode, "");
     }
 
-    // replace the variable the variable name. eg @name -> name + <appender>
-    private static String replaceVariableAndAppend(String theCode, Matcher variableMatcher, String newCode, String appender) {
-        String htmlVariable = theCode.substring(variableMatcher.start(), variableMatcher.end());
-        String variable = StringUtils.replaceOnce(htmlVariable, "@", "");
-        newCode = StringUtils.replaceOnce(
-                newCode, htmlVariable, variable + appender
-        );
+    /**
+     * theCode = "1,2, 3, 5 , 6"
+     * separator = ","
+     * returned value = [1,2,3,4,5,6]
+     * <p>
+     * it also checks if the separator is brackets or within string literals if so ignores that separator
+     *
+     * @param theCode
+     * @param separator
+     * @return returns list of strings that are separated by the separator
+     */
+    public static List<String> getCodeParts(String theCode, String separator) {
+        List<String> parts = new ArrayList<>();
+        String newCode = theCode;
+        int separatorIndex;
+        int startIndex = 0;
+        while ((separatorIndex = findIndex(startIndex, separator, newCode)) > -1) {
+            if (isWithinBrackets(newCode, separatorIndex)) {
+                startIndex = separatorIndex + 1;
+            } else {
+                parts.add(newCode.substring(0, separatorIndex).trim());
+                newCode = newCode.substring(separatorIndex + 1);
+                startIndex = 0;
+            }
+        }
+        if (StringUtils.isNotBlank(newCode)) {
+            parts.add(newCode.trim());
+        }
+        return parts;
+    }
+
+    private static boolean isWithinBrackets(String theCode, int commaIndex) {
+        Deque<Integer> openBrackets = new LinkedList<>();
+        int openBracketIndex = 0;
+        int openBracketsSearchIndex = 0;
+        while (true) {
+            openBracketIndex = findIndex(openBracketsSearchIndex, "(", theCode);
+            if (openBracketIndex == -1 || openBracketIndex > commaIndex) {
+                break;
+            } else {
+                openBrackets.add(openBracketIndex);
+                openBracketsSearchIndex = openBracketIndex + 1;
+            }
+        }
+
+        if (!openBrackets.isEmpty()) {
+            int closingBracketIndex;
+            int searchIndex = openBrackets.getLast();
+            while (!openBrackets.isEmpty()) {
+                closingBracketIndex = findIndex(searchIndex, ")", theCode);
+                if (closingBracketIndex > commaIndex) {
+                    return true;
+                } else {
+                    openBrackets.removeLast();
+                    searchIndex = closingBracketIndex + 1;
+                }
+            }
+        }
+        return false;
+    }
+
+
+    private static String parserImpl(String theCode, String variableAppender) {
+        String newCode = theCode;
+        int findIndex = 0;
+        Matcher variableMatcher = CONTENT_VARIABLE_PATTERN.matcher(newCode);
+        while (variableMatcher.find(findIndex)) {
+            if (isVariableInString(newCode, variableMatcher.start())) {
+                findIndex = newCode.indexOf("\"", variableMatcher.end());
+            } else {
+                newCode = replaceVariableAndAppend(newCode, variableMatcher, variableAppender);
+                variableMatcher = CONTENT_VARIABLE_PATTERN.matcher(newCode);
+            }
+        }
         return newCode;
     }
 
+    // replace the variable the variable name. eg @name -> name + <appender>
+    private static String replaceVariableAndAppend(String theCode, Matcher variableMatcher, String appender) {
+        String htmlVariable = theCode.substring(variableMatcher.start(), variableMatcher.end());
+        String variable = StringUtils.replaceOnce(htmlVariable, "@", "");
+        String leftPart = theCode.substring(0, variableMatcher.start());
+        String rightPart = theCode.substring(variableMatcher.start());
+        rightPart = StringUtils.replaceOnce(
+                rightPart, htmlVariable, variable + appender
+        );
+        return leftPart + rightPart;
+    }
+
     private static boolean isVariableInString(String theCode, int variableStartIndex) {
-        var stringMatcher = com.github.sukhvir41.utils.StringUtils.CONTENT_VARIABLE_STRING_PATTERN.matcher(theCode);
+        var stringMatcher = CONTENT_VARIABLE_STRING_PATTERN.matcher(theCode);
         var startIndex = 0;
 
         while (stringMatcher.find(startIndex)) {

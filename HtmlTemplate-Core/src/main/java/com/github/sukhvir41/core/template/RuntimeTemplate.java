@@ -95,7 +95,7 @@ public final class RuntimeTemplate extends Template {
             return new MetaImportHtmlTag(tagString);
 
         } else if (RuntimeIncludeHtmlTag.matches(tagString)) {
-            return new RuntimeIncludeHtmlTag(tagString, this);
+            return new RuntimeIncludeHtmlTag(tagString, Code::parseForFunction, this);
 
         } else if (MetaVariableHtmlTag.matches(tagString)) {
             return new MetaVariableHtmlTag(tagString, this);

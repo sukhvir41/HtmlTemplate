@@ -19,6 +19,8 @@ package com.github.sukhvir41.parsers;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.List;
+
 
 public class CodeTest {
 
@@ -48,6 +50,55 @@ public class CodeTest {
 
         var parsedVariableCode = Code.parseForVariable("@name.contains(\"@name.com\") + @name");
         Assert.assertEquals("name.contains(\"@name.com\") + name", parsedVariableCode);
+    }
+
+    @Test
+    public void sameNameVariableRepeatTest() {
+        var parsedFunctionCode = Code.parseForFunction("@name.contains(\"@name.com\") + @name + @newName + @name + @newName + @name.contains(\"@name.com\")");
+        Assert.assertEquals("name().contains(\"@name.com\") + name() + newName() + name() + newName() + name().contains(\"@name.com\")", parsedFunctionCode);
+
+        var parsedVariableCode = Code.parseForVariable("@name.contains(\"@name.com\") + @name + @newName + @name + @newName + @name.contains(\"@name.com\")");
+        Assert.assertEquals("name.contains(\"@name.com\") + name + newName + name + newName + name.contains(\"@name.com\")", parsedVariableCode);
+    }
+
+    @Test
+    public void codePartsSimpleTest() {
+        String theCode = "int , age , String , name";
+        List<String> codeParts = List.of("int", "age", "String", "name");
+        Assert.assertEquals(codeParts, Code.getCodeParts(theCode, ","));
+    }
+
+    @Test
+    public void codePartsSeparatorInCodeTest() {
+        String theCode = "int , age , boolean , name.contains(\",\")";
+        List<String> codeParts = List.of("int", "age", "boolean", "name.contains(\",\")");
+        Assert.assertEquals(codeParts, Code.getCodeParts(theCode, ","));
+    }
+
+    @Test
+    public void codePartsSeparatorWithInStringInString() {
+        String theCode = "boolean , name.contains(\"\\\",\\\"\") ,int , age ";
+        List<String> codeParts = List.of("boolean", "name.contains(\"\\\",\\\"\")", "int", "age");
+        Assert.assertEquals(codeParts, Code.getCodeParts(theCode, ","));
+    }
+
+    @Test
+    public void codePartsSeparatorWithCode() {
+        String theCode = "boolean , name.substring(@start,@end) ,int , age ";
+        List<String> codeParts = List.of("boolean", "name.substring(@start,@end)", "int", "age");
+        Assert.assertEquals(codeParts, Code.getCodeParts(theCode, ","));
+
+        String theCode1 = "boolean , name.substring(@start,@end,@something) ,int , age ";
+        List<String> codeParts1 = List.of("boolean", "name.substring(@start,@end,@something)", "int", "age");
+        Assert.assertEquals(codeParts1, Code.getCodeParts(theCode1, ","));
+
+        String theCode2 = "boolean , name.someFunction((@start.substring(@a,@b)),@end,@something) ,int , age ";
+        List<String> codeParts2 = List.of("boolean", "name.someFunction((@start.substring(@a,@b)),@end,@something)", "int", "age");
+        Assert.assertEquals(codeParts2, Code.getCodeParts(theCode2, ","));
+
+        String theCode3 = "int , age , boolean , name.someFunction(\",\",@testVariable), boolean, name.contains(\"\\\",\\\"\") , int , number.precision(1,3) ";
+        List<String> codeParts3 = List.of("int", "age", "boolean", "name.someFunction(\",\",@testVariable)", "boolean", "name.contains(\"\\\",\\\"\")", "int", "number.precision(1,3)");
+        Assert.assertEquals(codeParts3, Code.getCodeParts(theCode3, ","));
     }
 
 

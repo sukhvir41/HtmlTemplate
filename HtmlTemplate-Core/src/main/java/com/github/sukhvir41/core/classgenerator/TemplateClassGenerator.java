@@ -102,13 +102,14 @@ public abstract class TemplateClassGenerator {
 
     /**
      * @param templateFile template file path
-     * @return if the template is processed or not
+     * @return process template
      */
-    public boolean isTemplateFileProcessed(Path templateFile) {
+    public Optional<Template> getTemplate(Path templateFile) {
         return this.templateDataMap
                 .keySet()
                 .stream()
-                .anyMatch(template -> template.getFile().equals(templateFile));
+                .filter(template -> template.getFile().equals(templateFile))
+                .findFirst();
     }
 
     /**
@@ -127,6 +128,13 @@ public abstract class TemplateClassGenerator {
         if (plainHtmlVariables.containsKey(plainHtmlVariableCount)) {
             ++this.plainHtmlVariableCount;
         }
+    }
+
+    /**
+     * increments the plain html variable count.
+     */
+    public void incrementPlainHtmlVariableCount() {
+        ++this.plainHtmlVariableCount;
     }
 
     /**

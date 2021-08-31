@@ -23,12 +23,11 @@ import com.github.sukhvir41.core.template.Template;
 import com.github.sukhvir41.parsers.Code;
 import com.github.sukhvir41.utils.HtmlUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 abstract class IncludeHtmlTag implements HtmlTag {
 
@@ -95,6 +94,9 @@ abstract class IncludeHtmlTag implements HtmlTag {
         }
     }
 
+    /**
+     * @return return the calling template
+     */
     protected final Template getTemplate() {
         return this.template;
     }
@@ -103,24 +105,22 @@ abstract class IncludeHtmlTag implements HtmlTag {
         return this.htmlString;
     }
 
-    protected List<VariableInfo> getVariables(Template template, TemplateClassGenerator classGenerator) {
-        return null;
-    }
-
-    private List<VariableInfo> getVariableImpl(TemplateClassGenerator classGenerator) {
+    /**
+     * @return the variables in ht-variables
+     */
+    protected Map<String, String> getPassedVariables() {
         try {
             var matcher = VARIABLES_ATTRIBUTE_PATTERN.matcher(this.htmlString);
             if (matcher.find()) {
-                String variables = extractVariablesString(matcher);
-
-                return getVariablesMapping(variables, classGenerator);
+                return getPassedVariablesList(extractVariablesString(matcher));
             } else {
-                return Collections.emptyList();
+                return Collections.emptyMap();
             }
         } catch (Exception e) {
-            throw new IllegalArgumentException("Error in parsing variables in meta include tag -> " + this.htmlString);
+            throw new IllegalArgumentException("Error in parsing variables in meta include tag -> " + this.htmlString, e);
         }
     }
+
 
     private String extractVariablesString(Matcher matcher) {
         var variables = this.htmlString
@@ -128,42 +128,22 @@ abstract class IncludeHtmlTag implements HtmlTag {
         return variables.substring(variables.indexOf("\"") + 1, variables.length() - 1);
     }
 
-    private List<VariableInfo> getVariablesMapping(String variables, TemplateClassGenerator classGenerator) {
-        var variableList = new ArrayList<VariableInfo>();
-        String[] variablesParts = variables.split(",");
+    private Map<String, String> getPassedVariablesList(String variables) {
+        Map<String, String> passedVariables = new HashMap<>();
+        List<String> codeParts = Code.getCodeParts(variables, ",");
 
-        if (variablesParts.length % 2 != 0) {
-            throw new IllegalSyntaxException(" -> " + this.htmlString);
+        if (codeParts.size() % 2 != 0) {
+            throw new IllegalSyntaxException("The variables in include html tag should be key value pair format. html > " + htmlString);
         } else {
-            for (int i = 0; i < variablesParts.length; i += 2) {
-                variableList.add(
-                        new VariableInfo(
-                                variablesParts[i],
-                                Code.parseForFunction(variablesParts[i + 1])
-                        )
+            for (int i = 0; i < codeParts.size(); i += 2) {
+                passedVariables.put(
+                        codeParts.get(i),
+                        codeParser.apply(codeParts.get(i + 1))
                 );
             }
         }
 
-        return variableList;
-    }
-
-    public static class PassedVariables {
-        private final String name;
-        private final String value;
-
-        public PassedVariables(String name, String value) {
-            this.name = name;
-            this.value = value;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getValue() {
-            return value;
-        }
+        return passedVariables;
     }
 
 }

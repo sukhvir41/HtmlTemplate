@@ -26,29 +26,13 @@ import java.util.UUID;
 
 public final class RuntimeSubTemplate extends Template {
 
-    private Template parentTemplate;
+    private final Template instantiatingTemplate;
     private final String fullyQualifiedName;
 
-    public RuntimeSubTemplate(Path file, Template parentTemplate) {
-        super(file, parentTemplate.getClassGenerator(), parentTemplate.getDepth() + 1, parentTemplate.getSettings());
-        this.parentTemplate = parentTemplate;
-
-        parentTemplate
-                .getRootTemplate()
-                .setDepth(parentTemplate.getDepth() + 1);
-        if (getDepth() > 99) {
-            throw new IllegalStateException("Reached Template depth");
-        }
-
+    public RuntimeSubTemplate(Path file, Template instantiatingTemplate) {
+        super(file, instantiatingTemplate.getClassGenerator(), instantiatingTemplate.getDepth() + 1, instantiatingTemplate.getSettings());
+        this.instantiatingTemplate = instantiatingTemplate;
         this.fullyQualifiedName = StringUtils.getClassNameFromFile(file) + "_" + UUID.randomUUID().toString().replace("-", "_");
-    }
-
-    @Override
-    public void readAndProcessTemplateFile() {
-        super.readAndProcessTemplateFile();
-        parentTemplate
-                .getRootTemplate()
-                .setDepth(parentTemplate.getDepth() - 1);
     }
 
     @Override
@@ -72,7 +56,7 @@ public final class RuntimeSubTemplate extends Template {
 
     @Override
     public Template getRootTemplate() {
-        return parentTemplate.getRootTemplate();
+        return instantiatingTemplate.getRootTemplate();
     }
 
 
@@ -86,7 +70,7 @@ public final class RuntimeSubTemplate extends Template {
             return new MetaImportHtmlTag(tagString);
 
         } else if (RuntimeIncludeHtmlTag.matches(tagString)) {
-            return new RuntimeIncludeHtmlTag(tagString, parentTemplate);
+            return new RuntimeIncludeHtmlTag(tagString, Code::parseForVariable, this);
 
         } else if (MetaVariableHtmlTag.matches(tagString)) {
             return new MetaVariableHtmlTag(tagString, this);

@@ -80,7 +80,7 @@ public abstract class Template {
         this.htmlParser = htmlParser;
     }
 
-    void setDepth(int depth) {
+    public void setDepth(int depth) {
         this.depth = depth;
     }
 

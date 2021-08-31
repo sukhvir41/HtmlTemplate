@@ -36,6 +36,12 @@ public class RuntimeIncludeTemplateTest {
                 "    test template\n" +
                 "</div>" +
                 "\n" +
+                "<h1> we are inside the imported template file</h1>\n" +
+                "<h1>30: the number</h1>\n" +
+                "<div>\n" +
+                "    test template\n" +
+                "</div>" +
+                "\n" +
                 "</body>\n" +
                 "</html>"), strip(renderedTemplate));
 
