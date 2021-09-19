@@ -58,7 +58,8 @@ public final class Code {
         int separatorIndex;
         int startIndex = 0;
         while ((separatorIndex = findIndex(startIndex, separator, newCode)) > -1) {
-            if (isWithinBrackets(newCode, separatorIndex)) {
+            if (isWithinBrackets(newCode, separatorIndex, "(", ")") ||
+                    isWithinBrackets(newCode, separatorIndex, "<", ">")) {
                 startIndex = separatorIndex + 1;
             } else {
                 parts.add(newCode.substring(0, separatorIndex).trim());
@@ -91,6 +92,36 @@ public final class Code {
             int searchIndex = openBrackets.getLast();
             while (!openBrackets.isEmpty()) {
                 closingBracketIndex = findIndex(searchIndex, ")", theCode);
+                if (closingBracketIndex > commaIndex) {
+                    return true;
+                } else {
+                    openBrackets.removeLast();
+                    searchIndex = closingBracketIndex + 1;
+                }
+            }
+        }
+        return false;
+    }
+
+    private static boolean isWithinBrackets(String theCode, int commaIndex, String startingBracket, String endingBracket) {
+        Deque<Integer> openBrackets = new LinkedList<>();
+        int openBracketIndex = 0;
+        int openBracketsSearchIndex = 0;
+        while (true) {
+            openBracketIndex = findIndex(openBracketsSearchIndex, startingBracket, theCode);
+            if (openBracketIndex == -1 || openBracketIndex > commaIndex) {
+                break;
+            } else {
+                openBrackets.add(openBracketIndex);
+                openBracketsSearchIndex = openBracketIndex + 1;
+            }
+        }
+
+        if (!openBrackets.isEmpty()) {
+            int closingBracketIndex;
+            int searchIndex = openBrackets.getLast();
+            while (!openBrackets.isEmpty()) {
+                closingBracketIndex = findIndex(searchIndex, endingBracket, theCode);
                 if (closingBracketIndex > commaIndex) {
                     return true;
                 } else {

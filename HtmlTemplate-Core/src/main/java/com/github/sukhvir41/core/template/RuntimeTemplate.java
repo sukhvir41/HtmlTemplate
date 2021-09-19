@@ -17,7 +17,6 @@
 package com.github.sukhvir41.core.template;
 
 import com.github.sukhvir41.core.classgenerator.RuntimeClassGenerator;
-import com.github.sukhvir41.core.classgenerator.RuntimeTemplateClassGeneratorOLD;
 import com.github.sukhvir41.core.settings.Settings;
 import com.github.sukhvir41.parsers.Code;
 import com.github.sukhvir41.tags.*;
@@ -101,19 +100,19 @@ public final class RuntimeTemplate extends Template {
             return new MetaVariableHtmlTag(tagString, this);
 
         } else if (IfHtmlTag.matches(tagString)) {
-            return new IfHtmlTag(tagString, this);
+            return new IfHtmlTag(tagString, this, Code::parseForFunction);
 
         } else if (ElseIfHtmlTag.matches(tagString)) {
-            return new ElseIfHtmlTag(tagString, this);
+            return new ElseIfHtmlTag(tagString, this, Code::parseForFunction);
 
         } else if (ElseHtmlTag.matches(tagString)) { // else tag check should be after else if check
-            return new ElseHtmlTag(tagString, this);
+            return new ElseHtmlTag(tagString, this, Code::parseForFunction);
 
         } else if (ForHtmlTag.matches(tagString)) {
-            return new ForHtmlTag(tagString, this);
+            return new ForHtmlTag(tagString, this, Code::parseForFunction);
 
         } else {
-            return new DynamicAttributeHtmlTag(tagString, this);
+            return new DynamicAttributeHtmlTag(tagString, this, Code::parseForFunction);
         }
 
     }

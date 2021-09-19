@@ -259,7 +259,7 @@ public abstract class TemplateClassGenerator {
         this.templateDataMap.computeIfAbsent(template, (template1) -> new TemplateData())
                 .appendToBody(new PlainStringRenderBodyStatement(
                         getWriterVariableName() +
-                                ".append(" +
+                                ".write(" +
                                 PLAIN_HTML_VARIABLE_PREFIX +
                                 variableName +
                                 ");"

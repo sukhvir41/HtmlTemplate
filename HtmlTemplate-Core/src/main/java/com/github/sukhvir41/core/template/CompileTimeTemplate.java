@@ -17,7 +17,6 @@
 package com.github.sukhvir41.core.template;
 
 import com.github.sukhvir41.core.classgenerator.CompileTimeClassGenerator;
-import com.github.sukhvir41.core.classgenerator.CompileTimeClassGeneratorOLD;
 import com.github.sukhvir41.core.settings.SettingOptions;
 import com.github.sukhvir41.core.settings.Settings;
 import com.github.sukhvir41.parsers.Code;
@@ -38,22 +37,8 @@ public final class CompileTimeTemplate extends Template {
                 settings
         );
 
-        validateFileLocation();
-
         this.packageName = packageName;
         this.className = StringUtils.getClassNameFromFile(file);
-    }
-
-    public void validateFileLocation() {
-        Path rootFolder = getSettings().get(SettingOptions.ROOT_FOLDER)
-                .orElseThrow(() -> new IllegalArgumentException("ROOT_FOLDER setting not present"))
-                .normalize();
-
-        if (!getFile().startsWith(rootFolder)) {
-            throw new IllegalArgumentException("Template file is outside the root folder. \nTemplate file: " + getFile().normalize().toString() +
-                    "\nRoot Folder: " + rootFolder.toString());
-        }
-
     }
 
 
@@ -96,19 +81,19 @@ public final class CompileTimeTemplate extends Template {
             return new MetaVariableHtmlTag(tagString, this);
 
         } else if (IfHtmlTag.matches(tagString)) {
-            return new IfHtmlTag(tagString, this);
+            return new IfHtmlTag(tagString, this, Code::parseForFunction);
 
         } else if (ElseIfHtmlTag.matches(tagString)) {
-            return new ElseIfHtmlTag(tagString, this);
+            return new ElseIfHtmlTag(tagString, this, Code::parseForFunction);
 
         } else if (ElseHtmlTag.matches(tagString)) { // else tag check should be after else if check
-            return new ElseHtmlTag(tagString, this);
+            return new ElseHtmlTag(tagString, this, Code::parseForFunction);
 
         } else if (ForHtmlTag.matches(tagString)) {
-            return new ForHtmlTag(tagString, this);
+            return new ForHtmlTag(tagString, this, Code::parseForFunction);
 
         } else {
-            return new DynamicAttributeHtmlTag(tagString, this);
+            return new DynamicAttributeHtmlTag(tagString, this, Code::parseForFunction);
         }
 
     }

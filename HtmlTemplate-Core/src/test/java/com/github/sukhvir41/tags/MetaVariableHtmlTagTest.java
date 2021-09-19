@@ -17,7 +17,6 @@
 package com.github.sukhvir41.tags;
 
 import com.github.sukhvir41.core.classgenerator.TemplateClassGenerator;
-import com.github.sukhvir41.core.classgenerator.TemplateClassGeneratorOLD;
 import com.github.sukhvir41.core.template.Template;
 import org.junit.Rule;
 import org.junit.Test;
@@ -78,6 +77,25 @@ public class MetaVariableHtmlTagTest {
         assertEquals("name", nameList.get(0).trim());
         assertEquals("int", typeList.get(1).trim());
         assertEquals("age", nameList.get(1).trim());
+    }
+
+    @Test
+    public void testMultiVariableWithBrackets() {
+        var metaVariableTag = new MetaVariableHtmlTag("<meta ht-variables=\"String,name, int, age, Map<String,String>, keyNames\" > ", template);
+
+        metaVariableTag.processOpeningTag(classGenerator);
+        Mockito.verify(classGenerator, Mockito.times(3))
+                .addVariable(instantiatingTemplateCapture.capture(), typeCaptor.capture(), nameCaptor.capture());
+
+        var typeList = typeCaptor.getAllValues();
+        var nameList = nameCaptor.getAllValues();
+
+        assertEquals("String", typeList.get(0).trim());
+        assertEquals("name", nameList.get(0).trim());
+        assertEquals("int", typeList.get(1).trim());
+        assertEquals("age", nameList.get(1).trim());
+        assertEquals("Map<String,String>", typeList.get(2).trim());
+        assertEquals("keyNames", nameList.get(2).trim());
     }
 
 

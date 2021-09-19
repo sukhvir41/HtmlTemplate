@@ -24,6 +24,7 @@ import com.github.sukhvir41.core.settings.SettingsManager;
 import org.joor.Reflect;
 
 import java.nio.file.Path;
+import java.util.Set;
 
 public class HtmlTemplateLoader {
 

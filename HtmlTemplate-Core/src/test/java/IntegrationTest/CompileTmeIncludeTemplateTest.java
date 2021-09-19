@@ -33,7 +33,7 @@ import static com.github.sukhvir41.TestUtils.strip;
 
 public class CompileTmeIncludeTemplateTest {
 
-    private String subTemplateExpectedString = "" +
+    private final String subTemplateExpectedString = "" +
             "\n" +
             "<h1> we are inside the imported template file</h1>\n" +
             "<h1>10: the number</h1>\n" +

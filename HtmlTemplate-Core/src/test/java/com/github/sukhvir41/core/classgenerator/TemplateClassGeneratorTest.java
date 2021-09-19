@@ -175,7 +175,7 @@ public class TemplateClassGeneratorTest {
         Assert.assertEquals("<html>\\n\\t<body>\\n", classGenerator.getPlainHtmlVariables()
                 .get(0).toString());
 
-        Assert.assertEquals("\t\t" + classGenerator.getWriterVariableName() + ".append(PLAIN_HTML_0);\n", classGenerator.getTemplateDataMap().get(template).getRenderFunctionBody().toString());
+        Assert.assertEquals("\t\t" + classGenerator.getWriterVariableName() + ".write(PLAIN_HTML_0);\n", classGenerator.getTemplateDataMap().get(template).getRenderFunctionBody().toString());
     }
 
     @Test
@@ -194,7 +194,7 @@ public class TemplateClassGeneratorTest {
         Assert.assertEquals("<div test=\\\"test\\\">\\n", classGenerator.getPlainHtmlVariables()
                 .get(0).toString());
 
-        Assert.assertEquals("\t\t" + classGenerator.getWriterVariableName() + ".append(PLAIN_HTML_0);\n", classGenerator.getTemplateDataMap().get(template).getRenderFunctionBody().toString());
+        Assert.assertEquals("\t\t" + classGenerator.getWriterVariableName() + ".write(PLAIN_HTML_0);\n", classGenerator.getTemplateDataMap().get(template).getRenderFunctionBody().toString());
     }
 
     @Test
@@ -212,7 +212,7 @@ public class TemplateClassGeneratorTest {
         Assert.assertEquals("\\t", classGenerator.getPlainHtmlVariables()
                 .get(0).toString());
 
-        Assert.assertEquals("\t\t" + classGenerator.getWriterVariableName() + ".append(PLAIN_HTML_0);\n", classGenerator.getTemplateDataMap().get(template).getRenderFunctionBody().toString());
+        Assert.assertEquals("\t\t" + classGenerator.getWriterVariableName() + ".write(PLAIN_HTML_0);\n", classGenerator.getTemplateDataMap().get(template).getRenderFunctionBody().toString());
     }
 
     @Test
@@ -229,7 +229,7 @@ public class TemplateClassGeneratorTest {
         Assert.assertEquals("\\n", classGenerator.getPlainHtmlVariables()
                 .get(0).toString());
 
-        Assert.assertEquals("\t\t" + classGenerator.getWriterVariableName() + ".append(PLAIN_HTML_0);\n", classGenerator.getTemplateDataMap().get(template).getRenderFunctionBody().toString());
+        Assert.assertEquals("\t\t" + classGenerator.getWriterVariableName() + ".write(PLAIN_HTML_0);\n", classGenerator.getTemplateDataMap().get(template).getRenderFunctionBody().toString());
     }
 
 

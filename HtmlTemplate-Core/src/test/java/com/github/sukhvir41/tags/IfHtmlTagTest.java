@@ -19,9 +19,10 @@ package com.github.sukhvir41.tags;
 import static org.junit.Assert.*;
 
 import com.github.sukhvir41.core.classgenerator.TemplateClassGenerator;
-import com.github.sukhvir41.core.classgenerator.TemplateClassGeneratorOLD;
+import com.github.sukhvir41.core.settings.SettingsManager;
 import com.github.sukhvir41.core.statements.RenderBodyStatement;
 import com.github.sukhvir41.core.template.Template;
+import com.github.sukhvir41.parsers.Code;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -32,6 +33,8 @@ import org.mockito.junit.MockitoRule;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+
+import java.util.function.Function;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(IfHtmlTag.class)
@@ -62,15 +65,17 @@ public class IfHtmlTagTest {
                 .processOpeningTag(classGenerator);
 
         PowerMockito.whenNew(DynamicAttributeHtmlTag.class)
-                .withArguments(ArgumentMatchers.anyString(), ArgumentMatchers.any(Template.class))
+                .withArguments(ArgumentMatchers.anyString(), ArgumentMatchers.any(Template.class), ArgumentMatchers.any(Function.class))
                 .thenReturn(dynamicAttributeHtmlTag);
     }
 
     @Test
     public void test1() throws Exception {
+        Function<String, String> codeParser = Code::parseForFunction;
+        Mockito.when(template.getSettings())
+                .thenReturn(SettingsManager.load());
 
-
-        IfHtmlTag ifHtmlTag = new IfHtmlTag("<h1 ht-if=\"@isTrue\">", template);
+        IfHtmlTag ifHtmlTag = new IfHtmlTag("<h1 ht-if=\"@isTrue\">", template, codeParser);
 
         ifHtmlTag.processOpeningTag(classGenerator);
 
@@ -78,7 +83,7 @@ public class IfHtmlTagTest {
                 .addStatement(instantiatingTemplateCapture.capture(), addCodeCapture.capture());
         Mockito.verify(classGenerator)
                 .incrementRenderBodyIndentation(instantiatingTemplateCapture.capture());
-        assertEquals("if(condition( () -> isTrue() )){", addCodeCapture.getValue().getStatement());
+        assertEquals("if (condition(() -> isTrue())) {", addCodeCapture.getValue().getStatement());
 
         ifHtmlTag.processClosingTag(classGenerator);
 
@@ -89,14 +94,17 @@ public class IfHtmlTagTest {
         assertEquals("}", addCodeCapture.getValue().getStatement());
 
         PowerMockito.verifyNew(DynamicAttributeHtmlTag.class)
-                .withArguments("<h1>", template);
+                .withArguments("<h1>", template, codeParser);
 
     }
 
     @Test
     public void test2() throws Exception {
+        Function<String, String> codeParser = Code::parseForFunction;
+        Mockito.when(template.getSettings())
+                .thenReturn(SettingsManager.load());
 
-        IfHtmlTag ifHtmlTag = new IfHtmlTag("<h1 ht-if=\"@string.indexOf('@test.com') > 10\">", template);
+        IfHtmlTag ifHtmlTag = new IfHtmlTag("<h1 ht-if=\"@string.indexOf('@test.com') > 10\">", template, codeParser);
 
         ifHtmlTag.processOpeningTag(classGenerator);
 
@@ -104,7 +112,7 @@ public class IfHtmlTagTest {
                 .addStatement(instantiatingTemplateCapture.capture(), addCodeCapture.capture());
         Mockito.verify(classGenerator)
                 .incrementRenderBodyIndentation(instantiatingTemplateCapture.capture());
-        assertEquals("if(condition( () -> string().indexOf(\"@test.com\") > 10 )){", addCodeCapture.getValue().getStatement());
+        assertEquals("if (condition(() -> string().indexOf(\"@test.com\") > 10)) {", addCodeCapture.getValue().getStatement());
 
         ifHtmlTag.processClosingTag(classGenerator);
 
@@ -115,7 +123,7 @@ public class IfHtmlTagTest {
         assertEquals("}", addCodeCapture.getValue().getStatement());
 
         PowerMockito.verifyNew(DynamicAttributeHtmlTag.class)
-                .withArguments("<h1>", template);
+                .withArguments("<h1>", template, codeParser);
 
     }
 

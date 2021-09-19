@@ -17,10 +17,11 @@
 package com.github.sukhvir41.tags;
 
 import com.github.sukhvir41.core.classgenerator.TemplateClassGenerator;
-import com.github.sukhvir41.core.classgenerator.TemplateClassGeneratorOLD;
 import com.github.sukhvir41.core.statements.PlainStringRenderBodyStatement;
 import com.github.sukhvir41.core.template.Template;
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.function.Function;
 
 public final class ElseHtmlTag extends RegularHtmlTag {
 
@@ -28,12 +29,15 @@ public final class ElseHtmlTag extends RegularHtmlTag {
     private static final String OPENING_CODE = "else {";
     private static final String CLOSING_CODE = "}";
 
+    private final Function<String, String> codeParser;
+
     public static boolean matches(String string) {
         return StringUtils.containsIgnoreCase(string, HT_ELSE);
     }
 
-    public ElseHtmlTag(String htmlString, Template instantiatingTemplate) {
+    public ElseHtmlTag(String htmlString, Template instantiatingTemplate, Function<String, String> codeParser) {
         super(htmlString, instantiatingTemplate);
+        this.codeParser = codeParser;
     }
 
     @Override
@@ -55,14 +59,14 @@ public final class ElseHtmlTag extends RegularHtmlTag {
         int startIndex = this.htmlString.indexOf(HT_ELSE);
 
         if (startIndex == -1) {
-            new DynamicAttributeHtmlTag(this.htmlString, super.template)
+            new DynamicAttributeHtmlTag(this.htmlString, super.template, codeParser)
                     .processOpeningTag(classGenerator);
         } else {
             int endIndex = startIndex + HT_ELSE.length();
             var leftPart = this.htmlString.substring(0, startIndex)
                     .trim();
             var rightPart = this.htmlString.substring(endIndex);
-            new DynamicAttributeHtmlTag(leftPart + rightPart, super.template)
+            new DynamicAttributeHtmlTag(leftPart + rightPart, super.template, codeParser)
                     .processOpeningTag(classGenerator);
         }
 

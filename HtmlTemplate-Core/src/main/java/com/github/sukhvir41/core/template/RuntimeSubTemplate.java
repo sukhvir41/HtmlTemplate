@@ -76,19 +76,19 @@ public final class RuntimeSubTemplate extends Template {
             return new MetaVariableHtmlTag(tagString, this);
 
         } else if (IfHtmlTag.matches(tagString)) {
-            return new IfHtmlTag(tagString, this);
+            return new IfHtmlTag(tagString, this, Code::parseForVariable);
 
         } else if (ElseIfHtmlTag.matches(tagString)) {
-            return new ElseIfHtmlTag(tagString, this);
+            return new ElseIfHtmlTag(tagString, this, Code::parseForVariable);
 
         } else if (ElseHtmlTag.matches(tagString)) { // else tag check should be after else if check
-            return new ElseHtmlTag(tagString, this);
+            return new ElseHtmlTag(tagString, this, Code::parseForVariable);
 
         } else if (ForHtmlTag.matches(tagString)) {
-            return new ForHtmlTag(tagString, this);
+            return new ForHtmlTag(tagString, this, Code::parseForVariable);
 
         } else {
-            return new DynamicAttributeHtmlTag(tagString, this);
+            return new DynamicAttributeHtmlTag(tagString, this, Code::parseForVariable);
         }
 
     }

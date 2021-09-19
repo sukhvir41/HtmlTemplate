@@ -89,8 +89,6 @@ public class AppTest {
         Path testFile = Paths.get(tempFolder.newFile("test.html").toURI());
         Path outputPath = Paths.get(tempOutputFolder.newFolder("output").toURI());
 
-        System.out.println(outputPath.normalize().toString() + "!!!!!!!!!");
-
         Settings settings = new Settings();
         Reflect.on(settings)
                 .set("path", testFile)

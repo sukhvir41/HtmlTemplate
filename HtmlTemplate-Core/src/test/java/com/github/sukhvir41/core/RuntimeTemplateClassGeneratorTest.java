@@ -17,9 +17,7 @@
 package com.github.sukhvir41.core;
 
 import com.github.sukhvir41.core.classgenerator.RuntimeClassGenerator;
-import com.github.sukhvir41.core.classgenerator.RuntimeTemplateClassGeneratorOLD;
 import com.github.sukhvir41.core.classgenerator.TemplateClassGenerator;
-import com.github.sukhvir41.core.classgenerator.TemplateClassGeneratorOLD;
 import com.github.sukhvir41.core.statements.PlainStringRenderBodyStatement;
 import com.github.sukhvir41.core.template.RuntimeSubTemplate;
 import com.github.sukhvir41.core.template.RuntimeTemplate;

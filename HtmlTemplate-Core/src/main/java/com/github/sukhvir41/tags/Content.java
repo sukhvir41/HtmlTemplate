@@ -17,10 +17,9 @@
 package com.github.sukhvir41.tags;
 
 import com.github.sukhvir41.core.classgenerator.TemplateClassGenerator;
+import com.github.sukhvir41.core.settings.SettingOptions;
 import com.github.sukhvir41.core.template.Template;
-import com.github.sukhvir41.core.classgenerator.TemplateClassGeneratorOLD;
 import com.github.sukhvir41.core.statements.PlainStringRenderBodyStatement;
-import com.github.sukhvir41.parsers.Code;
 import com.github.sukhvir41.core.IllegalSyntaxException;
 import org.apache.commons.lang3.StringUtils;
 
@@ -36,11 +35,17 @@ public final class Content implements HtmlTag {
     public static final String UNESCAPED_CONTENT_START = "{{{";
     public static final String UNESCAPED_CONTENT_END = "}}}";
 
-    private static final String ESCAPED_VARIABLE_LEFT_PART_CODE = ".append(content(() -> String.valueOf(";
+    private static final String ESCAPED_VARIABLE_LEFT_PART_CODE = ".write(content(() -> String.valueOf(";
     private static final String ESCAPED_VARIABLE_RIGHT_PART_CODE = ")));";
 
-    private static final String UNESCAPED_VARIABLE_LEFT_PART_CODE = ".append(unescapedContent(() -> String.valueOf(";
+    private static final String ESCAPED_VARIABLE_NO_CHECK_LEFT_PART_CODE = ".write(content(";
+    private static final String ESCAPED_VARIABLE_NO_CHECK_RIGHT_PART_CODE = "));";
+
+    private static final String UNESCAPED_VARIABLE_LEFT_PART_CODE = ".write(unescapedContent(() -> String.valueOf(";
     private static final String UNESCAPED_VARIABLE_RIGHT_PART_CODE = ")));";
+
+    private static final String UNESCAPED_VARIABLE_NO_CHECK_LEFT_PART_CODE = ".write(unescapedContent(";
+    private static final String UNESCAPED_VARIABLE_NO_CHECK_RIGHT_PART_CODE = "));";
 
     private final String content;
     private final Template template;
@@ -143,9 +148,9 @@ public final class Content implements HtmlTag {
         classGenerator.addStatement(template,
                 new PlainStringRenderBodyStatement(
                         classGenerator.getWriterVariableName() +
-                                ESCAPED_VARIABLE_LEFT_PART_CODE +
+                                (suppressExceptions() ? ESCAPED_VARIABLE_LEFT_PART_CODE : ESCAPED_VARIABLE_NO_CHECK_LEFT_PART_CODE) +
                                 code +
-                                ESCAPED_VARIABLE_RIGHT_PART_CODE
+                                (suppressExceptions() ? ESCAPED_VARIABLE_RIGHT_PART_CODE : ESCAPED_VARIABLE_NO_CHECK_RIGHT_PART_CODE)
                 )
         );
 
@@ -153,8 +158,17 @@ public final class Content implements HtmlTag {
 
     private void addUnescapedCode(String code, TemplateClassGenerator classGenerator) {
         classGenerator.addStatement(template, new PlainStringRenderBodyStatement(
-                classGenerator.getWriterVariableName() + UNESCAPED_VARIABLE_LEFT_PART_CODE + code + UNESCAPED_VARIABLE_RIGHT_PART_CODE
+                classGenerator.getWriterVariableName() +
+                        (suppressExceptions() ? UNESCAPED_VARIABLE_LEFT_PART_CODE : UNESCAPED_VARIABLE_NO_CHECK_LEFT_PART_CODE) +
+                        code +
+                        (suppressExceptions() ? UNESCAPED_VARIABLE_RIGHT_PART_CODE : UNESCAPED_VARIABLE_NO_CHECK_RIGHT_PART_CODE)
         ));
+    }
+
+    private boolean suppressExceptions() {
+        return this.template.getSettings()
+                .get(SettingOptions.SUPPRESS_EXCEPTIONS)
+                .orElseThrow(() -> new IllegalStateException("SUPPRESS_EXCEPTIONS setting was not set"));
     }
 
     @Override

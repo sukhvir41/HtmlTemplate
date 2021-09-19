@@ -17,9 +17,10 @@
 package com.github.sukhvir41.tags;
 
 import com.github.sukhvir41.core.classgenerator.TemplateClassGenerator;
-import com.github.sukhvir41.core.classgenerator.TemplateClassGeneratorOLD;
+import com.github.sukhvir41.core.settings.SettingsManager;
 import com.github.sukhvir41.core.statements.RenderBodyStatement;
 import com.github.sukhvir41.core.template.Template;
+import com.github.sukhvir41.parsers.Code;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -50,11 +51,14 @@ public class DynamicAttributeHtmlTagTest {
     @Captor
     private ArgumentCaptor<Boolean> appendNewLineCapture;
 
-    private final DynamicAttributeHtmlTag dynamicTag = new DynamicAttributeHtmlTag("<h1 ht-test = \"@testValue\" ht-test1 = \"@test1Value\" >", null);
 
     @Test
     public void testClosing() {
         TemplateClassGenerator templateClass = Mockito.mock(TemplateClassGenerator.class);
+        DynamicAttributeHtmlTag dynamicTag = new DynamicAttributeHtmlTag(
+                "<h1 ht-test = \"@testValue\" ht-test1 = \"@test1Value\" >",
+                null,
+                Code::parseForFunction);
 
         dynamicTag.processClosingTag(templateClass);
 
@@ -64,11 +68,19 @@ public class DynamicAttributeHtmlTagTest {
 
     @Test
     public void testOpeningTag() {
+        Template template = Mockito.mock(Template.class);
+        Mockito.when(template.getSettings())
+                .thenReturn(SettingsManager.load());
 
         TemplateClassGenerator classGenerator = Mockito.mock(TemplateClassGenerator.class);
 
         Mockito.when(classGenerator.getWriterVariableName())
                 .thenReturn("testWriter");
+
+        DynamicAttributeHtmlTag dynamicTag = new DynamicAttributeHtmlTag(
+                "<h1 ht-test = \"@testValue\" ht-test1 = \"@test1Value\" >",
+                template,
+                Code::parseForFunction);
 
         dynamicTag.processOpeningTag(classGenerator);
 
@@ -103,8 +115,8 @@ public class DynamicAttributeHtmlTagTest {
                 .addStatement(instantiatingTemplateCapture.capture(), addCodeCapture.capture());
 
         var codes = addCodeCapture.getAllValues();
-        assertEquals("testWriter.append(content(() -> String.valueOf(testValue())));", codes.get(0).getStatement());
-        assertEquals("testWriter.append(content(() -> String.valueOf(test1Value())));", codes.get(1).getStatement());
+        assertEquals("testWriter.write(content(() -> String.valueOf(testValue())));", codes.get(0).getStatement());
+        assertEquals("testWriter.write(content(() -> String.valueOf(test1Value())));", codes.get(1).getStatement());
 
 
     }

@@ -17,9 +17,9 @@
 package com.github.sukhvir41.tags;
 
 import com.github.sukhvir41.core.classgenerator.TemplateClassGenerator;
-import com.github.sukhvir41.core.classgenerator.TemplateClassGeneratorOLD;
 import com.github.sukhvir41.core.statements.RenderBodyStatement;
 import com.github.sukhvir41.core.template.Template;
+import com.github.sukhvir41.parsers.Code;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,6 +30,8 @@ import org.mockito.junit.MockitoRule;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+
+import java.util.function.Function;
 
 import static org.junit.Assert.assertEquals;
 
@@ -62,13 +64,14 @@ public class ForHtmlTagTest {
                 .processOpeningTag(templateClass);
 
         PowerMockito.whenNew(DynamicAttributeHtmlTag.class)
-                .withArguments(ArgumentMatchers.anyString(), ArgumentMatchers.any(Template.class))
+                .withArguments(ArgumentMatchers.anyString(), ArgumentMatchers.any(Template.class), ArgumentMatchers.any(Function.class))
                 .thenReturn(dynamicAttributeHtmlTag);
     }
 
     @Test
     public void valueTest() throws Exception {
-        ForHtmlTag forTag = new ForHtmlTag("<h1 test=\"test\" ht-for=\"name in @names\" test=\"test\">", template);
+        Function<String, String> codeParser = Code::parseForFunction;
+        ForHtmlTag forTag = new ForHtmlTag("<h1 test=\"test\" ht-for=\"name in @names\" test=\"test\">", template, codeParser);
         forTag.processOpeningTag(templateClass);
         forTag.processClosingTag(templateClass);
 
@@ -85,13 +88,14 @@ public class ForHtmlTagTest {
         assertEquals("});", codes.get(1).getStatement());
 
         PowerMockito.verifyNew(DynamicAttributeHtmlTag.class)
-                .withArguments("<h1 test=\"test\" test=\"test\">", template);
+                .withArguments("<h1 test=\"test\" test=\"test\">", template, codeParser);
 
     }
 
     @Test
     public void indexValueTest() throws Exception {
-        var forTag = new ForHtmlTag("<h1 ht-for=\"index,name in @names\" >", template);
+        Function<String, String> codeParser = Code::parseForFunction;
+        var forTag = new ForHtmlTag("<h1 ht-for=\"index,name in @names\" >", template, codeParser);
         forTag.processOpeningTag(templateClass);
         forTag.processClosingTag(templateClass);
 
@@ -109,12 +113,13 @@ public class ForHtmlTagTest {
         assertEquals("});", codes.get(1).getStatement());
 
         PowerMockito.verifyNew(DynamicAttributeHtmlTag.class)
-                .withArguments("<h1 >", template);
+                .withArguments("<h1 >", template, codeParser);
     }
 
     @Test
     public void MapTest() throws Exception {
-        var forTag = new ForHtmlTag("<h1 ht-for=\"index,key,value in @names\">", template);
+        Function<String, String> codeParser = Code::parseForFunction;
+        var forTag = new ForHtmlTag("<h1 ht-for=\"index,key,value in @names\">", template, codeParser);
         forTag.processOpeningTag(templateClass);
         forTag.processClosingTag(templateClass);
 
@@ -131,7 +136,7 @@ public class ForHtmlTagTest {
         assertEquals("});", codes.get(1).getStatement());
 
         PowerMockito.verifyNew(DynamicAttributeHtmlTag.class)
-                .withArguments("<h1>", template);
+                .withArguments("<h1>", template, codeParser);
     }
 
 }

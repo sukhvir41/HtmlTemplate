@@ -17,7 +17,6 @@
 package com.github.sukhvir41.core.template;
 
 import com.github.sukhvir41.core.classgenerator.TemplateClassGenerator;
-import com.github.sukhvir41.core.classgenerator.TemplateClassGeneratorOLD;
 import com.github.sukhvir41.core.settings.Settings;
 import com.github.sukhvir41.parsers.htmlParsers.HtmlParserData;
 import com.github.sukhvir41.parsers.htmlParsers.HtmlParsers;

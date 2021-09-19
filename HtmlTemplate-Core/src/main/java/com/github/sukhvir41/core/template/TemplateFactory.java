@@ -16,6 +16,7 @@
 
 package com.github.sukhvir41.core.template;
 
+import com.github.sukhvir41.core.settings.SettingOptions;
 import com.github.sukhvir41.core.settings.Settings;
 import org.apache.commons.lang3.StringUtils;
 
@@ -53,7 +54,8 @@ public final class TemplateFactory {
             case COMPILE_TIME:
                 settings.getLogger()
                         .info("compile time template mode selected");
-                return null;//new CompileTimeTemplate(file, packageName, settings);
+                validateFileLocation(settings, file);
+                return new CompileTimeTemplate(file, packageName, settings);
             default:
                 throw new IllegalArgumentException("Please provide template type");
         }
@@ -73,5 +75,17 @@ public final class TemplateFactory {
         if (!Files.isReadable(file)) {
             throw new IllegalArgumentException("Can not read file : " + file.getFileName().toString());
         }
+    }
+
+    private static void validateFileLocation(Settings settings, Path file) {
+        Path rootFolder = settings.get(SettingOptions.ROOT_FOLDER)
+                .orElseThrow(() -> new IllegalArgumentException("ROOT_FOLDER setting not present"))
+                .normalize();
+
+        if (!file.startsWith(rootFolder)) {
+            throw new IllegalArgumentException("Template file is outside the root folder. \nTemplate file: " + file.normalize().toString() +
+                    "\nRoot Folder: " + rootFolder.toString());
+        }
+
     }
 }

@@ -18,41 +18,53 @@ package com.github.sukhvir41.core.template;
 
 import com.github.sukhvir41.core.settings.SettingOptions;
 import com.github.sukhvir41.tags.HtmlTag;
+import com.github.sukhvir41.utils.StringUtils;
 import org.apache.commons.lang3.NotImplementedException;
 
+import java.io.File;
 import java.nio.file.Path;
+
+import static org.apache.commons.lang3.StringUtils.removeStart;
+import static org.apache.commons.lang3.StringUtils.replace;
 
 public class CompileTimeSubTemplate extends Template {
 
     private final Template parentTemplate;
+    private final String fullyQualified;
 
     public CompileTimeSubTemplate(Path file, Template parentTemplate) {
         super(file, parentTemplate.getClassGenerator(), parentTemplate.getDepth() + 1, parentTemplate.getSettings());
         this.parentTemplate = parentTemplate;
-        if (getDepth() > 99) {
-            throw new IllegalStateException("Reached Template depth");
-        }
-
-        validateFileLocation();
-
+        this.fullyQualified = computeFullyQualifiedName();
     }
 
-    public void validateFileLocation() {
-        Path rootFolder = getSettings().get(SettingOptions.ROOT_FOLDER)
-                .orElseThrow()
-                .normalize();
+    private String computeFullyQualifiedName() {
+        String packageName = getSettings().get(SettingOptions.PACKAGE_NAME)
+                .orElseThrow(() -> new IllegalStateException("Please provide PACKAGE_NAME setting"));
 
-        if (!getFile().startsWith(rootFolder)) {
-            throw new IllegalArgumentException("Template file is outside the root folder. \nTemplate file: " + getFile().normalize().toString() +
-                    "\nRoot Folder: " + rootFolder.toString());
-        }
+        String className = StringUtils.getClassNameFromFile(getFile());
+
+        String rootFolder = getSettings().get(SettingOptions.ROOT_FOLDER)
+                .orElseThrow(() -> new IllegalStateException("Please provide ROOT_FOLDER setting"))
+                .normalize()
+                .toAbsolutePath()
+                .toString();
+
+        String templateFilePath = getFile().normalize()
+                .toAbsolutePath()
+                .toString();
+
+        String intermediatePath = removeStart(templateFilePath, rootFolder);
+        intermediatePath = replace(intermediatePath, File.separator, ".");
+
+        return packageName + "." + intermediatePath + "." + className;
 
     }
 
 
     @Override
     public String getFullyQualifiedName() {
-        throw new NotImplementedException("don't what the name should be for a compile time sub template");
+        return this.fullyQualified;
     }
 
     @Override

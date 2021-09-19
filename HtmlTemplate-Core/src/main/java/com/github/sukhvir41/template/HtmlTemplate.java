@@ -16,33 +16,38 @@
 
 package com.github.sukhvir41.template;
 
+import com.github.sukhvir41.utils.CheckedSupplier;
 import org.joor.Reflect;
 
 import java.io.Writer;
+import java.lang.invoke.MethodType;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Stream;
 
 public class HtmlTemplate {
 
-    private Reflect templateClass;
+    private final Reflect templateClass;
+
 
     HtmlTemplate(Reflect templateClass) {
         this.templateClass = templateClass;
     }
 
     public String render(Map<String, Object> parameters) {
-        Reflect instance = Reflect.on(getTemplateInstance());
-        renderImpl(instance, parameters);
-        return instance
-                .call("render")
-                .get();
+        HtTemplate instance = getTemplateInstance();
+        Reflect reflectInstance = Reflect.on(instance);
+        renderImpl(reflectInstance, parameters);
+        return instance.render();
     }
 
     public void render(Map<String, Object> parameters, Writer writer) {
-        Reflect instance = Reflect.on(getTemplateInstance());
-        renderImpl(instance, parameters);
-        instance
-                .call("render", writer);
+        HtTemplate instance = getTemplateInstance();
+        Reflect reflectInstance = Reflect.on(instance);
+        renderImpl(reflectInstance, parameters);
+        instance.render(writer);
     }
 
     public String render() {

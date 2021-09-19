@@ -27,6 +27,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import static org.apache.commons.lang3.StringUtils.*;
+
 public final class App {
     private Settings settings;
 
@@ -128,14 +130,14 @@ public final class App {
                 .normalize()
                 .toString();
 
-        var outputFilePathString = org.apache.commons.lang3.StringUtils.removeStart(absolutePathString, sourceAbsolutePath);
-        if (org.apache.commons.lang3.StringUtils.isBlank(settings.getPackageName())) {
+        var outputFilePathString = removeStart(absolutePathString, sourceAbsolutePath);
+        if (isBlank(settings.getPackageName())) {
             outputFilePathString = settings.getPath().getFileName().toString() + outputFilePathString;
         } else {
             outputFilePathString = settings.getPackageName() + File.separator + outputFilePathString;
         }
 
-        return org.apache.commons.lang3.StringUtils.replace(outputFilePathString, File.separator, ".");
+        return replace(outputFilePathString, File.separator, ".");
     }
 
 

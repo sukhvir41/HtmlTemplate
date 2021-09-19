@@ -17,13 +17,17 @@
 package com.github.sukhvir41.tags;
 
 import com.github.sukhvir41.core.classgenerator.TemplateClassGenerator;
+import com.github.sukhvir41.core.settings.SettingOptions;
 import com.github.sukhvir41.core.statements.RenderBodyStatement;
 import com.github.sukhvir41.core.template.CompileTimeSubTemplate;
 import com.github.sukhvir41.core.template.Template;
-import com.github.sukhvir41.core.classgenerator.TemplateClassGeneratorOLD;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class CompileTimeIncludeHtmlTag extends IncludeHtmlTag {
     public CompileTimeIncludeHtmlTag(String htmlString, Template template) {
@@ -35,13 +39,23 @@ public class CompileTimeIncludeHtmlTag extends IncludeHtmlTag {
         String filePath = getFilePath();
         Path file = getFile(filePath);
 
+        Path rootFolder = getTemplate().getSettings().get(SettingOptions.ROOT_FOLDER)
+                .orElseThrow(() -> new IllegalArgumentException("ROOT_FOLDER setting not present"))
+                .normalize();
+
+        if (!file.startsWith(rootFolder)) {
+            throw new IllegalArgumentException("Template file is outside the root folder. \nTemplate file: " + file.normalize().toString() +
+                    "\nRoot Folder: " + rootFolder.toString());
+        }
+
         Template subTemplate = new CompileTimeSubTemplate(file, getTemplate().getRootTemplate());
+        Optional<Template> processedTemplate = classGenerator.getTemplate(file);
 
-        //todo: this needs to change
-        //classGenerator.addMappedVariables(subTemplate, getVariables(subTemplate, classGenerator));
-
-        if (getTemplate().getDepth() == 1) {
-
+        if (processedTemplate.isPresent() && subTemplate.equals(processedTemplate.get())) {
+            classGenerator.addStatement(getTemplate(), new CompileTimeIncludeHtmlTag.SubTemplateRenderInclude(classGenerator, processedTemplate.get(), getPassedVariables(), getHtmlString()));
+        } else {
+            classGenerator.addStatement(getTemplate(), new CompileTimeIncludeHtmlTag.SubTemplateRenderInclude(classGenerator, subTemplate, getPassedVariables(), getHtmlString()));
+            subTemplate.readAndProcessTemplateFile();
         }
 
     }
@@ -60,13 +74,52 @@ public class CompileTimeIncludeHtmlTag extends IncludeHtmlTag {
 
     private static final class SubTemplateRenderInclude implements RenderBodyStatement {
 
-        public SubTemplateRenderInclude() {
+        private final TemplateClassGenerator classGenerator;
+        private final Template subTemplate;
+        private final Map<String, String> passedVariables;
+        private final String html;
 
+        public SubTemplateRenderInclude(TemplateClassGenerator classGenerator, Template subTemplate, Map<String, String> passedVariables, String html) {
+            this.classGenerator = classGenerator;
+            this.subTemplate = subTemplate;
+            this.passedVariables = passedVariables;
+            this.html = html;
         }
 
         @Override
         public String getStatement() {
-            return null;
+            testPassedVariables();
+            return subTemplate.getFullyQualifiedName() +
+                    ".getInstance()." +
+                    classGenerator.getVariables(subTemplate)
+                            .keySet()
+                            .stream()
+                            .map(name -> name + "(" + passedVariables.get(name) + ")")
+                            .collect(Collectors.joining(".")) +
+                    "render(" + classGenerator.getWriterVariableName() + ")";
+        }
+
+
+        /**
+         * tests to see if the number of variables passed to subTemplate match the number of variables of that template
+         */
+        private void testPassedVariables() {
+            if (passedVariables.keySet().size() != classGenerator.getVariables(subTemplate).size()) {
+                throw new IllegalStateException("The number of arguments passed does not match number variables the template takes. \n" +
+                        "Template " + subTemplate.getFile() + "\n" +
+                        "html -> " + html);
+            }
+
+            Set<String> variables = classGenerator.getVariables(subTemplate)
+                    .keySet();
+
+            for (String variable : variables) {
+                if (!passedVariables.containsKey(variable)) {
+                    throw new IllegalArgumentException("The template requires the argument " + variable + ".\n" +
+                            "Template " + subTemplate.getFile() + "\n" +
+                            "html ->" + html);
+                }
+            }
         }
     }
 }

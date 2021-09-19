@@ -17,9 +17,10 @@
 package com.github.sukhvir41.tags;
 
 import com.github.sukhvir41.core.classgenerator.TemplateClassGenerator;
-import com.github.sukhvir41.core.classgenerator.TemplateClassGeneratorOLD;
+import com.github.sukhvir41.core.settings.SettingsManager;
 import com.github.sukhvir41.core.statements.RenderBodyStatement;
 import com.github.sukhvir41.core.template.Template;
+import com.github.sukhvir41.parsers.Code;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,6 +31,8 @@ import org.mockito.junit.MockitoRule;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+
+import java.util.function.Function;
 
 import static org.junit.Assert.assertEquals;
 
@@ -61,13 +64,17 @@ public class ElseHtmlTagTest {
                 .processOpeningTag(classGenerator);
 
         PowerMockito.whenNew(DynamicAttributeHtmlTag.class)
-                .withArguments(ArgumentMatchers.anyString(), ArgumentMatchers.any(Template.class))
+                .withArguments(ArgumentMatchers.anyString(), ArgumentMatchers.any(Template.class), ArgumentMatchers.any(Function.class))
                 .thenReturn(dynamicAttributeHtmlTag);
     }
 
     @Test
     public void testOpeningProcess() throws Exception {
-        ElseHtmlTag elseTag = new ElseHtmlTag("<h1 ht-else >", template);
+        Function<String, String> codeParser = Code::parseForFunction;
+
+        Mockito.when(template.getSettings())
+                .thenReturn(SettingsManager.load());
+        ElseHtmlTag elseTag = new ElseHtmlTag("<h1 ht-else >", template, codeParser);
 
         elseTag.processOpeningTag(classGenerator);
 
@@ -79,7 +86,7 @@ public class ElseHtmlTagTest {
                 .incrementRenderBodyIndentation(instantiatingTemplateCapture.capture());
 
         PowerMockito.verifyNew(DynamicAttributeHtmlTag.class)
-                .withArguments("<h1 >", template);
+                .withArguments("<h1 >", template, codeParser);
 
         Mockito.verify(dynamicAttributeHtmlTag)
                 .processOpeningTag(classGenerator);
@@ -87,7 +94,9 @@ public class ElseHtmlTagTest {
 
     @Test
     public void testClosingProcess() {
-        ElseHtmlTag elseTag = new ElseHtmlTag("<h1 ht-else >", null);
+        Mockito.when(template.getSettings())
+                .thenReturn(SettingsManager.load());
+        ElseHtmlTag elseTag = new ElseHtmlTag("<h1 ht-else >", template, Code::parseForFunction);
 
         elseTag.processClosingTag(classGenerator);
 

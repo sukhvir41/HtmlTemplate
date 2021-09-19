@@ -39,7 +39,7 @@ public class SettingsManager {
 
     private static Map<SettingOptions<?>, Object> getDefaultSettings() {
         return Map.of(
-                SUPPRESS_NULL_EXCEPTIONS, true,
+                SUPPRESS_EXCEPTIONS, true,
                 TEMPLATE_FOLDER_PATH, "",
                 LOGGING_LEVEL, "OFF"
         );

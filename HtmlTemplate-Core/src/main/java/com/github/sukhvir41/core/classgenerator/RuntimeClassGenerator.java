@@ -27,6 +27,9 @@ public class RuntimeClassGenerator extends TemplateClassGenerator {
         appendPlainHtmlVariables(classString);
         appendGetInstanceMethod(classString);
 
+        // appending writer initial size;
+        appendWriterInitialSize(classString);
+
         //instance variables and methods
         appendVariableDeclaration(classString);
 
@@ -121,6 +124,35 @@ public class RuntimeClassGenerator extends TemplateClassGenerator {
                 .append(BREAK_LINE)
                 .append(BREAK_LINE);
     }
+
+    public void appendWriterInitialSize(StringBuilder classString) {
+        long size = getPlainHtmlVariables()
+                .values()
+                .stream()
+                .mapToLong(builder -> builder.length())
+                .sum()*2;
+
+        if (size > Integer.MAX_VALUE) {
+            size = Integer.MAX_VALUE;
+        }
+
+        classString.append(getIndentations(1))
+                .append("@Override")
+                .append(BREAK_LINE)
+                .append(getIndentations(1))
+                .append("public int writerInitialSize() {")
+                .append(BREAK_LINE)
+                .append(getIndentations(2))
+                .append("return ")
+                .append(size)
+                .append(";")
+                .append(BREAK_LINE)
+                .append(getIndentations(1))
+                .append("}")
+                .append(BREAK_LINE)
+                .append(BREAK_LINE);
+    }
+
 
     private void appendVariableDeclaration(StringBuilder classString) {
         getVariables(getRootTemplate())

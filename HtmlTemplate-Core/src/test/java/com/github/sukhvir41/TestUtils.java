@@ -67,6 +67,11 @@ public class TestUtils {
                 "                throw new RuntimeException(e);\n" +
                 "            }\n" +
                 "        }\n" +
+                "\n" +
+                "           @Override\n" +
+                "           public int writerInitialSize() {" +
+                "               return 0;\n" +
+                "           }\n" +
                 "    }");
     }
 

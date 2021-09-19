@@ -26,14 +26,14 @@ import java.util.logging.Level;
 
 public class SettingOptions<RETURN> {
 
-    public static final SettingOptions<Boolean> SUPPRESS_NULL_EXCEPTIONS =
+    public static final SettingOptions<Boolean> SUPPRESS_EXCEPTIONS =
             new SettingOptions<>((Object param) -> Boolean.valueOf(String.valueOf(param)));
-    public static final SettingOptions<String> TEMPLATE_FOLDER_PATH =
-            new SettingOptions<>(String::valueOf);
     public static final SettingOptions<Level> LOGGING_LEVEL =
             new SettingOptions<>(CheckedFunction.wrapFunction((Object param) -> Level.parse(param.toString())));
     public static final SettingOptions<Path> ROOT_FOLDER =
             new SettingOptions<>(CheckedFunction.wrapFunction((Object param) -> Paths.get(param.toString())));
+    public static final SettingOptions<String> PACKAGE_NAME =
+            new SettingOptions<>(CheckedFunction.wrapFunction(String::valueOf));
 
     private final Function<Object, RETURN> caster;
 

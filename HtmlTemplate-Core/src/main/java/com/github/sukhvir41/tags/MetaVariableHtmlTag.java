@@ -18,13 +18,14 @@ package com.github.sukhvir41.tags;
 
 import com.github.sukhvir41.core.IllegalSyntaxException;
 import com.github.sukhvir41.core.classgenerator.TemplateClassGenerator;
-import com.github.sukhvir41.core.classgenerator.TemplateClassGeneratorOLD;
 import com.github.sukhvir41.core.template.Template;
+import com.github.sukhvir41.parsers.Code;
 import com.github.sukhvir41.utils.HtmlUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -77,13 +78,13 @@ public class MetaVariableHtmlTag implements HtmlTag {
         if (StringUtils.isBlank(variableString)) {
             return Collections.emptyMap();
         } else {
-            String[] variableParts = variableString.split(",");
-            if (variableParts.length % 2 != 0) {
+            List<String> variableParts = Code.getCodeParts(variableString, ",");
+            if (variableParts.size() % 2 != 0) {
                 throw new IllegalSyntaxException("A missing name or type.\nLine -> " + this.htmlString);
             } else {
                 Map<String, String> variables = new HashMap<>();
-                for (int i = 0; i < variableParts.length; i += 2) {
-                    variables.put(variableParts[i + 1].trim(), variableParts[i].trim());
+                for (int i = 0; i < variableParts.size(); i += 2) {
+                    variables.put(variableParts.get(i + 1).trim(), variableParts.get(i).trim());
                 }
                 return variables;
             }
