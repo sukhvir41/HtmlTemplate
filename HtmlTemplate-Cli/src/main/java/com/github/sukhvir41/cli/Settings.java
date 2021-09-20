@@ -33,7 +33,7 @@ import java.util.stream.Stream;
 public final class Settings {
 
     @CommandLine.Option(names = {"-f", "--file", "--folder"},
-            description = "HtmlTemplate File or folder where HtmlTemplate files reside",
+            description = "HtmlTemplate folder where HtmlTemplate files reside",
             required = true)
     @Getter
     private Path path;
@@ -67,7 +67,7 @@ public final class Settings {
     private boolean verboseOutputRequested;
 
     @CommandLine.Option(names = {"-p", "--package-name"},
-            description = "Package name. Last folder name of the folder path(-f). if file then no package name", defaultValue = "")
+            description = "Package name. umbrella package name given to all templatess", defaultValue = "")
     private String packageName;
 
     @CommandLine.Option(names = {"-q", "--quite"}, description = "Quite mode")

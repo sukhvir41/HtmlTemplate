@@ -16,20 +16,23 @@
 
 package IntegrationTest;
 
+import com.github.sukhvir41.core.settings.SettingOptions;
+import com.github.sukhvir41.core.settings.SettingsManager;
 import com.github.sukhvir41.core.template.Template;
 import com.github.sukhvir41.core.template.TemplateFactory;
 import com.github.sukhvir41.core.template.TemplateType;
-import com.github.sukhvir41.core.settings.SettingOptions;
-import com.github.sukhvir41.core.settings.SettingsManager;
+import org.apache.commons.lang3.StringUtils;
 import org.joor.Reflect;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.File;
 import java.net.URISyntaxException;
 import java.util.Map;
 
 import static com.github.sukhvir41.TestUtils.getFile;
 import static com.github.sukhvir41.TestUtils.strip;
+import static org.apache.commons.lang3.StringUtils.removeStart;
 
 public class CompileTmeIncludeTemplateTest {
 
@@ -43,19 +46,31 @@ public class CompileTmeIncludeTemplateTest {
 
 
     @Test
-    public void testInclude() throws URISyntaxException {
+    public void testInclude() throws URISyntaxException, ClassNotFoundException {
 
         var settings = SettingsManager.load(Map.of(
                 SettingOptions.ROOT_FOLDER,
-                getFile("importTemplate.html").getParent().getParent().getParent()));
+                getFile("importTemplate.html").getParent().getParent().getParent(),
+                SettingOptions.PACKAGE_NAME,
+                "test"
+        ));
+
+
+        String path = removeStart(
+                getFile("importTemplate.html").getParent().normalize().toAbsolutePath().toString(),
+                getFile("importTemplate.html").getParent().getParent().getParent().normalize().toAbsolutePath().toString()
+        );
+        String packageName = "test" + StringUtils.replace(path, File.separator, ".");
 
         Template template = TemplateFactory
-                .getTemplate(getFile("importTemplate.html"), TemplateType.COMPILE_TIME, "test", settings);
+                .getTemplate(getFile("importTemplate.html"), TemplateType.COMPILE_TIME, packageName, settings);
         template.readAndProcessTemplateFile();
 
         String subTemplateClassString = template.render();
 
-        Reflect subTemplateClass = Reflect.compile("test.importTemplate", subTemplateClassString);
+        System.out.println(subTemplateClassString);
+
+        Reflect subTemplateClass = Reflect.compile(packageName + ".importTemplate", subTemplateClassString);
 
         String subTemplateString = subTemplateClass.call("getInstance")
                 .call("number", 10)
@@ -65,14 +80,18 @@ public class CompileTmeIncludeTemplateTest {
         Assert.assertEquals(strip(subTemplateExpectedString), strip(subTemplateString));
 
         Template mainTemplate = TemplateFactory
-                .getTemplate(getFile("HtIncludeTest.html"), TemplateType.COMPILE_TIME, "test", settings);
+                .getTemplate(getFile("HtIncludeTest.html"), TemplateType.COMPILE_TIME, packageName, settings);
         mainTemplate.readAndProcessTemplateFile();
 
         String mainTemplateClassString = mainTemplate.render();
-
         System.out.println(mainTemplateClassString);
 
-        Assert.fail();
+        //todo: as joor can not compile multiple classes yet this cases can not be tested yet.
+//        Reflect parentTemplate = Reflect.compile(
+//                packageName + ".HtIncludeTest",
+//                mainTemplateClassString);
+
+        Assert.assertTrue(false);
     }
 
     @Test

@@ -85,9 +85,9 @@ public final class HtmlUtils {
     }
 
     /**
-     * returns the name of the starting html tag name if the line start s with a html tag else throws an IllegalArgumentException
+     * returns the name of the starting html tag name if the line starts with a html tag else throws an IllegalArgumentException
      * <pre>
-     * "{{<some code>}} &lt;h1&gt;some heading &lt;/h1&gt; " = "throws IllegalArgumentException"
+     * "{{some code}} &lt;h1&gt;some heading &lt;/h1&gt; " = "throws IllegalArgumentException"
      * "some content &lt;h1&gt;some heading &lt;/h1&gt; " = "throws IllegalArgumentException"
      * " &lt;h1&gt;some heading &lt;/h1&gt;" = "h1"
      * " &lt;!DOCTYPE html&gt;some text &lt;/html&gt;" = "html"

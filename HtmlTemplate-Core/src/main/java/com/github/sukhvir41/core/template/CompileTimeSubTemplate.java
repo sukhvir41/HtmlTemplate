@@ -17,15 +17,15 @@
 package com.github.sukhvir41.core.template;
 
 import com.github.sukhvir41.core.settings.SettingOptions;
-import com.github.sukhvir41.tags.HtmlTag;
+import com.github.sukhvir41.tags.*;
+import com.github.sukhvir41.utils.HtmlUtils;
 import com.github.sukhvir41.utils.StringUtils;
 import org.apache.commons.lang3.NotImplementedException;
 
 import java.io.File;
 import java.nio.file.Path;
 
-import static org.apache.commons.lang3.StringUtils.removeStart;
-import static org.apache.commons.lang3.StringUtils.replace;
+import static org.apache.commons.lang3.StringUtils.*;
 
 public class CompileTimeSubTemplate extends Template {
 
@@ -50,14 +50,20 @@ public class CompileTimeSubTemplate extends Template {
                 .toAbsolutePath()
                 .toString();
 
-        String templateFilePath = getFile().normalize()
+        String templateFilePath = getFile().getParent()
+                .normalize()
                 .toAbsolutePath()
                 .toString();
 
         String intermediatePath = removeStart(templateFilePath, rootFolder);
         intermediatePath = replace(intermediatePath, File.separator, ".");
 
-        return packageName + "." + intermediatePath + "." + className;
+        if (isBlank(packageName)) {
+            return intermediatePath.substring(1) + "." + className;
+        } else {
+            return packageName + intermediatePath + "." + className;
+        }
+
 
     }
 
@@ -69,7 +75,28 @@ public class CompileTimeSubTemplate extends Template {
 
     @Override
     public HtmlTag parseSection(String section) {
-        return null;
+        if (HtmlUtils.isHtmlTagAtStart(section)) {
+            if (containsDynamicAttribute(section)) {
+                return parseDynamicHtml(section);
+            } else {
+                return new DummyHtmlTag(section, this);
+            }
+        } else {
+            return new DummyContent();
+        }
+    }
+
+    private HtmlTag parseDynamicHtml(String section) {
+        if (MetaVariableHtmlTag.matches(section)) {
+            return new MetaVariableHtmlTag(section, this);
+        } else {
+            return new DummyHtmlTag(section, this);
+        }
+    }
+
+    private boolean containsDynamicAttribute(String htmlString) {
+        return HtmlUtils.DYNAMIC_ATTRIBUTE.matcher(htmlString)
+                .find() || ElseHtmlTag.matches(htmlString); // else html tag here as it does not match the dynamic attribute pattern which is the only exception.
     }
 
     @Override

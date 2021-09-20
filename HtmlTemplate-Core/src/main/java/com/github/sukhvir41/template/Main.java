@@ -18,15 +18,11 @@ package com.github.sukhvir41.template;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Map;
 
 public class Main {
 
     public static void main(String[] args) throws URISyntaxException, IOException {
-        HtmlTemplate htmlTemplate = HtmlTemplateLoader.load(Paths.get("ifConditionTest.html"));
-        htmlTemplate.render(Map.of("isThisTrue", false));
+
     }
 
 }

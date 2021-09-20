@@ -16,11 +16,8 @@
 
 package com.github.sukhvir41.cli;
 
-import com.github.sukhvir41.core.settings.SettingsManager;
-import com.github.sukhvir41.core.template.Template;
 import com.github.sukhvir41.core.template.TemplateFactory;
 import com.github.sukhvir41.core.template.TemplateType;
-import com.github.sukhvir41.utils.StringUtils;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -30,16 +27,17 @@ import java.nio.file.Paths;
 import static org.apache.commons.lang3.StringUtils.*;
 
 public final class App {
-    private Settings settings;
+    private final Settings settings;
+    //private final com.github.sukhvir41.core.settings.Settings templateSettings;
 
     public App(Settings settings) {
         this.settings = settings;
+
     }
 
     public void createHtmlTemplateClass() {
-        //todo: fix for single file to behave like runtime but for multi file behave like compile time.
         if (Files.isRegularFile(settings.getPath())) {
-            createSingleFileTemplate(settings.getPath());
+            throw new IllegalArgumentException("Please provide path to the folder where template files lie");
         } else {
             settings.getTemplateFiles()
                     .parallelStream()
@@ -47,18 +45,10 @@ public final class App {
         }
     }
 
-    private void createSingleFileTemplate(Path templateFile) {
-        String packageName = settings.getPackageName();
-        Template template = TemplateFactory.getTemplate(templateFile, TemplateType.RUN_TIME, packageName, SettingsManager.load());
-        template.readAndProcessTemplateFile();
-        String templateCode = template.render();
-        var outputPath = getOutputFilePath(packageName, StringUtils.getClassNameFromFile(templateFile.getFileName().toString()));
-        createDirectory(outputPath);
-        createFile(outputPath);
-        writeToFile(outputPath, templateCode);
-    }
-
     private void createTemplate(String packageName, Path templateFile) {
+
+
+        //TemplateFactory.getTemplate(templateFile, TemplateType.COMPILE_TIME, packageName, )
 
 
 //        var htmlTemplate = new TemplateGenerator();

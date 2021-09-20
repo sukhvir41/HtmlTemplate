@@ -45,7 +45,11 @@ public class TemplateTest {
     public void testGetRootTemplate_CompileTimeSubTemplate() throws URISyntaxException {
         Path file = TestUtils.getFile("SimpleTest1.html");
 
-        Template template = TemplateFactory.getTemplate(file, TemplateType.COMPILE_TIME, SettingsManager.load(Map.of(SettingOptions.ROOT_FOLDER, file.getParent())));
+        Template template = TemplateFactory.getTemplate(file, TemplateType.COMPILE_TIME,
+                SettingsManager.load(Map.of(
+                        SettingOptions.ROOT_FOLDER, file.getParent(),
+                        SettingOptions.PACKAGE_NAME, "test"
+                )));
 
         Template compileTimeTemplate = new CompileTimeSubTemplate(file, template);
 

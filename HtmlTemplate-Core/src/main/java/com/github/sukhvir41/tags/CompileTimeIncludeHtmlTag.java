@@ -27,11 +27,12 @@ import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class CompileTimeIncludeHtmlTag extends IncludeHtmlTag {
-    public CompileTimeIncludeHtmlTag(String htmlString, Template template) {
-        super(htmlString, null, template);
+    public CompileTimeIncludeHtmlTag(String htmlString, Function<String, String> codeParser, Template template) {
+        super(htmlString, codeParser, template);
     }
 
     @Override
@@ -96,7 +97,7 @@ public class CompileTimeIncludeHtmlTag extends IncludeHtmlTag {
                             .stream()
                             .map(name -> name + "(" + passedVariables.get(name) + ")")
                             .collect(Collectors.joining(".")) +
-                    "render(" + classGenerator.getWriterVariableName() + ")";
+                    ".render(" + classGenerator.getWriterVariableName() + ");";
         }
 
 

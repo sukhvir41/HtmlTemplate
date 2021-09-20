@@ -75,7 +75,7 @@ public final class CompileTimeTemplate extends Template {
             return new MetaImportHtmlTag(tagString);
 
         } else if (CompileTimeIncludeHtmlTag.matches(tagString)) {
-            return new CompileTimeIncludeHtmlTag(tagString, this);
+            return new CompileTimeIncludeHtmlTag(tagString, Code::parseForFunction, this);
 
         } else if (MetaVariableHtmlTag.matches(tagString)) {
             return new MetaVariableHtmlTag(tagString, this);

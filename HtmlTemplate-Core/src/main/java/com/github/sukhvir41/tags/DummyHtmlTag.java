@@ -1,8 +1,13 @@
 package com.github.sukhvir41.tags;
 
 import com.github.sukhvir41.core.classgenerator.TemplateClassGenerator;
+import com.github.sukhvir41.core.template.Template;
 
-public class DummyHtmlTag implements HtmlTag {
+public class DummyHtmlTag extends RegularHtmlTag {
+    public DummyHtmlTag(String htmlString, Template instantiatingTemplate) {
+        super(htmlString, instantiatingTemplate);
+    }
+
     @Override
     public void processOpeningTag(TemplateClassGenerator classGenerator) {
 
@@ -11,25 +16,5 @@ public class DummyHtmlTag implements HtmlTag {
     @Override
     public void processClosingTag(TemplateClassGenerator classGenerator) {
 
-    }
-
-    @Override
-    public String getName() {
-        return null;
-    }
-
-    @Override
-    public boolean isClosingTag() {
-        return false;
-    }
-
-    @Override
-    public boolean isSelfClosing() {
-        return false;
-    }
-
-    @Override
-    public boolean isDocTypeTag() {
-        return false;
     }
 }

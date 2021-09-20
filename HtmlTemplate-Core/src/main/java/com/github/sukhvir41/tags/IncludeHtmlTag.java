@@ -132,7 +132,6 @@ abstract class IncludeHtmlTag implements HtmlTag {
     private Map<String, String> getPassedVariablesList(String variables) {
         Map<String, String> passedVariables = new HashMap<>();
         List<String> codeParts = Code.getCodeParts(variables, ",");
-
         if (codeParts.size() % 2 != 0) {
             throw new IllegalSyntaxException("The variables in include html tag should be key value pair format. html > " + htmlString);
         } else {
