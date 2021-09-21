@@ -16,23 +16,32 @@
 
 package com.github.sukhvir41.cli;
 
+import com.github.sukhvir41.core.settings.SettingOptions;
+import com.github.sukhvir41.core.settings.SettingsManager;
+import com.github.sukhvir41.core.template.Template;
 import com.github.sukhvir41.core.template.TemplateFactory;
 import com.github.sukhvir41.core.template.TemplateType;
+import com.github.sukhvir41.utils.StringUtils;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.apache.commons.lang3.StringUtils.*;
 
 public final class App {
     private final Settings settings;
-    //private final com.github.sukhvir41.core.settings.Settings templateSettings;
+    private final com.github.sukhvir41.core.settings.Settings templateSettings;
 
     public App(Settings settings) {
         this.settings = settings;
-
+        Map<SettingOptions<?>, Object> settingsMap = new HashMap<>();
+        settingsMap.put(SettingOptions.ROOT_FOLDER, settings.getPath());
+        settingsMap.put(SettingOptions.PACKAGE_NAME, settings.getPackageName());
+        this.templateSettings = SettingsManager.load(settingsMap);
     }
 
     public void createHtmlTemplateClass() {
@@ -46,28 +55,22 @@ public final class App {
     }
 
     private void createTemplate(String packageName, Path templateFile) {
-
-
-        //TemplateFactory.getTemplate(templateFile, TemplateType.COMPILE_TIME, packageName, )
-
-
-//        var htmlTemplate = new TemplateGenerator();
-//        var classString = htmlTemplate.setTemplate(templateFile, packageName)
-//                .render();
-//
-//        var outputPath = getOutputFilePath(packageName, StringUtils.getClassNameFromFile(templateFile.getFileName().toString()));
-//        createDirectory(outputPath);
-//        createFile(outputPath);
-//        writeToFile(outputPath, classString);
+        Template template = TemplateFactory.getTemplate(templateFile, TemplateType.COMPILE_TIME, packageName, templateSettings);
+        template.readAndProcessTemplateFile();
+        String classString = template.render();
+        Path outputPath = getOutputFilePath(packageName, StringUtils.getClassNameFromFile(templateFile.getFileName().toString()));
+        createDirectory(outputPath);
+        createFile(outputPath);
+        writeToFile(outputPath, classString);
     }
 
     private void writeToFile(Path path, String content) {
         try (var writer = Files.newBufferedWriter(path)) {
             writer.write(content);
             LogManager.getLogger()
-                    .info("Content written to file " + path.toAbsolutePath().toString());
+                    .info("Content written to file " + path.toAbsolutePath());
         } catch (Exception e) {
-            throw new RuntimeException("Could not write to file " + path.toAbsolutePath().toString(), e);
+            throw new RuntimeException("Could not write to file " + path.toAbsolutePath(), e);
         }
     }
 
@@ -75,11 +78,11 @@ public final class App {
         try {
             if (Files.exists(outputFilePath)) {
                 LogManager.getLogger()
-                        .warning("File: " + outputFilePath.toAbsolutePath().toString() + " already exits. Will be overwriting file contents");
+                        .warning("File: " + outputFilePath.toAbsolutePath() + " already exits. Will be overwriting file contents");
             } else {
                 Files.createFile(outputFilePath);
                 LogManager.getLogger()
-                        .info("Created File " + outputFilePath.toAbsolutePath().toString());
+                        .info("Created File " + outputFilePath.toAbsolutePath());
             }
         } catch (Exception e) {
             throw new RuntimeException("Could not create File " + outputFilePath.toString(), e);
@@ -90,7 +93,7 @@ public final class App {
         try {
             Files.createDirectories(outputFilePath.getParent());
             LogManager.getLogger()
-                    .info("Created Directory " + outputFilePath.toAbsolutePath().toString());
+                    .info("Created Directory " + outputFilePath.toAbsolutePath());
         } catch (Exception e) {
             throw new RuntimeException("Could not create directory " + outputFilePath.getParent().toString(), e);
         }

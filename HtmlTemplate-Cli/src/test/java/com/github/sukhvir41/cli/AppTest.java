@@ -17,6 +17,7 @@
 package com.github.sukhvir41.cli;
 
 import org.joor.Reflect;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -50,11 +51,15 @@ public class AppTest {
         testFolder = Paths.get(tempFolder.newFolder("test").toURI());
         //creating files in test Folder
         Files.createFile(testFolder.resolve("test1.html"));
+        writeToFile(testFolder.resolve("test1.html"));
         Files.createFile(testFolder.resolve("test2.html"));
+        writeToFile(testFolder.resolve("test2.html"));
         //creating testFolder2 inside test folder
         testFolder2 = Files.createDirectories(testFolder.resolve("testFolder2"));
         Files.createFile(testFolder2.resolve("test3.html"));
+        writeToFile(testFolder2.resolve("test3.html"));
         Files.createFile(testFolder2.resolve("test4.html"));
+        writeToFile(testFolder2.resolve("test4.html"));
 
         outputPath = Paths.get(tempOutputFolder.newFolder("output").toURI());
 
@@ -81,7 +86,10 @@ public class AppTest {
         assertTrue(Files.exists(outputPath.resolve("test").resolve("test2.java")));
         assertTrue(Files.exists(outputPath.resolve("test").resolve("testFolder2").resolve("test3.java")));
 
+    }
 
+    private void writeToFile(Path path) throws IOException {
+        Files.write(path, "<html><html>".getBytes());
     }
 
     @Test
@@ -101,8 +109,12 @@ public class AppTest {
                 .call("setLoggingLevel");
 
         var app = new App(settings);
-        app.createHtmlTemplateClass();
-        assertTrue(Files.exists(outputPath.resolve("test.java")));
+        try {
+            app.createHtmlTemplateClass();
+            Assert.fail("this should fail as the input is a file not a folder");
+        } catch (Exception e) {
+            assertTrue(true);
+        }
 
 
     }

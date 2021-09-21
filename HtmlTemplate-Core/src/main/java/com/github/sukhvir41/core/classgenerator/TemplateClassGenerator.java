@@ -288,12 +288,23 @@ public abstract class TemplateClassGenerator {
      * @return the root template
      */
     public Template getRootTemplate() {
-        return this.templateDataMap
-                .keySet()
-                .stream()
-                .filter(template -> template.getRootTemplate().equals(template))
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("Couldn't find the root template"));
+        if (this.templateDataMap.size() < 1) {
+            throw new IllegalStateException("Couldn't find the root template. " +
+                    "Please check the template file as it could be blank");
+        } else {
+            return this.templateDataMap.keySet()
+                    .stream()
+                    .findAny()
+                    .orElseThrow(() -> new IllegalStateException("Couldn't find the root template"))
+                    .getRootTemplate();
+        }
+
+//        return this.templateDataMap
+//                .keySet()
+//                .stream()
+//                .filter(template -> template.getRootTemplate().equals(template))
+//                .findFirst()
+//                .orElseThrow(() ->);
     }
 
     public abstract String render();

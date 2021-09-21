@@ -265,7 +265,7 @@ public class TemplateClassGeneratorTest {
         TemplateClassGenerator classGenerator = Mockito.spy(new RuntimeClassGenerator(packageName, className));
 
         Mockito.when(template.getRootTemplate())
-                .thenReturn(anotherTemplate);
+                .thenReturn(template);
         Mockito.when(anotherTemplate.getRootTemplate())
                 .thenReturn(template);
 
@@ -273,10 +273,9 @@ public class TemplateClassGeneratorTest {
         classGenerator.addVariable(anotherTemplate, "int", "age");
 
         try {
-            classGenerator.getRootTemplate();
-            Assert.fail();
+            Assert.assertEquals(template, classGenerator.getRootTemplate());
         } catch (IllegalStateException illegalStateException) {
-            Assert.assertTrue(true);
+            Assert.fail();
         }
     }
 
