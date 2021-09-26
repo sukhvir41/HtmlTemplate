@@ -93,15 +93,17 @@ public class RuntimeIncludeHtmlTag extends IncludeHtmlTag {
         @Override
         public String getStatement() {
             testPassedVariables();
+
+            String variablesParams = classGenerator.getVariables(subTemplate)
+                    .keySet()
+                    .stream()
+                    .map(passedVariables::get)
+                    .collect(Collectors.joining(","));
+
             return subTemplate.getFullyQualifiedName() +
                     "(" +
                     classGenerator.getWriterVariableName() +
-                    "," +
-                    classGenerator.getVariables(subTemplate)
-                            .keySet()
-                            .stream()
-                            .map(passedVariables::get)
-                            .collect(Collectors.joining(",")) +
+                    (variablesParams.length() > 0 ? "," + variablesParams : "") +
                     ");";
         }
 

@@ -167,8 +167,9 @@ public abstract class TemplateClassGenerator {
      * @return unmodifiable Map of variables of the template
      */
     public Map<String, String> getVariables(Template template) {
-        return this.templateDataMap.get(template)
-                .getVariables();
+        return Optional.ofNullable(this.templateDataMap.get(template))
+                .map(TemplateData::getVariables)
+                .orElse(Collections.emptyMap());
     }
 
     /**

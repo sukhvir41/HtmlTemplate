@@ -36,7 +36,7 @@ class ProjectReleasePlugin implements Plugin<Project> {
         }
     }
 
-    private void moveJars(Project project) {
+    private static void moveJars(Project project) {
         project.tasks.register("moveJar", Copy) {
             group = "Releases"
             dependsOn shadowJarDependency(project)
@@ -46,7 +46,7 @@ class ProjectReleasePlugin implements Plugin<Project> {
         }
     }
 
-    private Path downloadFolderPath(Project project) {
+    private static Path downloadFolderPath(Project project) {
         def parentProject = project.parent
         while (true) {
             if (parentProject == null) {
@@ -61,11 +61,11 @@ class ProjectReleasePlugin implements Plugin<Project> {
     }
 
 
-    private Set<Task> shadowJarDependency(Project project) {
+    private static Set<Task> shadowJarDependency(Project project) {
         return Set.of(project.tasks.findByName("shadowJar"))
     }
 
-    private Project getHtmlTemplateProject(Project project) {
+    private static Project getHtmlTemplateProject(Project project) {
         if (project.name.equals(PARENT_PROJECT)) {
             return project
         } else {

@@ -50,7 +50,8 @@ public class CompileTimeSubTemplate extends Template {
                 .toAbsolutePath()
                 .toString();
 
-        String templateFilePath = getFile().getParent()
+        String templateFilePath = getFile()
+                .getParent()
                 .normalize()
                 .toAbsolutePath()
                 .toString();
