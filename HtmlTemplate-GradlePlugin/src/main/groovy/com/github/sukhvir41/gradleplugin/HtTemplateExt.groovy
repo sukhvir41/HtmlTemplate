@@ -17,7 +17,8 @@
 package com.github.sukhvir41.gradleplugin
 
 class HtTemplateExt {
-    public String javaPackage = "";
-    public String[] ignoreFiles = new String()[];
+    public String javaPackage = ""
+    public String outputDirectory = ""
+    public String[] ignoreFiles = new String()[]
 
 }

@@ -22,21 +22,21 @@ import com.github.sukhvir41.core.settings.SettingsManager
 import com.github.sukhvir41.core.template.Template
 import com.github.sukhvir41.core.template.TemplateFactory
 import com.github.sukhvir41.core.template.TemplateType
-import org.apache.commons.io.FileUtils
 import org.apache.commons.lang3.StringUtils
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.TaskAction
 
 import java.nio.file.Files
 import java.nio.file.Path
+import java.nio.file.StandardOpenOption
 
 import static com.github.sukhvir41.utils.StringUtils.getClassNameFromFile
 
 class CreateHtmlTemplate extends DefaultTask {
 
-    final Path outputDirectory = getProject().projectDir.toPath().resolve("src/generated/HtmlTemplates/")
+    @Input
+    Path outputDirectory
 
     @Input
     private Set<Path> templateFiles
@@ -64,9 +64,12 @@ class CreateHtmlTemplate extends DefaultTask {
         this.packageName = packageName
     }
 
+    void outputDirectory(Path outputDirectory) {
+        this.outputDirectory = outputDirectory
+    }
+
     @TaskAction
     private void createTemplate() {
-        FileUtils.deleteDirectory(getProject().buildDir.toPath().resolve(outputDirectory).toFile())
         Settings settings = SettingsManager.load(
                 Map.of(
                         SettingOptions.ROOT_FOLDER, this.rootFolder,
@@ -83,18 +86,13 @@ class CreateHtmlTemplate extends DefaultTask {
                             StringUtils.replace(this.getFilePackageName(file) + "." + getClassNameFromFile(file), ".", File.separator) + ".java"
                     )
                     Files.createDirectories(templateFile.getParent())
-                    Files.createFile(templateFile)
 
-                    Files.write(templateFile, classString.getBytes())
+                    Files.write(templateFile,
+                            classString.getBytes(),
+                            StandardOpenOption.CREATE,
+                            StandardOpenOption.TRUNCATE_EXISTING,
+                            StandardOpenOption.WRITE)
                 }
-
-        SourceSetContainer sourceSets = (SourceSetContainer) getProject().getProperties().get("sourceSets")
-        def sourceSet = sourceSets.getByName("main")
-        sourceSet.java
-                .srcDirs(sourceSet.java.srcDirs, outputDirectory.toFile())
-        sourceSets.add(sourceSet)
-
-        setupIdeaPlugin()
     }
 
     String getFilePackageName(Path file) {
@@ -104,14 +102,6 @@ class CreateHtmlTemplate extends DefaultTask {
         )
 
         return packageName + StringUtils.replace(fileLocation, File.separator, ".")
-    }
-
-    void setupIdeaPlugin() {
-        def ideaPlugin = getProject().plugins.getPlugin("idea")
-        if (ideaPlugin != null) {
-            def ideaExt = getProject().extensions.getByName("idea")
-            ideaExt.module.generatedSourceDirs += this.outputDirectory
-        }
     }
 
 }

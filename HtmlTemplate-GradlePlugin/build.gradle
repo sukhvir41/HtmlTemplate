@@ -20,7 +20,7 @@ dependencies {
 
 gradlePlugin {
     plugins {
-        simplePlugin {
+        HtmlTemplatePlugin {
             id = 'com.github.sukhvir41.HtmlTemplate'
             implementationClass = 'com.github.sukhvir41.gradleplugin.HtmlTemplatePlugin'
         }
