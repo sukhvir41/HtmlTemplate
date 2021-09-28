@@ -49,10 +49,10 @@ public class CompileTimeIncludeHtmlTag extends IncludeHtmlTag {
                     "\nRoot Folder: " + rootFolder.toString());
         }
 
-        Template subTemplate = new CompileTimeSubTemplate(file, getTemplate().getRootTemplate());
+        Template subTemplate = new CompileTimeSubTemplate(file, getTemplate());
         Optional<Template> processedTemplate = classGenerator.getTemplate(file);
 
-        if (processedTemplate.isPresent() && subTemplate.equals(processedTemplate.get())) {
+        if (processedTemplate.isPresent()) {
             classGenerator.addStatement(getTemplate(), new CompileTimeIncludeHtmlTag.SubTemplateRenderInclude(classGenerator, processedTemplate.get(), getPassedVariables(), getHtmlString()));
         } else {
             classGenerator.addStatement(getTemplate(), new CompileTimeIncludeHtmlTag.SubTemplateRenderInclude(classGenerator, subTemplate, getPassedVariables(), getHtmlString()));
@@ -111,6 +111,8 @@ public class CompileTimeIncludeHtmlTag extends IncludeHtmlTag {
             if (passedVariables.keySet().size() != classGenerator.getVariables(subTemplate).size()) {
                 throw new IllegalStateException("The number of arguments passed does not match number variables the template takes. \n" +
                         "Template " + subTemplate.getFile() + "\n" +
+                        "expected arguments " + classGenerator.getVariables(subTemplate).keySet() + "\n" +
+                        "passed arguments " + passedVariables.keySet() + "\n" +
                         "html -> " + html);
             }
 

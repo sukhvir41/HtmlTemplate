@@ -88,7 +88,7 @@ public class CompileTimeSubTemplate extends Template {
     }
 
     private HtmlTag parseDynamicHtml(String section) {
-        if (MetaVariableHtmlTag.matches(section)) {
+        if (MetaVariableHtmlTag.matches(section) && !CompileTimeIncludeHtmlTag.matches(section)) {
             return new MetaVariableHtmlTag(section, this);
         } else {
             return new DummyHtmlTag(section, this);
