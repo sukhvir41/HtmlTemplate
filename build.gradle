@@ -5,7 +5,10 @@ plugins {
 }
 version '1.0-SNAPSHOT'
 
-sourceCompatibility = JavaVersion.VERSION_1_10
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_10
+}
+
 
 idea {
     module {
@@ -18,7 +21,7 @@ repositories {
 }
 
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testImplementation('junit:junit:4.13')
 }
 
 test {

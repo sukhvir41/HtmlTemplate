@@ -114,7 +114,7 @@ In the above example the h1 tag will be rendered only if the condition is true.
 **Else if statement**
 ```html
 <html>
-    <meta ht-varibles="boolean show1, boolean show2 ">
+    <meta ht-varibles="boolean ,show1, boolean ,show2 ">
     
     <h1 ht-if="@show1">
         show1 is true
@@ -141,7 +141,7 @@ In the above example the h1 tag will be rendered only if the condition is true.
 
 ```html
 <html>
-    <meta ht-varibles="boolean show1, boolean show2 ">
+    <meta ht-varibles="boolean ,show1, boolean, show2 ">
     
     <h1 ht-if="@show1">
         show1 is true

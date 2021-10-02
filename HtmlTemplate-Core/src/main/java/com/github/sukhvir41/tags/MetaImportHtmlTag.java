@@ -18,6 +18,7 @@ package com.github.sukhvir41.tags;
 
 import com.github.sukhvir41.core.IllegalSyntaxException;
 import com.github.sukhvir41.core.classgenerator.TemplateClassGenerator;
+import com.github.sukhvir41.parsers.Code;
 import com.github.sukhvir41.utils.HtmlUtils;
 
 import java.util.regex.Pattern;
@@ -53,7 +54,7 @@ public final class MetaImportHtmlTag implements HtmlTag {
                         .replace("\"", "")
                         .trim();
 
-                var imports = importString.split(",");
+                var imports = Code.getCodeParts(importString, ",");
                 for (String anImport : imports) {
                     classGenerator.addImport(anImport.trim());
                 }

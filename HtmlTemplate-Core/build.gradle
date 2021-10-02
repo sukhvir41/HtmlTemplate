@@ -19,7 +19,9 @@ plugins {
 }
 version '1.0-SNAPSHOT'
 
-sourceCompatibility = JavaVersion.VERSION_1_10
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_10
+}
 
 repositories {
     mavenCentral()
@@ -31,7 +33,7 @@ dependencies {
     implementation 'org.jooq:joor:0.9.13'
     implementation 'commons-io:commons-io:2.7'
 
-    testImplementation group: 'junit', name: 'junit', version: '4.12'
+    testImplementation group: 'junit', name: 'junit', version: '4.13'
     testImplementation 'org.mockito:mockito-core:3.9.0'
     testImplementation 'org.powermock:powermock-core:2.0.9'
     testImplementation 'org.powermock:powermock-api-mockito2:2.0.9'
