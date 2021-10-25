@@ -17,39 +17,28 @@
 package IntegrationTest;
 
 import com.github.sukhvir41.TestUtils;
-import com.github.sukhvir41.core.TemplateGenerator;
-import org.joor.Reflect;
+import com.github.sukhvir41.core.settings.SettingsManager;
+import com.github.sukhvir41.template.HtmlTemplateLoader;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
-import java.io.StringWriter;
-import java.io.Writer;
+import java.lang.reflect.Field;
 import java.net.URISyntaxException;
 
 public class TagClosingInAttributeTestTest extends TestUtils {
 
-
-    String getFilePath() {
-        return "TagClosingInAttributeTest.html";
-    }
-
-
-    //@org.junit.Test
+    @Test
     public void testMethod() throws URISyntaxException {
 
-        var file = TestUtils.getFile(getFilePath());
-        var htmlTemplate = new TemplateGenerator();
+        var file = TestUtils.getFile("TagClosingInAttributeTest.html");
 
-        var theClass = Reflect.compile(getClassName(), htmlTemplate.setTemplate(file)
-                .renderReflection());
+        var output = strip(
+                HtmlTemplateLoader.load(file)
+                        .render()
+        );
 
-
-        Writer writer = new StringWriter();
-        var instance = theClass.call("getInstance");
-        instance.call("render", writer);
-
-        var output = strip(writer.toString());
-
-        Assert.assertEquals(getTestName(), strip(getExpectedOutput()), output);
+        Assert.assertEquals(strip(getExpectedOutput()), output);
     }
 
 
@@ -68,15 +57,5 @@ public class TagClosingInAttributeTestTest extends TestUtils {
                 "\n" +
                 "</body>\n" +
                 "</html>";
-    }
-
-
-    String getTestName() {
-        return "TagClosingInAttributeTest";
-    }
-
-
-    String getClassName() {
-        return "TagClosingInAttributeTest";
     }
 }

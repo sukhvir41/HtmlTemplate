@@ -17,13 +17,15 @@
 package com.github.sukhvir41.tags;
 
 import com.github.sukhvir41.core.IllegalSyntaxException;
-import com.github.sukhvir41.newCore.TemplateClassGenerator;
+import com.github.sukhvir41.core.classgenerator.TemplateClassGenerator;
+import com.github.sukhvir41.core.template.Template;
+import com.github.sukhvir41.parsers.Code;
 import com.github.sukhvir41.utils.HtmlUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.lang.invoke.SwitchPoint;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -33,7 +35,9 @@ public class MetaVariableHtmlTag implements HtmlTag {
     public static final Pattern TYPE_ATTRIBUTE_PATTERN =
             Pattern.compile("ht-variables\\s*=\\s*\"[^\"]*\"", Pattern.CASE_INSENSITIVE);
 
-    public String htmlString;
+    private final String htmlString;
+    private final Template template;
+
 
     public static boolean matches(String html) {
 
@@ -44,8 +48,9 @@ public class MetaVariableHtmlTag implements HtmlTag {
                         .find();
     }
 
-    public MetaVariableHtmlTag(String htmlString) {
+    public MetaVariableHtmlTag(String htmlString, Template instantiatingTemplate) {
         this.htmlString = htmlString;
+        this.template = instantiatingTemplate;
     }
 
     @Override
@@ -73,42 +78,21 @@ public class MetaVariableHtmlTag implements HtmlTag {
         if (StringUtils.isBlank(variableString)) {
             return Collections.emptyMap();
         } else {
-            String[] variableParts = variableString.split(",");
-            if (variableParts.length % 2 != 0) {
+            List<String> variableParts = Code.getCodeParts(variableString, ",");
+            if (variableParts.size() % 2 != 0) {
                 throw new IllegalSyntaxException("A missing name or type.\nLine -> " + this.htmlString);
             } else {
                 Map<String, String> variables = new HashMap<>();
-                for (int i = 0; i < variableParts.length; i += 2) {
-                    variables.put(variableParts[i + 1].trim(), covertFromPrimitiveToObjectType(variableParts[i].trim()));
+                for (int i = 0; i < variableParts.size(); i += 2) {
+                    variables.put(variableParts.get(i + 1).trim(), variableParts.get(i).trim());
                 }
                 return variables;
             }
         }
     }
 
-    private String covertFromPrimitiveToObjectType(String type) {
-        switch (type) {
-            case "byte":
-                return "Byte";
-            case "short":
-                return "Short";
-            case "int":
-                return "Integer";
-            case "long":
-                return "Long";
-            case "float":
-                return "Float";
-            case "double":
-                return "Double";
-            case "char":
-                return "Character";
-            default:
-                return type;
-        }
-    }
-
     protected void addVariables(TemplateClassGenerator classGenerator, Map<String, String> variables) {
-        variables.forEach((name, type) -> classGenerator.addVariable(type, name));
+        variables.forEach((name, type) -> classGenerator.addVariable(this.template, type, name));
     }
 
 

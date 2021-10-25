@@ -16,8 +16,7 @@
 
 package com.github.sukhvir41.tags;
 
-import com.github.sukhvir41.core.ClassGenerator;
-import com.github.sukhvir41.newCore.TemplateClassGenerator;
+import com.github.sukhvir41.core.classgenerator.TemplateClassGenerator;
 import com.github.sukhvir41.utils.HtmlUtils;
 
 public interface HtmlTag {

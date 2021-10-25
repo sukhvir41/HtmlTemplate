@@ -17,33 +17,27 @@
 package IntegrationTest;
 
 import com.github.sukhvir41.TestUtils;
-import com.github.sukhvir41.core.TemplateGenerator;
-import org.joor.Reflect;
+import com.github.sukhvir41.core.settings.SettingsManager;
+import com.github.sukhvir41.template.HtmlTemplateLoader;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
-import java.io.StringWriter;
-import java.io.Writer;
+import java.lang.reflect.Field;
 import java.net.URISyntaxException;
+import java.util.Map;
 
 public class DynamicContentTestTest {
 
-    //@Test
+    @Test
     public void nameTest() throws URISyntaxException {
 
         var file = TestUtils.getFile("DynamicContentTest.html");
 
-        var htmlTemplate = new TemplateGenerator();
-        var theClassString = htmlTemplate.setTemplate(file)
-                .renderReflection();
-
-        var theClass = Reflect.compile("DynamicContentTest", theClassString);
-
-        Writer writer = new StringWriter();
-        var instance = theClass.call("getInstance");
-        instance.call("name", "SAM");
-        instance.call("render", writer);
-
-        var output = TestUtils.strip(writer.toString());
+        var output = TestUtils.strip(
+                HtmlTemplateLoader.load(file)
+                        .render(Map.of("name", "SAM"))
+        );
 
         Assert.assertEquals("Dynamic Content test", TestUtils.strip(getExpectedOutput()), output);
 

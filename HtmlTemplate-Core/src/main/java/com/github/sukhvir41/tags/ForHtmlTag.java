@@ -16,11 +16,12 @@
 
 package com.github.sukhvir41.tags;
 
-import com.github.sukhvir41.newCore.TemplateClassGenerator;
-import com.github.sukhvir41.parsers.Code;
+import com.github.sukhvir41.core.classgenerator.TemplateClassGenerator;
+import com.github.sukhvir41.core.statements.PlainStringRenderBodyStatement;
+import com.github.sukhvir41.core.template.Template;
 import com.github.sukhvir41.core.IllegalSyntaxException;
-import com.github.sukhvir41.core.ClassGenerator;
 
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -33,6 +34,7 @@ public final class ForHtmlTag extends RegularHtmlTag {
 
     private static final String IN = " in ";
 
+    private final Function<String, String> codeParser;
 
     public static boolean matches(String html) {
         return FOR_ATTRIBUTE_PATTERN.matcher(html)
@@ -40,8 +42,9 @@ public final class ForHtmlTag extends RegularHtmlTag {
     }
 
 
-    public ForHtmlTag(String htmlString) {
-        super(htmlString);
+    public ForHtmlTag(String htmlString, Template instantiatingTemplate, Function<String, String> codeParser) {
+        super(htmlString, instantiatingTemplate);
+        this.codeParser = codeParser;
     }
 
     @Override
@@ -56,13 +59,13 @@ public final class ForHtmlTag extends RegularHtmlTag {
                 throw new IllegalSyntaxException("Error in org.ht-for.\nLine -> " + this.htmlString);
             }
 
-            var collection = Code.parse(forStatementParts[1].trim());
+            var collection = codeParser.apply(forStatementParts[1].trim());
             var variables = Stream.of(forStatementParts[0].trim().split(","))
                     .map(String::trim)
                     .collect(Collectors.joining(", "));
 
-            classGenerator.addCode("forEach(" + collection + ", (" + variables + ") -> {");
-            classGenerator.incrementRenderFunctionIndentation();
+            classGenerator.addStatement(super.template, new PlainStringRenderBodyStatement("forEach(" + collection + ", (" + variables + ") -> {"));
+            classGenerator.incrementRenderBodyIndentation(super.template);
 
         }
 
@@ -84,18 +87,18 @@ public final class ForHtmlTag extends RegularHtmlTag {
                     .trim();
             var rightPart = this.htmlString.substring(matcher.end());
 
-            new DynamicAttributeHtmlTag(leftPart + rightPart)
+            new DynamicAttributeHtmlTag(leftPart + rightPart, super.template, codeParser)
                     .processOpeningTag(classGenerator);
         } else {
 
-            new DynamicAttributeHtmlTag(this.htmlString)
+            new DynamicAttributeHtmlTag(this.htmlString, super.template, codeParser)
                     .processOpeningTag(classGenerator);
         }
     }
 
     @Override
     public void processClosingTag(TemplateClassGenerator classGenerator) {
-        classGenerator.decrementRenderFunctionIndentation();
-        classGenerator.addCode("});");
+        classGenerator.decrementRenderBodyIndentation(super.template);
+        classGenerator.addStatement(super.template, new PlainStringRenderBodyStatement("});"));
     }
 }

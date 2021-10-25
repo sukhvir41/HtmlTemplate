@@ -17,6 +17,7 @@
 package com.github.sukhvir41.cli;
 
 import org.joor.Reflect;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -40,21 +41,25 @@ public class AppTest {
     @Rule
     public TemporaryFolder tempOutputFolder = new TemporaryFolder();
 
-    private Settings settings;
-    private Path testFolder;
-    private Path testFolder2;
-    private Path outputPath;
+    @Test
+    public void testMultipleFilesGenerated() throws IOException {
+        Settings settings;
+        Path testFolder;
+        Path testFolder2;
+        Path outputPath;
 
-    @Before
-    public void init() throws IOException {
         testFolder = Paths.get(tempFolder.newFolder("test").toURI());
         //creating files in test Folder
         Files.createFile(testFolder.resolve("test1.html"));
+        writeToFile(testFolder.resolve("test1.html"));
         Files.createFile(testFolder.resolve("test2.html"));
+        writeToFile(testFolder.resolve("test2.html"));
         //creating testFolder2 inside test folder
         testFolder2 = Files.createDirectories(testFolder.resolve("testFolder2"));
         Files.createFile(testFolder2.resolve("test3.html"));
+        writeToFile(testFolder2.resolve("test3.html"));
         Files.createFile(testFolder2.resolve("test4.html"));
+        writeToFile(testFolder2.resolve("test4.html"));
 
         outputPath = Paths.get(tempOutputFolder.newFolder("output").toURI());
 
@@ -72,10 +77,7 @@ public class AppTest {
                 .set("outputPath", outputPath)
                 .call("setLoggingLevel");
 
-    }
 
-    @Test
-    public void testFilesGenerated() {
         var app = new App(settings);
         app.createHtmlTemplateClass();
 
@@ -83,6 +85,36 @@ public class AppTest {
         assertTrue(Files.exists(outputPath.resolve("test").resolve("test1.java")));
         assertTrue(Files.exists(outputPath.resolve("test").resolve("test2.java")));
         assertTrue(Files.exists(outputPath.resolve("test").resolve("testFolder2").resolve("test3.java")));
+
+    }
+
+    private void writeToFile(Path path) throws IOException {
+        Files.write(path, "<html><html>".getBytes());
+    }
+
+    @Test
+    public void testSingleFile() throws IOException {
+        Path testFile = Paths.get(tempFolder.newFile("test.html").toURI());
+        Path outputPath = Paths.get(tempOutputFolder.newFolder("output").toURI());
+
+        Settings settings = new Settings();
+        Reflect.on(settings)
+                .set("path", testFile)
+                .set("packageName", "")
+                .set("verboseOutputRequested", false)
+                .set("quiteOutputRequested", false)
+                .set("filePattern", Pattern.compile("[\\s,\\S]*\\.html"))
+                .set("filesToIgnore", new HashSet<String>())
+                .set("outputPath", outputPath)
+                .call("setLoggingLevel");
+
+        var app = new App(settings);
+        try {
+            app.createHtmlTemplateClass();
+            Assert.fail("this should fail as the input is a file not a folder");
+        } catch (Exception e) {
+            assertTrue(true);
+        }
 
 
     }

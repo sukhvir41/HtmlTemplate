@@ -16,23 +16,31 @@
 
 package com.github.sukhvir41.template;
 
-import com.github.sukhvir41.newCore.Template;
-import com.github.sukhvir41.newCore.TemplateFactory;
-import com.github.sukhvir41.newCore.TemplateType;
+import com.github.sukhvir41.core.template.Template;
+import com.github.sukhvir41.core.template.TemplateFactory;
+import com.github.sukhvir41.core.template.TemplateType;
+import com.github.sukhvir41.core.settings.Settings;
+import com.github.sukhvir41.core.settings.SettingsManager;
 import org.joor.Reflect;
 
 import java.nio.file.Path;
+import java.util.Set;
 
 public class HtmlTemplateLoader {
 
     public static HtmlTemplate load(Path file) {
-        Template template = TemplateFactory.getTemplate(file, TemplateType.RUN_TIME);
+        Settings settings = SettingsManager.load();
+        return load(file, settings);
+    }
+
+    public static HtmlTemplate load(Path file, Settings settings) {
+        Template template = TemplateFactory.getTemplate(file, TemplateType.RUN_TIME, settings);
         template.readAndProcessTemplateFile();
         String templateCode = template.render();
-        System.out.println(templateCode);
-        Reflect reflect = Reflect.compile(template.getFullClassName(), templateCode);
+        settings.getLogger()
+                .info("Class generated: \n" + templateCode);
+        Reflect reflect = Reflect.compile(template.getFullyQualifiedName(), templateCode);
         return new HtmlTemplate(reflect);
-
     }
 
 }

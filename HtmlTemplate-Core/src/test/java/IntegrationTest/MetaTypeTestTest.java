@@ -17,16 +17,15 @@
 package IntegrationTest;
 
 import com.github.sukhvir41.TestUtils;
-import com.github.sukhvir41.core.TemplateGenerator;
-import org.joor.Reflect;
+import com.github.sukhvir41.core.settings.SettingsManager;
+import com.github.sukhvir41.template.HtmlTemplateLoader;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
-import java.io.StringWriter;
-import java.io.Writer;
+import java.lang.reflect.Field;
 import java.net.URISyntaxException;
 
-import static com.github.sukhvir41.TestUtils.getFile;
 import static com.github.sukhvir41.TestUtils.strip;
 
 public class MetaTypeTestTest {
@@ -36,46 +35,19 @@ public class MetaTypeTestTest {
         return "MetaTypeTest.html";
     }
 
-    //@Test
+    @Test
     public void testMethod() throws URISyntaxException {
 
         var file = TestUtils.getFile(getFilePath());
-        var htmlTemplate = new TemplateGenerator();
 
-        var classString = htmlTemplate.setTemplate(file)
-                .renderReflection();
-        var theClass = Reflect.compile(getClassName(), classString);
-
-        Writer writer = new StringWriter();
-        var instance = theClass.call("getInstance");
-        instance.call("render", writer);
-
-        var output = strip(writer.toString());
+        var output = strip(
+                HtmlTemplateLoader.load(file)
+                        .render()
+        );
 
         Assert.assertEquals(getTestName(), strip(getExpectedOutput()), output);
 
     }
-
-    //@Test
-    public void testType() throws URISyntaxException {
-
-        var file = getFile(getFilePath());
-        var htmlTemplate = new TemplateGenerator();
-
-        var theClass = Reflect.compile(getClassName(), htmlTemplate.setTemplate(file)
-                .renderReflection());
-
-
-        Writer writer = new StringWriter();
-        var instance = theClass.call("getInstance");
-        instance.call("render", writer);
-
-        instance.call("name", "world");
-
-        Assert.assertEquals("type test", "world", instance.call("name").get());
-
-    }
-
 
     String getExpectedOutput() {
         return "<!DOCTYPE html>\n" +

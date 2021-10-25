@@ -22,6 +22,7 @@ import org.apache.commons.text.StringEscapeUtils;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
@@ -29,33 +30,188 @@ import java.util.function.Supplier;
 
 public abstract class HtTemplate {
 
-    public final String encodeContent(String htmlContent) {
-        return StringEscapeUtils.escapeHtml4(htmlContent);
-    }
+    private final String EMPTY_STRING = "";
 
     public final String content(Supplier<String> theContent) {
         try {
             String value = theContent.get();
             if (value == null) {
-                return "";
+                return EMPTY_STRING;
             } else {
                 return encodeContent(value);
             }
         } catch (Exception e) {
-            return "";
+            return EMPTY_STRING;
         }
+    }
+
+    public final String content(int i) {
+        return EMPTY_STRING + i;
+    }
+
+    public final String content(long i) {
+        return EMPTY_STRING + i;
+    }
+
+    public final String content(float i) {
+        return EMPTY_STRING + i;
+    }
+
+    public final String content(double i) {
+        return EMPTY_STRING + i;
+    }
+
+    public final String content(String s) {
+        if (s == null) {
+            return EMPTY_STRING;
+        } else {
+            return encodeContent(s);
+        }
+    }
+
+    public final String content(Object s) {
+        if (s == null) {
+            return EMPTY_STRING;
+        } else {
+            return encodeContent(s.toString());
+        }
+    }
+
+    public final String content(Object[] s) {
+        if (s == null)
+            return EMPTY_STRING;
+
+        int iMax = s.length - 1;
+        if (iMax == -1)
+            return "[]";
+
+        StringBuilder b = new StringBuilder();
+        b.append('[');
+        for (int i = 0; ; i++) {
+            b.append(s[i]);
+            if (i == iMax)
+                return encodeContent(b.append(']').toString());
+            b.append(", ");
+        }
+    }
+
+    // reference https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html#rule-1-html-encode-before-inserting-untrusted-data-into-html-element-content
+    // used rocker template html encoder as reference
+    private String encodeContent(String htmlContent) {
+        int length = htmlContent.length();
+        if (length == 0) {
+            return htmlContent;
+        } else {
+            char c;
+            String replace = null;
+            StringBuilder builder = null;
+            int lastPositionUpdated = 0;
+            for (int i = 0; i < length; i++) {
+                c = htmlContent.charAt(i);
+                switch (c) {
+                    case '&':
+                        replace = "&amp;";
+                        break;
+                    case '<':
+                        replace = "&lt;";
+                        break;
+                    case '>':
+                        replace = "&gt;";
+                        break;
+                    case '"':
+                        replace = "&quot;";
+                        break;
+                    case '\'':
+                        replace = "&#x27;";
+                        break;
+                    default:
+                        replace = null;
+                }
+
+                if (replace != null) {
+                    if (builder == null) {
+                        builder = new StringBuilder(length);
+                    }
+                    builder.append(htmlContent, lastPositionUpdated, i);
+                    builder.append(replace);
+                    lastPositionUpdated = i + 1;
+                }
+
+            }
+
+            if (builder == null) {
+                return htmlContent;
+            } else if (lastPositionUpdated < length) {
+                builder.append(htmlContent, lastPositionUpdated, length);
+                return builder.toString();
+            } else {
+                return builder.toString();
+            }
+
+        }
+
     }
 
     public final String unescapedContent(Supplier<String> theContent) {
         try {
             String value = theContent.get();
             if (value == null) {
-                return "";
+                return EMPTY_STRING;
             } else {
                 return value;
             }
         } catch (Exception e) {
-            return "";
+            return EMPTY_STRING;
+        }
+    }
+
+    public final String unescapedContent(int i) {
+        return EMPTY_STRING + i;
+    }
+
+    public final String unescapedContent(long i) {
+        return EMPTY_STRING + i;
+    }
+
+    public final String unescapedContent(float i) {
+        return EMPTY_STRING + i;
+    }
+
+    public final String unescapedContent(double i) {
+        return EMPTY_STRING + i;
+    }
+
+    public final String unescapedContent(String s) {
+        if (s == null) {
+            return EMPTY_STRING;
+        } else {
+            return s;
+        }
+    }
+
+    public final String unescapedContent(Object s) {
+        if (s == null) {
+            return EMPTY_STRING;
+        } else {
+            return s.toString();
+        }
+    }
+
+    public final String unescapedContent(Object[] s) {
+        if (s == null)
+            return EMPTY_STRING;
+
+        int iMax = s.length - 1;
+        if (iMax == -1)
+            return "[]";
+
+        StringBuilder b = new StringBuilder();
+        b.append('[');
+        for (int i = 0; ; i++) {
+            b.append(s[i]);
+            if (i == iMax)
+                return b.append(']').toString();
+            b.append(", ");
         }
     }
 
@@ -245,7 +401,7 @@ public abstract class HtTemplate {
 
     public final String render() {
         try {
-            Writer writer = new StringBuilderWriter();
+            Writer writer = new StringBuilderWriter(writerInitialSize());
             renderImpl(writer);
             return writer.toString();
         } catch (Exception e) {
@@ -264,5 +420,7 @@ public abstract class HtTemplate {
     }
 
     protected abstract void renderImpl(Writer writer) throws IOException;
+
+    public abstract int writerInitialSize();
 
 }

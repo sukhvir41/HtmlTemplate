@@ -17,9 +17,12 @@
 package com.github.sukhvir41.template;
 
 import com.github.sukhvir41.TestUtils;
+import com.github.sukhvir41.core.settings.SettingsManager;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
+import java.lang.reflect.Field;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -41,5 +44,6 @@ public class HtmlTemplateLoaderTest {
         HtmlTemplate htmlTemplate = HtmlTemplateLoader.load(file);
         Assert.assertNotNull(htmlTemplate);
     }
+
 
 }

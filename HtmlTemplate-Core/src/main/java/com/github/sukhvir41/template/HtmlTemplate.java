@@ -16,33 +16,38 @@
 
 package com.github.sukhvir41.template;
 
+import com.github.sukhvir41.utils.CheckedSupplier;
 import org.joor.Reflect;
 
 import java.io.Writer;
+import java.lang.invoke.MethodType;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Stream;
 
 public class HtmlTemplate {
 
-    private Reflect templateClass;
+    private final Reflect templateClass;
+
 
     HtmlTemplate(Reflect templateClass) {
         this.templateClass = templateClass;
     }
 
     public String render(Map<String, Object> parameters) {
-        Reflect instance = Reflect.on(getTemplateInstance());
-        renderImpl(instance, parameters);
-        return instance
-                .call("render")
-                .get();
+        HtTemplate instance = getTemplateInstance();
+        Reflect reflectInstance = Reflect.on(instance);
+        renderImpl(reflectInstance, parameters);
+        return instance.render();
     }
 
     public void render(Map<String, Object> parameters, Writer writer) {
-        Reflect instance = Reflect.on(getTemplateInstance());
-        renderImpl(instance, parameters);
-        instance
-                .call("render", writer);
+        HtTemplate instance = getTemplateInstance();
+        Reflect reflectInstance = Reflect.on(instance);
+        renderImpl(reflectInstance, parameters);
+        instance.render(writer);
     }
 
     public String render() {
@@ -65,18 +70,35 @@ public class HtmlTemplate {
 
     private void setParameterValue(Reflect templateInstance, Map<String, Reflect> instanceFields, String name, Object value) {
         Reflect field = instanceFields.get(name);
+        Object fieldValue = value;
         if (field != null) {
-            verifyType(field, name, value);
-            templateInstance.call(name, value);
+            if (!isTypeVerified(field, value)) {
+                fieldValue = tryCastingValue(field, name, value);
+            }
+            templateInstance.call(name, fieldValue);
+
+
         }
     }
 
-    private void verifyType(Reflect field, String name, Object value) {
+
+    private boolean isTypeVerified(Reflect field, Object value) {
         Class<?> valueClass = Reflect.on(value)
                 .type();
 
-        if (!valueClass.equals(field.type())) {
-            throw new IllegalArgumentException("Type does not match for parameter " + name + ". Expected: " + field.type().toString() + " Received: " + valueClass.getName());
-        }
+        return valueClass.equals(field.type());
     }
+
+    private Object tryCastingValue(Reflect field, String fieldName, Object value) {
+        try {
+            return field.type().cast(value);
+        } catch (Exception e) {
+            Class<?> valueClass = Reflect.on(value)
+                    .type();
+            throw new IllegalArgumentException("Type does not match for parameter " + fieldName + ". Expected: " + field.type().toString() + " Received: "
+                    + valueClass.getName() + ". Casting to Type " + field.type().toString() + " also failed.");
+        }
+
+    }
+
 }

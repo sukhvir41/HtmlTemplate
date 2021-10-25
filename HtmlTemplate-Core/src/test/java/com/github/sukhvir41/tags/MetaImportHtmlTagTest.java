@@ -16,7 +16,7 @@
 
 package com.github.sukhvir41.tags;
 
-import com.github.sukhvir41.newCore.TemplateClassGenerator;
+import com.github.sukhvir41.core.classgenerator.TemplateClassGenerator;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,7 +51,7 @@ public class MetaImportHtmlTagTest {
         importTag.processClosingTag(classGenerator);
 
         Mockito.verify(classGenerator)
-                .addImportStatement(importCapture.capture());
+                .addImport(importCapture.capture());
 
         assertEquals("java.nio.file.Path", importCapture.getValue());
     }
@@ -63,7 +63,7 @@ public class MetaImportHtmlTagTest {
         importTag.processClosingTag(classGenerator);
 
         Mockito.verify(classGenerator, Mockito.times(2))
-                .addImportStatement(importCapture.capture());
+                .addImport(importCapture.capture());
 
         var importList = importCapture.getAllValues();
         assertEquals("java.nio.file.Path", importList.get(0));

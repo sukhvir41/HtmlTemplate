@@ -16,10 +16,13 @@
 
 package com.github.sukhvir41.tags;
 
-import com.github.sukhvir41.newCore.TemplateClassGenerator;
+import com.github.sukhvir41.core.classgenerator.TemplateClassGenerator;
+import com.github.sukhvir41.core.settings.SettingOptions;
+import com.github.sukhvir41.core.statements.PlainStringRenderBodyStatement;
+import com.github.sukhvir41.core.template.Template;
 import com.github.sukhvir41.parsers.Code;
-import com.github.sukhvir41.core.ClassGenerator;
 
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,25 +32,38 @@ public final class ElseIfHtmlTag extends RegularHtmlTag {
             Pattern.compile("ht-elseIf\\s*=\\s*\"[^\"]*\"", Pattern.CASE_INSENSITIVE);
 
     private static final String OPENING_LEFT_PART_CODE = "else if (condition(() -> ";
+    private static final String OPENING_LEFT_NO_CHECK_PART_CODE = "else if (";
+
     private static final String OPENING_RIGHT_PART_CODE = ")) {";
+    private static final String OPENING_RIGHT_NO_CHECK_PART_CODE = ") {";
+
+
     private static final String CLOSING_CODE = "}";
+
+    private final Function<String, String> codeParser;
 
     public static boolean matches(String string) {
         return ELSEIF_ATTRIBUTE_PATTERN.matcher(string)
                 .find();
     }
 
-    public ElseIfHtmlTag(String htmlString) {
-        super(htmlString);
+    public ElseIfHtmlTag(String htmlString, Template instantiatingTemplate, Function<String, String> codeParser) {
+        super(htmlString, instantiatingTemplate);
+        this.codeParser = codeParser;
     }
 
     @Override
     public void processOpeningTag(TemplateClassGenerator classGenerator) {
         var matcher = ELSEIF_ATTRIBUTE_PATTERN.matcher(this.htmlString);
         if (matcher.find()) {
-            String ifCondition = Code.parse(getIfCondition(matcher));
-            classGenerator.addCode(OPENING_LEFT_PART_CODE + ifCondition + OPENING_RIGHT_PART_CODE);
-            classGenerator.incrementRenderFunctionIndentation();
+            String ifCondition = Code.parseForFunction(getIfCondition(matcher));
+            if (suppressExceptions()) {
+                classGenerator.addStatement(super.template, new PlainStringRenderBodyStatement(OPENING_LEFT_PART_CODE + ifCondition + OPENING_RIGHT_PART_CODE));
+            } else {
+                classGenerator.addStatement(super.template, new PlainStringRenderBodyStatement(OPENING_LEFT_NO_CHECK_PART_CODE + ifCondition + OPENING_RIGHT_NO_CHECK_PART_CODE));
+            }
+
+            classGenerator.incrementRenderBodyIndentation(super.template);
         }
 
         processTag(classGenerator);
@@ -65,8 +81,8 @@ public final class ElseIfHtmlTag extends RegularHtmlTag {
 
     @Override
     public void processClosingTag(TemplateClassGenerator classGenerator) {
-        classGenerator.decrementRenderFunctionIndentation();
-        classGenerator.addCode(CLOSING_CODE);
+        classGenerator.decrementRenderBodyIndentation(super.template);
+        classGenerator.addStatement(super.template, new PlainStringRenderBodyStatement(CLOSING_CODE));
     }
 
 
@@ -76,11 +92,16 @@ public final class ElseIfHtmlTag extends RegularHtmlTag {
             var leftPart = this.htmlString.substring(0, elseIfAttributeMatcher.start())
                     .trim();
             var rightPart = this.htmlString.substring(elseIfAttributeMatcher.end());
-            new DynamicAttributeHtmlTag(leftPart + rightPart)
+            new DynamicAttributeHtmlTag(leftPart + rightPart, super.template, codeParser)
                     .processOpeningTag(classGenerator);
         } else {
-            new DynamicAttributeHtmlTag(this.htmlString)
+            new DynamicAttributeHtmlTag(this.htmlString, super.template, codeParser)
                     .processOpeningTag(classGenerator);
         }
+    }
+
+    private boolean suppressExceptions() {
+        return this.template.getSettings().get(SettingOptions.SUPPRESS_EXCEPTIONS)
+                .orElseThrow(() -> new IllegalStateException("SUPPRESS_EXCEPTIONS setting was not set"));
     }
 }

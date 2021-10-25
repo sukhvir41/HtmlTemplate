@@ -16,7 +16,11 @@
 
 package com.github.sukhvir41.tags;
 
-import com.github.sukhvir41.newCore.TemplateClassGenerator;
+import com.github.sukhvir41.core.classgenerator.TemplateClassGenerator;
+import com.github.sukhvir41.core.settings.Settings;
+import com.github.sukhvir41.core.settings.SettingsManager;
+import com.github.sukhvir41.core.template.Template;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -36,13 +40,24 @@ public class RegularHtmlTagTest {
     @Captor
     private ArgumentCaptor<String> addPlainHtmlCapture;
 
-    RegularHtmlTag regularHtmlTag = new RegularHtmlTag("<h1 attribute = \"value\" >");
+    @Captor
+    private ArgumentCaptor<Template> instantiatingTemplateCapture;
+
+    @Mock
+    public Template template;
 
     @Mock
     private TemplateClassGenerator classGenerator;
 
+    @Before
+    public void setup() {
+        Mockito.when(template.getSettings())
+                .thenReturn(SettingsManager.load());
+    }
+
     @Test
     public void testClosing() {
+        RegularHtmlTag regularHtmlTag = new RegularHtmlTag("<h1 attribute = \"value\" >", template);
         regularHtmlTag.processClosingTag(classGenerator);
         Mockito.verifyNoInteractions(classGenerator);
     }
@@ -50,9 +65,10 @@ public class RegularHtmlTagTest {
 
     @Test
     public void testProcessTag() {
+        RegularHtmlTag regularHtmlTag = new RegularHtmlTag("<h1 attribute = \"value\" >", template);
         regularHtmlTag.processOpeningTag(classGenerator);
         Mockito.verify(classGenerator)
-                .appendPlainHtml(addPlainHtmlCapture.capture());
+                .appendPlainHtml(instantiatingTemplateCapture.capture(), addPlainHtmlCapture.capture());
         assertEquals("<h1 attribute = \"value\" >", addPlainHtmlCapture.getValue());
 
     }

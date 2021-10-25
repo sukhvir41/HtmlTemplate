@@ -17,35 +17,27 @@
 package IntegrationTest;
 
 import com.github.sukhvir41.TestUtils;
-import com.github.sukhvir41.core.TemplateGenerator;
-import org.joor.Reflect;
+import com.github.sukhvir41.core.settings.SettingsManager;
+import com.github.sukhvir41.template.HtmlTemplateLoader;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
-import java.io.StringWriter;
-import java.io.Writer;
+import java.lang.reflect.Field;
 import java.net.URISyntaxException;
+import java.util.Map;
 
 public class ElseIfConditionTestTest {
-    //@Test
+
+    @Test
     public void testTrue() throws URISyntaxException {
 
         var file = TestUtils.getFile("ElseIfConditionTest.html");
 
-        var htmlTemplate = new TemplateGenerator();
-        var theClassString = htmlTemplate.setTemplate(file)
-                .renderReflection();
-
-
-        var theClass = Reflect.compile("ElseIfConditionTest", theClassString);
-
-
-        Writer writer = new StringWriter();
-        var instance = theClass.call("getInstance");
-        instance.call("showIf", true);
-        instance.call("showElseIf", false);
-        instance.call("render", writer);
-
-        var output = TestUtils.strip(writer.toString());
+        var output = TestUtils.strip(
+                HtmlTemplateLoader.load(file)
+                        .render(Map.of("showIf", true, "showElseIf", false))
+        );
 
         Assert.assertEquals("Else If condition test if = true", TestUtils.strip(getExpectedOutputTrue()), output);
 
@@ -68,25 +60,15 @@ public class ElseIfConditionTestTest {
 
     }
 
-   // @Test
+    @Test
     public void testFalse() throws URISyntaxException {
 
         var file = TestUtils.getFile("ElseIfConditionTest.html");
 
-        var htmlTemplate = new TemplateGenerator();
-        var theClassString = htmlTemplate.setTemplate(file)
-                .renderReflection();
-
-        var theClass = Reflect.compile("ElseIfConditionTest", theClassString);
-
-
-        Writer writer = new StringWriter();
-        var instance = theClass.call("getInstance");
-        instance.call("showIf", false);
-        instance.call("showElseIf", true);
-        instance.call("render", writer);
-
-        var output = TestUtils.strip(writer.toString());
+        var output = TestUtils.strip(
+                HtmlTemplateLoader.load(file)
+                        .render(Map.of("showIf", false, "showElseIf", true))
+        );
 
         Assert.assertEquals("ELse If condition test else if false", TestUtils.strip(getExpectedOutputFalse()), output);
 

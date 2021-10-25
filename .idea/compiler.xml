@@ -2,7 +2,6 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
-      <profile default="true" name="Default" enabled="true" />
       <profile name="Gradle Imported" enabled="true">
         <outputRelativeToContentRoot value="true" />
         <option name="project" value="HtmlTemplate/HtmlTemplate-Cli" />
@@ -14,13 +13,6 @@
         <module name="HtmlTemplate.HtmlTemplate-Cli.main" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="1.10">
-      <module name="HtmlTemplate.HtTemplate-Cli.main" target="1.10" />
-      <module name="HtmlTemplate.HtTemplate-Cli.test" target="1.10" />
-      <module name="HtmlTemplater.buildSrc.main" target="1.10" />
-      <module name="HtmlTemplater.buildSrc.test" target="1.10" />
-      <module name="HtmlTemplater.main" target="1.10" />
-      <module name="HtmlTemplater.test" target="1.10" />
-    </bytecodeTargetLevel>
+    <bytecodeTargetLevel target="1.10" />
   </component>
 </project>

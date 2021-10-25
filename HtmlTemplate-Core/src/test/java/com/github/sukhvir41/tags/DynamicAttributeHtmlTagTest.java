@@ -16,7 +16,12 @@
 
 package com.github.sukhvir41.tags;
 
-import com.github.sukhvir41.newCore.TemplateClassGenerator;
+import com.github.sukhvir41.core.classgenerator.TemplateClassGenerator;
+import com.github.sukhvir41.core.settings.SettingsManager;
+import com.github.sukhvir41.core.statements.RenderBodyStatement;
+import com.github.sukhvir41.core.template.Template;
+import com.github.sukhvir41.parsers.Code;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -36,19 +41,28 @@ public class DynamicAttributeHtmlTagTest {
     private ArgumentCaptor<String> addPlainHtmlCapture;
 
     @Captor
-    private ArgumentCaptor<String> addCodeCapture;
+    private ArgumentCaptor<RenderBodyStatement> addCodeCapture;
 
     @Captor
     private ArgumentCaptor<Boolean> appendIndentationCapture;
 
     @Captor
+    private ArgumentCaptor<Template> instantiatingTemplateCapture;
+
+    @Captor
     private ArgumentCaptor<Boolean> appendNewLineCapture;
 
-    private DynamicAttributeHtmlTag dynamicTag = new DynamicAttributeHtmlTag("<h1 ht-test = \"@testValue\" ht-test1 = \"@test1Value\" >");
 
     @Test
     public void testClosing() {
         TemplateClassGenerator templateClass = Mockito.mock(TemplateClassGenerator.class);
+        Template template = Mockito.mock(Template.class);
+        Mockito.when(template.getSettings())
+                .thenReturn(SettingsManager.load());
+        DynamicAttributeHtmlTag dynamicTag = new DynamicAttributeHtmlTag(
+                "<h1 ht-test = \"@testValue\" ht-test1 = \"@test1Value\" >",
+                template,
+                Code::parseForFunction);
 
         dynamicTag.processClosingTag(templateClass);
 
@@ -58,16 +72,24 @@ public class DynamicAttributeHtmlTagTest {
 
     @Test
     public void testOpeningTag() {
+        Template template = Mockito.mock(Template.class);
+        Mockito.when(template.getSettings())
+                .thenReturn(SettingsManager.load());
 
         TemplateClassGenerator classGenerator = Mockito.mock(TemplateClassGenerator.class);
 
         Mockito.when(classGenerator.getWriterVariableName())
                 .thenReturn("testWriter");
 
+        DynamicAttributeHtmlTag dynamicTag = new DynamicAttributeHtmlTag(
+                "<h1 ht-test = \"@testValue\" ht-test1 = \"@test1Value\" >",
+                template,
+                Code::parseForFunction);
+
         dynamicTag.processOpeningTag(classGenerator);
 
         Mockito.verify(classGenerator, Mockito.times(6))
-                .appendPlainHtml(addPlainHtmlCapture.capture(), appendIndentationCapture.capture(), appendNewLineCapture.capture());
+                .appendPlainHtml(instantiatingTemplateCapture.capture(), addPlainHtmlCapture.capture(), appendIndentationCapture.capture(), appendNewLineCapture.capture());
 
         var capturedPlainHtml = addPlainHtmlCapture.getAllValues();
         var capturedIndentation = appendIndentationCapture.getAllValues();
@@ -94,11 +116,11 @@ public class DynamicAttributeHtmlTagTest {
 
 
         Mockito.verify(classGenerator, Mockito.times(2))
-                .addCode(addCodeCapture.capture());
+                .addStatement(instantiatingTemplateCapture.capture(), addCodeCapture.capture());
 
         var codes = addCodeCapture.getAllValues();
-        assertEquals("testWriter.append(content(() -> String.valueOf(testValue())));", codes.get(0));
-        assertEquals("testWriter.append(content(() -> String.valueOf(test1Value())));", codes.get(1));
+        assertEquals("testWriter.write(content(() -> String.valueOf(testValue())));", codes.get(0).getStatement());
+        assertEquals("testWriter.write(content(() -> String.valueOf(test1Value())));", codes.get(1).getStatement());
 
 
     }

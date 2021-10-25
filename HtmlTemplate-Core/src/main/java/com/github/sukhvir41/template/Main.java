@@ -16,15 +16,17 @@
 
 package com.github.sukhvir41.template;
 
-import com.github.sukhvir41.newCore.TemplateReader;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.IOException;
+import java.net.URISyntaxException;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws URISyntaxException, IOException {
 
     }
+
 }
+
+
+
+

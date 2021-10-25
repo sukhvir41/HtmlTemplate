@@ -16,10 +16,12 @@
 
 package com.github.sukhvir41.tags;
 
-import com.github.sukhvir41.newCore.TemplateClassGenerator;
-import com.github.sukhvir41.parsers.Code;
-import com.github.sukhvir41.core.ClassGenerator;
+import com.github.sukhvir41.core.classgenerator.TemplateClassGenerator;
+import com.github.sukhvir41.core.settings.SettingOptions;
+import com.github.sukhvir41.core.statements.PlainStringRenderBodyStatement;
+import com.github.sukhvir41.core.template.Template;
 
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,23 +30,31 @@ public final class IfHtmlTag extends RegularHtmlTag {
     public static final Pattern IF_ATTRIBUTE_PATTERN =
             Pattern.compile("ht-if\\s*=\\s*\"[^\"]*\"", Pattern.CASE_INSENSITIVE);
 
+    private final Function<String, String> codeParser;
+
     public static boolean matches(String string) {
         return IF_ATTRIBUTE_PATTERN.matcher(string)
                 .find();
     }
 
 
-    public IfHtmlTag(String htmlString) {
-        super(htmlString);
+    public IfHtmlTag(String htmlString, Template instantiatingTemplate, Function<String, String> codeParser) {
+        super(htmlString, instantiatingTemplate);
+        this.codeParser = codeParser;
     }
 
     @Override
     public void processOpeningTag(TemplateClassGenerator classGenerator) {
         var matcher = IF_ATTRIBUTE_PATTERN.matcher(this.htmlString);
         if (matcher.find()) {
-            String ifCondition = Code.parse(getIfCondition(matcher));
-            classGenerator.addCode("if(condition( () -> " + ifCondition + " )){");
-            classGenerator.incrementRenderFunctionIndentation();
+            String ifCondition = codeParser.apply(getIfCondition(matcher));
+            if (suppressExceptions()) {
+                classGenerator.addStatement(super.template, new PlainStringRenderBodyStatement("if (condition(() -> " + ifCondition + ")) {"));
+            } else {
+                classGenerator.addStatement(super.template, new PlainStringRenderBodyStatement("if (" + ifCondition + " ) {"));
+            }
+
+            classGenerator.incrementRenderBodyIndentation(super.template);
         }
         processTag(classGenerator);
     }
@@ -66,19 +76,24 @@ public final class IfHtmlTag extends RegularHtmlTag {
                     .trim();
             var rightPart = this.htmlString.substring(matcher.end());
             //templateClass.appendPlainHtml(leftPart + rightPart);
-            new DynamicAttributeHtmlTag(leftPart + rightPart)
+            new DynamicAttributeHtmlTag(leftPart + rightPart, super.template, codeParser)
                     .processOpeningTag(classGenerator);
         } else {
             //templateClass.appendPlainHtml(this.htmlString);
-            new DynamicAttributeHtmlTag(this.htmlString)
+            new DynamicAttributeHtmlTag(this.htmlString, super.template, codeParser)
                     .processOpeningTag(classGenerator);
         }
     }
 
     @Override
     public void processClosingTag(TemplateClassGenerator classGenerator) {
-        classGenerator.decrementRenderFunctionIndentation();
-        classGenerator.addCode("}");
+        classGenerator.decrementRenderBodyIndentation(super.template);
+        classGenerator.addStatement(super.template, new PlainStringRenderBodyStatement("}"));
+    }
+
+    private boolean suppressExceptions() {
+        return this.template.getSettings().get(SettingOptions.SUPPRESS_EXCEPTIONS)
+                .orElseThrow(() -> new IllegalStateException("SUPPRESS_EXCEPTIONS setting was not set"));
     }
 
 }

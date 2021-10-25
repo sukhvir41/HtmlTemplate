@@ -16,8 +16,7 @@
 
 package com.github.sukhvir41.parsers.htmlParsers;
 
-import com.github.sukhvir41.newCore.Template;
-import com.github.sukhvir41.tags.Content;
+import com.github.sukhvir41.core.template.Template;
 import com.github.sukhvir41.tags.HtmlTag;
 import org.apache.commons.lang3.StringUtils;
 
@@ -60,7 +59,7 @@ final class TagParser implements HtmlParser {
     private void processClosingTag(HtmlTag htmlTag, HtmlParserData data) {
         var classGenerator = data.getClassGenerator();
 
-        var openingHtmlTag = classGenerator.removeFromTagStack()
+        var openingHtmlTag = classGenerator.popHtmlTag()
                 .orElseThrow(() -> new IllegalStateException("There is An extra closing tag. tag: " + data.getSection()));
 
         if (openingHtmlTag.isClosingTag(htmlTag)) {
@@ -77,7 +76,7 @@ final class TagParser implements HtmlParser {
         htmlTag.processOpeningTag(data.getClassGenerator());
 
         data.getClassGenerator()
-                .addTagToStack(htmlTag);
+                .addHtmlTag(htmlTag);
 
         changeProcessor(htmlTag.getName(), data.getTemplate());
 

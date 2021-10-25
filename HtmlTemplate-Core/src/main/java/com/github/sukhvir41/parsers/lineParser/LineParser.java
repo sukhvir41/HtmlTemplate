@@ -18,8 +18,9 @@ package com.github.sukhvir41.parsers.lineParser;
 
 import org.apache.commons.lang3.StringUtils;
 
-public final class LineParser {
+import java.util.logging.Logger;
 
+public final class LineParser {
 
     private String line;
     private String previousLine = ""; // this contains the previous lines part that got unprocessed.

@@ -16,14 +16,13 @@
 
 package IntegrationTest;
 
-import com.github.sukhvir41.core.TemplateGenerator;
+import com.github.sukhvir41.core.settings.SettingsManager;
 import com.github.sukhvir41.template.HtmlTemplateLoader;
-import org.joor.Reflect;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
-import java.io.StringWriter;
-import java.io.Writer;
+import java.lang.reflect.Field;
 import java.net.URISyntaxException;
 import java.util.Collections;
 
@@ -117,7 +116,7 @@ public class SimpleTestTest {
         String output = HtmlTemplateLoader.load(file)
                 .render(Collections.emptyMap());
 
-        Assert.assertEquals("Simple test 1 ", strip(expectedOutput), strip(output));
+        Assert.assertEquals(strip(expectedOutput), strip(output));
     }
 
 }

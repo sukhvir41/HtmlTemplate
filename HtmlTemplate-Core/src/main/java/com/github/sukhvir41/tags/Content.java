@@ -16,18 +16,15 @@
 
 package com.github.sukhvir41.tags;
 
-import com.github.sukhvir41.core.ClassGenerator;
-import com.github.sukhvir41.newCore.Template;
-import com.github.sukhvir41.newCore.TemplateClassGenerator;
-import com.github.sukhvir41.newCore.VariableInfo;
-import com.github.sukhvir41.parsers.Code;
+import com.github.sukhvir41.core.classgenerator.TemplateClassGenerator;
+import com.github.sukhvir41.core.settings.SettingOptions;
+import com.github.sukhvir41.core.template.Template;
+import com.github.sukhvir41.core.statements.PlainStringRenderBodyStatement;
 import com.github.sukhvir41.core.IllegalSyntaxException;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.logging.Logger;
 
 import static com.github.sukhvir41.utils.StringUtils.findIndex;
 
@@ -39,27 +36,39 @@ public final class Content implements HtmlTag {
     public static final String UNESCAPED_CONTENT_START = "{{{";
     public static final String UNESCAPED_CONTENT_END = "}}}";
 
-    private static final String ESCAPED_VARIABLE_LEFT_PART_CODE = ".append(content(() -> String.valueOf(";
+    private static final String ESCAPED_VARIABLE_LEFT_PART_CODE = ".write(content(() -> String.valueOf(";
     private static final String ESCAPED_VARIABLE_RIGHT_PART_CODE = ")));";
 
-    private static final String UNESCAPED_VARIABLE_LEFT_PART_CODE = ".append(unescapedContent(() -> String.valueOf(";
+    private static final String ESCAPED_VARIABLE_NO_CHECK_LEFT_PART_CODE = ".write(content(";
+    private static final String ESCAPED_VARIABLE_NO_CHECK_RIGHT_PART_CODE = "));";
+
+    private static final String UNESCAPED_VARIABLE_LEFT_PART_CODE = ".write(unescapedContent(() -> String.valueOf(";
     private static final String UNESCAPED_VARIABLE_RIGHT_PART_CODE = ")));";
+
+    private static final String UNESCAPED_VARIABLE_NO_CHECK_LEFT_PART_CODE = ".write(unescapedContent(";
+    private static final String UNESCAPED_VARIABLE_NO_CHECK_RIGHT_PART_CODE = "));";
 
     private final String content;
     private final Template template;
+    private final Function<String, String> codeParser;
     private boolean isFirstLeftPart = true;
+    private final Logger logger;
 
-    public Content(String content, Template instantiatingTemplate) {
+    public Content(String content, Template instantiatingTemplate, Function<String, String> codeParser) {
         this.content = content;
         this.template = instantiatingTemplate;
+        this.codeParser = codeParser;
+        this.logger = this.template.getSettings().getLogger();
     }
 
     @Override
     public void processOpeningTag(TemplateClassGenerator classGenerator) {
+        this.logger.info("Processing Content. content " + this.content);
         if (containsDynamicContent()) {
+            this.logger.fine("processing dynamic content");
             processDynamicContent(content, classGenerator);//process left to right
         } else {
-            classGenerator.appendPlainHtml(content);
+            classGenerator.appendPlainHtml(template, content);
         }
     }
 
@@ -74,15 +83,18 @@ public final class Content implements HtmlTag {
         int escapedStartIndex = content.indexOf(ESCAPED_CONTENT_START);
         int unescapedStartIndex = content.indexOf(UNESCAPED_CONTENT_START);
 
-        if (unescapedStartIndex > -1 && unescapedStartIndex <= escapedStartIndex) { // is unescaped brackets before escaped brackets
+        if (unescapedStartIndex > -1 && unescapedStartIndex <= escapedStartIndex) { // is unescaped brackets before escaped brackets or have the same start
+            this.logger.finer("processing unescaped dynamic content");
             processUnescapedDynamicContent(unescapedStartIndex, content, classGenerator);
         } else if (escapedStartIndex > -1) {
+            this.logger.finer("processing escaped dynamic content");
             processEscapedDynamicContent(escapedStartIndex, content, classGenerator);
         } else {
+            this.logger.finer("processing plain content");
             if (StringUtils.isBlank(content)) {
-                classGenerator.appendPlainHtmlNewLine();
+                classGenerator.appendPlainHtmlNewLine(template);
             } else {
-                classGenerator.appendPlainHtml(content, false, true);
+                classGenerator.appendPlainHtml(template, content, false, true);
             }
         }
     }
@@ -100,7 +112,7 @@ public final class Content implements HtmlTag {
                 .substring(escapedContentStart + ESCAPED_CONTENT_START.length(), endIndex)
                 .trim();
 
-        addCode(Code.parse(theCode, classGenerator.getVariableMappings(template)), classGenerator);
+        addCode(this.codeParser.apply(theCode), classGenerator);
 
         var remainingContent = content.substring(endIndex + ESCAPED_CONTENT_END.length());
 
@@ -121,7 +133,7 @@ public final class Content implements HtmlTag {
                 .substring(unescapedContentStart + UNESCAPED_CONTENT_START.length(), endIndex)
                 .trim();
 
-        addUnescapedCode(Code.parse(theCode, classGenerator.getVariableMappings(template)), classGenerator);
+        addUnescapedCode(this.codeParser.apply(theCode), classGenerator);
 
         var remainingContent = content.substring(endIndex + UNESCAPED_CONTENT_END.length());
 
@@ -132,20 +144,39 @@ public final class Content implements HtmlTag {
     private void processLeftPart(int dynamicStartIndex, String content, TemplateClassGenerator classGenerator) {
         var plaintHtmlLeft = StringUtils.left(content, dynamicStartIndex);
         if (StringUtils.isBlank(plaintHtmlLeft)) { //if staring of with {{ dynamic content}} or {{{ dynamic content }}}
-            classGenerator.appendPlainHtmlIndentation();
+            classGenerator.appendPlainHtmlIndentation(template);
         } else {
-            classGenerator.appendPlainHtml(plaintHtmlLeft, isFirstLeftPart, false);
+            classGenerator.appendPlainHtml(template, plaintHtmlLeft, isFirstLeftPart, false);
         }
         isFirstLeftPart = false;
     }
 
 
     private void addCode(String code, TemplateClassGenerator classGenerator) {
-        classGenerator.addCode(classGenerator.getWriterVariableName() + ESCAPED_VARIABLE_LEFT_PART_CODE + code + ESCAPED_VARIABLE_RIGHT_PART_CODE);
+        classGenerator.addStatement(template,
+                new PlainStringRenderBodyStatement(
+                        classGenerator.getWriterVariableName() +
+                                (suppressExceptions() ? ESCAPED_VARIABLE_LEFT_PART_CODE : ESCAPED_VARIABLE_NO_CHECK_LEFT_PART_CODE) +
+                                code +
+                                (suppressExceptions() ? ESCAPED_VARIABLE_RIGHT_PART_CODE : ESCAPED_VARIABLE_NO_CHECK_RIGHT_PART_CODE)
+                )
+        );
+
     }
 
     private void addUnescapedCode(String code, TemplateClassGenerator classGenerator) {
-        classGenerator.addCode(classGenerator.getWriterVariableName() + UNESCAPED_VARIABLE_LEFT_PART_CODE + code + UNESCAPED_VARIABLE_RIGHT_PART_CODE);
+        classGenerator.addStatement(template, new PlainStringRenderBodyStatement(
+                classGenerator.getWriterVariableName() +
+                        (suppressExceptions() ? UNESCAPED_VARIABLE_LEFT_PART_CODE : UNESCAPED_VARIABLE_NO_CHECK_LEFT_PART_CODE) +
+                        code +
+                        (suppressExceptions() ? UNESCAPED_VARIABLE_RIGHT_PART_CODE : UNESCAPED_VARIABLE_NO_CHECK_RIGHT_PART_CODE)
+        ));
+    }
+
+    private boolean suppressExceptions() {
+        return this.template.getSettings()
+                .get(SettingOptions.SUPPRESS_EXCEPTIONS)
+                .orElseThrow(() -> new IllegalStateException("SUPPRESS_EXCEPTIONS setting was not set"));
     }
 
     @Override

@@ -1,18 +1,27 @@
 plugins {
     id 'java'
+    id 'idea'
     id "com.github.johnrengelman.shadow" version "5.2.0" apply false
 }
 version '1.0-SNAPSHOT'
 
-sourceCompatibility = JavaVersion.VERSION_1_10
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_10
+}
 
+
+idea {
+    module {
+        downloadJavadoc = true
+    }
+}
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testImplementation('junit:junit:4.13')
 }
 
 test {

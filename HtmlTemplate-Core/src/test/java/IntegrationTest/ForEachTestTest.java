@@ -17,48 +17,40 @@
 package IntegrationTest;
 
 import com.github.sukhvir41.TestUtils;
-import com.github.sukhvir41.core.TemplateGenerator;
-import org.joor.Reflect;
+import com.github.sukhvir41.core.settings.SettingsManager;
+import com.github.sukhvir41.template.HtmlTemplateLoader;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
-import java.io.StringWriter;
-import java.io.Writer;
+import java.lang.reflect.Field;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static com.github.sukhvir41.TestUtils.strip;
 
 public class ForEachTestTest {
 
     private String fileName = "ForEachTest.html";
-    private String className = "ForEachTest";
     private String testName = "ForEachTest";
 
-    private String[] names = {"SAM", "DEAN"};
-    private List<Integer> ages = List.of(1, 2);
-    private int[] counters = new int[]{1, 2};
-
-   // @Test
+    @Test
     public void testMethod() throws URISyntaxException {
+        String[] names = {"SAM", "DEAN"};
+        List<Integer> ages = new ArrayList<>();
+        ages.add(1);
+        ages.add(2);
+        int[] counters = new int[]{1, 2};
 
         var file = TestUtils.getFile(fileName);
-        var htmlTemplate = new TemplateGenerator();
 
-        var classString = htmlTemplate.setTemplate(file)
-                .renderReflection();
+        var output = strip(
+                HtmlTemplateLoader.load(file)
+                        .render(Map.of("names", names, "ages", (List<Integer>) ages, "counters", counters))
+        );
 
-        var theClass = Reflect.compile(className, classString);
-
-        Writer writer = new StringWriter();
-        var instance = theClass.call("getInstance");
-        instance.call("names", new Object[]{names});
-        instance.call("ages", ages);
-        instance.call("counters", new Object[]{counters});
-        instance.call("render", writer);
-
-        var output = strip(writer.toString());
-        // can't test for imports as testing through reflection is not possible. So, if this compiles then assuming
-        // everything went fine
         Assert.assertEquals(testName, strip(expectedOutput), output);
 
     }

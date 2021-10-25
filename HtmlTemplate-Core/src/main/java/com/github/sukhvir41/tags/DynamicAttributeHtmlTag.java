@@ -16,24 +16,32 @@
 
 package com.github.sukhvir41.tags;
 
-import com.github.sukhvir41.newCore.TemplateClassGenerator;
+import com.github.sukhvir41.core.classgenerator.TemplateClassGenerator;
+import com.github.sukhvir41.core.settings.SettingOptions;
+import com.github.sukhvir41.core.statements.PlainStringRenderBodyStatement;
+import com.github.sukhvir41.core.template.Template;
 import org.apache.commons.lang3.StringUtils;
-import com.github.sukhvir41.parsers.Code;
-import com.github.sukhvir41.core.ClassGenerator;
 import com.github.sukhvir41.utils.HtmlUtils;
 
+import java.util.function.Function;
 import java.util.regex.Matcher;
 
 public final class DynamicAttributeHtmlTag extends RegularHtmlTag {
 
     private static final String DYNAMIC_ATTRIBUTE_START = "ht-";
-    private static final String ATTRIBUTE_LEFT_PART_CODE = ".append(content(() -> String.valueOf(";
+    private static final String ATTRIBUTE_LEFT_PART_CODE = ".write(content(() -> String.valueOf(";
+    private static final String ATTRIBUTE_LEFT_PART_NO_CHECK_CODE = ".write(content(";
+
     private static final String ATTRIBUTE_RIGHT_PART_CODE = ")));";
+    private static final String ATTRIBUTE_RIGHT_PART_NO_CHECK_CODE = "));";
 
-    boolean isFirstLeftPart = true;
 
-    public DynamicAttributeHtmlTag(String htmlString) {
-        super(htmlString);
+    private boolean isFirstLeftPart = true;
+    private final Function<String, String> codeParser;
+
+    public DynamicAttributeHtmlTag(String htmlString, Template instantiatingTemplate, Function<String, String> codeParser) {
+        super(htmlString, instantiatingTemplate);
+        this.codeParser = codeParser;
     }
 
 
@@ -53,14 +61,14 @@ public final class DynamicAttributeHtmlTag extends RegularHtmlTag {
             processDynamicAttribute(matcher, classGenerator, htmlString);
 
         } else {
-            classGenerator.appendPlainHtml(htmlString, isFirstLeftPart, true);
+            classGenerator.appendPlainHtml(super.template, htmlString, isFirstLeftPart, true);
         }
 
     }
 
     private void processLeftPart(TemplateClassGenerator classGenerator, String leftPart) {
         if (StringUtils.isNotBlank(leftPart)) {
-            classGenerator.appendPlainHtml(leftPart, isFirstLeftPart, false);
+            classGenerator.appendPlainHtml(super.template, leftPart, isFirstLeftPart, false);
         }
         isFirstLeftPart = false;
     }
@@ -73,13 +81,35 @@ public final class DynamicAttributeHtmlTag extends RegularHtmlTag {
 
         var attributeValue = dynamicAttribute.substring(dynamicAttribute.indexOf("=") + 1)
                 .replace("\"", "")
+                .replace("'", "\"")
                 .trim();
 
-        var code = Code.parse(attributeValue);
+        var code = codeParser.apply(attributeValue);
 
-        classGenerator.appendPlainHtml(actualAttributeName + " = \"", false, false);
-        classGenerator.addCode(classGenerator.getWriterVariableName() + ATTRIBUTE_LEFT_PART_CODE + code + ATTRIBUTE_RIGHT_PART_CODE);
-        classGenerator.appendPlainHtml("\" ", false, false);
+        classGenerator.appendPlainHtml(super.template, actualAttributeName + " = \"", false, false);
+
+        if (suppressExceptions()) {
+            classGenerator.addStatement(super.template,
+                    new PlainStringRenderBodyStatement(
+                            classGenerator.getWriterVariableName() +
+                                    ATTRIBUTE_LEFT_PART_CODE +
+                                    code +
+                                    ATTRIBUTE_RIGHT_PART_CODE
+                    )
+            );
+        } else {
+            classGenerator.addStatement(super.template,
+                    new PlainStringRenderBodyStatement(
+                            classGenerator.getWriterVariableName() +
+                                    ATTRIBUTE_LEFT_PART_NO_CHECK_CODE +
+                                    code +
+                                    ATTRIBUTE_RIGHT_PART_NO_CHECK_CODE
+                    )
+            );
+        }
+
+
+        classGenerator.appendPlainHtml(super.template, "\" ", false, false);
 
         var remainingPart = htmlString.substring(matcher.end());
 
@@ -90,5 +120,11 @@ public final class DynamicAttributeHtmlTag extends RegularHtmlTag {
     private String getActualAttributeName(String attributeName) {
         return StringUtils.removeStartIgnoreCase(attributeName, DYNAMIC_ATTRIBUTE_START)
                 .trim();
+    }
+
+    private boolean suppressExceptions() {
+        return this.template.getSettings()
+                .get(SettingOptions.SUPPRESS_EXCEPTIONS)
+                .orElseThrow(() -> new IllegalStateException("SUPPRESS_EXCEPTIONS setting was not set"));
     }
 }
