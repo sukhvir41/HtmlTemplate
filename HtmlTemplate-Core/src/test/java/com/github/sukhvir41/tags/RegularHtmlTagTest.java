@@ -17,7 +17,10 @@
 package com.github.sukhvir41.tags;
 
 import com.github.sukhvir41.core.classgenerator.TemplateClassGenerator;
+import com.github.sukhvir41.core.settings.Settings;
+import com.github.sukhvir41.core.settings.SettingsManager;
 import com.github.sukhvir41.core.template.Template;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -45,6 +48,12 @@ public class RegularHtmlTagTest {
 
     @Mock
     private TemplateClassGenerator classGenerator;
+
+    @Before
+    public void setup() {
+        Mockito.when(template.getSettings())
+                .thenReturn(SettingsManager.load());
+    }
 
     @Test
     public void testClosing() {

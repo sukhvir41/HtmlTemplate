@@ -72,9 +72,13 @@ public final class RuntimeTemplate extends Template {
             if (containsDynamicAttribute(section)) {
                 return parseDynamicHtml(section);
             } else {
+                getSettings().getLogger()
+                        .info("Regular Html tag detected");
                 return new RegularHtmlTag(section, this);
             }
         } else {
+            getSettings().getLogger()
+                    .info("Content detected");
             return new Content(section, this, Code::parseForFunction);
         }
     }
@@ -91,27 +95,43 @@ public final class RuntimeTemplate extends Template {
 
     private HtmlTag parseDynamicHtml(String tagString) {
         if (MetaImportHtmlTag.matches(tagString)) {
+            getSettings().getLogger()
+                    .info("MetaImport Html Tag detected");
             return new MetaImportHtmlTag(tagString);
 
         } else if (RuntimeIncludeHtmlTag.matches(tagString)) {
+            getSettings().getLogger()
+                    .info("RuntimeInclude Html Tag detected");
             return new RuntimeIncludeHtmlTag(tagString, Code::parseForFunction, this);
 
         } else if (MetaVariableHtmlTag.matches(tagString)) {
+            getSettings().getLogger()
+                    .info("MetaVariable Html Tag detected");
             return new MetaVariableHtmlTag(tagString, this);
 
         } else if (IfHtmlTag.matches(tagString)) {
+            getSettings().getLogger()
+                    .info("If Html Tag detected");
             return new IfHtmlTag(tagString, this, Code::parseForFunction);
 
         } else if (ElseIfHtmlTag.matches(tagString)) {
+            getSettings().getLogger()
+                    .info("ElseIf Html Tag detected");
             return new ElseIfHtmlTag(tagString, this, Code::parseForFunction);
 
         } else if (ElseHtmlTag.matches(tagString)) { // else tag check should be after else if check
+            getSettings().getLogger()
+                    .info("Else Html Tag detected");
             return new ElseHtmlTag(tagString, this, Code::parseForFunction);
 
         } else if (ForHtmlTag.matches(tagString)) {
+            getSettings().getLogger()
+                    .info("For Html Tag detected");
             return new ForHtmlTag(tagString, this, Code::parseForFunction);
 
         } else {
+            getSettings().getLogger()
+                    .info("DynamicAttribute Html Tag detected");
             return new DynamicAttributeHtmlTag(tagString, this, Code::parseForFunction);
         }
 

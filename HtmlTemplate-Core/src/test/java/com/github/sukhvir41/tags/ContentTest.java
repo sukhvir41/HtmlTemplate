@@ -58,6 +58,8 @@ public class ContentTest {
     public void plainTest() {
         TemplateClassGenerator classGenerator = Mockito.mock(TemplateClassGenerator.class);
         Template template = Mockito.mock(Template.class);
+        Mockito.when(template.getSettings())
+                .thenReturn(SettingsManager.load());
 
         var content = new Content(" some content ", template, Code::parseForFunction);
         content.processOpeningTag(classGenerator);

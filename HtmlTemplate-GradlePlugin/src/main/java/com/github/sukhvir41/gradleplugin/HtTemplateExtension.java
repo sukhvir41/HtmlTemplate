@@ -10,6 +10,8 @@ public abstract class HtTemplateExtension {
 
     public abstract ListProperty<String> getIgnoreFiles();
 
+    public abstract Property<Boolean> getSuppressExceptions();
+
     public abstract DirectoryProperty getTemplateDirectory();
 
     public abstract DirectoryProperty getOutputDirectory();

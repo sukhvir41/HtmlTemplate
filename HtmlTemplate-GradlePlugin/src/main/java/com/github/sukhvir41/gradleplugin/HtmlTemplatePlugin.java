@@ -22,8 +22,13 @@ public class HtmlTemplatePlugin implements Plugin<Project> {
         TaskProvider<GenerateHtmlTemplates> htmlTask = project.getTasks().register("generateTemplates", GenerateHtmlTemplates.class, task -> {
             task.getJavaPackage().set(extension.getJavaPackage());
             task.getIgnoreFiles().set(extension.getIgnoreFiles());
+            task.getSuppressExceptions().set(extension.getSuppressExceptions());
             task.getTemplateDirectory().set(extension.getTemplateDirectory());
             task.getOutputDirectory().set(extension.getOutputDirectory());
+        });
+
+        htmlTask.configure(generateHtmlTemplates -> {
+            generateHtmlTemplates.setGroup("html templates");
         });
 
         getSourceSets(project)

@@ -17,6 +17,7 @@
 package com.github.sukhvir41.tags;
 
 import com.github.sukhvir41.core.classgenerator.TemplateClassGenerator;
+import com.github.sukhvir41.core.settings.SettingsManager;
 import com.github.sukhvir41.core.statements.RenderBodyStatement;
 import com.github.sukhvir41.core.template.Template;
 import com.github.sukhvir41.parsers.Code;
@@ -66,6 +67,9 @@ public class ForHtmlTagTest {
         PowerMockito.whenNew(DynamicAttributeHtmlTag.class)
                 .withArguments(ArgumentMatchers.anyString(), ArgumentMatchers.any(Template.class), ArgumentMatchers.any(Function.class))
                 .thenReturn(dynamicAttributeHtmlTag);
+
+        Mockito.when(template.getSettings())
+                .thenReturn(SettingsManager.load());
     }
 
     @Test

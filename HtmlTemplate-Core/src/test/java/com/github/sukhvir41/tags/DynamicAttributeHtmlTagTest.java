@@ -21,6 +21,7 @@ import com.github.sukhvir41.core.settings.SettingsManager;
 import com.github.sukhvir41.core.statements.RenderBodyStatement;
 import com.github.sukhvir41.core.template.Template;
 import com.github.sukhvir41.parsers.Code;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -55,9 +56,12 @@ public class DynamicAttributeHtmlTagTest {
     @Test
     public void testClosing() {
         TemplateClassGenerator templateClass = Mockito.mock(TemplateClassGenerator.class);
+        Template template = Mockito.mock(Template.class);
+        Mockito.when(template.getSettings())
+                .thenReturn(SettingsManager.load());
         DynamicAttributeHtmlTag dynamicTag = new DynamicAttributeHtmlTag(
                 "<h1 ht-test = \"@testValue\" ht-test1 = \"@test1Value\" >",
-                null,
+                template,
                 Code::parseForFunction);
 
         dynamicTag.processClosingTag(templateClass);

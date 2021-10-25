@@ -33,16 +33,15 @@ public abstract class GenerateHtmlTemplates extends DefaultTask {
     @Optional
     public abstract ListProperty<String> getIgnoreFiles();
 
+    @Input
+    @Optional
+    public abstract Property<Boolean> getSuppressExceptions();
+
     @InputDirectory
     public abstract DirectoryProperty getTemplateDirectory();
 
     @OutputDirectory
     public abstract DirectoryProperty getOutputDirectory();
-
-    @Override
-    public String getGroup() {
-        return "Html Templates";
-    }
 
     @TaskAction
     public void generateTemplates() {
@@ -51,7 +50,8 @@ public abstract class GenerateHtmlTemplates extends DefaultTask {
         Settings settings = SettingsManager.load(
                 Map.of(
                         SettingOptions.PACKAGE_NAME, getJavaPackage().getOrElse(""),
-                        SettingOptions.ROOT_FOLDER, getTemplateDirectory().get().getAsFile().toPath()
+                        SettingOptions.ROOT_FOLDER, getTemplateDirectory().get().getAsFile().toPath(),
+                        SettingOptions.SUPPRESS_EXCEPTIONS, getSuppressExceptions().getOrElse(true)
                 )
         );
         getTemplateDirectory().getAsFileTree()

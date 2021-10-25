@@ -20,15 +20,19 @@ import com.github.sukhvir41.core.classgenerator.TemplateClassGenerator;
 import com.github.sukhvir41.core.template.Template;
 import com.github.sukhvir41.utils.HtmlUtils;
 
+import java.util.logging.Logger;
+
 public class RegularHtmlTag implements HtmlTag {
 
     protected String htmlString;
     protected final Template template;
+    protected final Logger logger;
 
     public RegularHtmlTag(String htmlString, Template instantiatingTemplate) {
         this.htmlString = htmlString;
         this.template = instantiatingTemplate;
-
+        this.logger = this.template.getSettings()
+                .getLogger();
     }
 
     @Override
@@ -54,6 +58,8 @@ public class RegularHtmlTag implements HtmlTag {
 
     @Override
     public void processOpeningTag(TemplateClassGenerator classGenerator) {
+        this.logger.fine("Processing opening of regular html tag. section " + htmlString);
+        this.logger.finer("Appending plain html " + htmlString + "for template " + template.getFullyQualifiedName());
         classGenerator.appendPlainHtml(template, this.htmlString);
     }
 

@@ -24,6 +24,7 @@ import com.github.sukhvir41.core.IllegalSyntaxException;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.function.Function;
+import java.util.logging.Logger;
 
 import static com.github.sukhvir41.utils.StringUtils.findIndex;
 
@@ -51,16 +52,20 @@ public final class Content implements HtmlTag {
     private final Template template;
     private final Function<String, String> codeParser;
     private boolean isFirstLeftPart = true;
+    private final Logger logger;
 
     public Content(String content, Template instantiatingTemplate, Function<String, String> codeParser) {
         this.content = content;
         this.template = instantiatingTemplate;
         this.codeParser = codeParser;
+        this.logger = this.template.getSettings().getLogger();
     }
 
     @Override
     public void processOpeningTag(TemplateClassGenerator classGenerator) {
+        this.logger.info("Processing Content. content " + this.content);
         if (containsDynamicContent()) {
+            this.logger.fine("processing dynamic content");
             processDynamicContent(content, classGenerator);//process left to right
         } else {
             classGenerator.appendPlainHtml(template, content);
@@ -79,10 +84,13 @@ public final class Content implements HtmlTag {
         int unescapedStartIndex = content.indexOf(UNESCAPED_CONTENT_START);
 
         if (unescapedStartIndex > -1 && unescapedStartIndex <= escapedStartIndex) { // is unescaped brackets before escaped brackets or have the same start
+            this.logger.finer("processing unescaped dynamic content");
             processUnescapedDynamicContent(unescapedStartIndex, content, classGenerator);
         } else if (escapedStartIndex > -1) {
+            this.logger.finer("processing escaped dynamic content");
             processEscapedDynamicContent(escapedStartIndex, content, classGenerator);
         } else {
+            this.logger.finer("processing plain content");
             if (StringUtils.isBlank(content)) {
                 classGenerator.appendPlainHtmlNewLine(template);
             } else {

@@ -55,13 +55,15 @@ public abstract class Template {
         TemplateReader.read(file, (section) -> {
             if (StringUtils.isNotBlank(section)) {
                 settings.getLogger()
-                        .info("process section: " + section);
+                        .info("processing section: " + section);
                 processSection(section);
             }
         });
     }
 
     private void processSection(String section) {
+        this.settings.getLogger()
+                .info("parsing section with parser " + htmlParser.name());
         htmlParser.parse(
                 HtmlParserData.builder()
                         .setSection(section)
