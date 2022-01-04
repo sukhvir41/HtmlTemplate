@@ -9,7 +9,6 @@ java {
     sourceCompatibility = JavaVersion.VERSION_1_10
 }
 
-
 idea {
     module {
         downloadJavadoc = true
@@ -27,7 +26,6 @@ dependencies {
 test {
     useJUnit()
 }
-
 
 allprojects {
     apply plugin: "com.github.johnrengelman.shadow"

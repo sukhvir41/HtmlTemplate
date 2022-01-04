@@ -19,15 +19,17 @@ package com.github.sukhvir41.core.template;
 import com.github.sukhvir41.core.classgenerator.RuntimeClassGenerator;
 import com.github.sukhvir41.core.settings.Settings;
 import com.github.sukhvir41.parsers.Code;
-import com.github.sukhvir41.tags.*;
+import com.github.sukhvir41.core.tags.*;
 import com.github.sukhvir41.utils.HtmlUtils;
 import com.github.sukhvir41.utils.StringUtils;
 
 import java.nio.file.Path;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 public final class RuntimeTemplate extends Template {
 
+    private static final Logger LOGGER = Logger.getLogger(RuntimeTemplate.class.getName());
     private static final String DEFAULT_PACKAGE_NAME = "com.github.sukhvir41.runtimeTemplates";
 
     private final String packageName;
@@ -72,13 +74,11 @@ public final class RuntimeTemplate extends Template {
             if (containsDynamicAttribute(section)) {
                 return parseDynamicHtml(section);
             } else {
-                getSettings().getLogger()
-                        .info("Regular Html tag detected");
+                LOGGER.info("Regular Html tag detected");
                 return new RegularHtmlTag(section, this);
             }
         } else {
-            getSettings().getLogger()
-                    .info("Content detected");
+            LOGGER.info("Content detected");
             return new Content(section, this, Code::parseForFunction);
         }
     }
@@ -95,43 +95,35 @@ public final class RuntimeTemplate extends Template {
 
     private HtmlTag parseDynamicHtml(String tagString) {
         if (MetaImportHtmlTag.matches(tagString)) {
-            getSettings().getLogger()
-                    .info("MetaImport Html Tag detected");
+            LOGGER.info("MetaImport Html Tag detected");
             return new MetaImportHtmlTag(tagString);
 
         } else if (RuntimeIncludeHtmlTag.matches(tagString)) {
-            getSettings().getLogger()
-                    .info("RuntimeInclude Html Tag detected");
+            LOGGER.info("RuntimeInclude Html Tag detected");
             return new RuntimeIncludeHtmlTag(tagString, Code::parseForFunction, this);
 
         } else if (MetaVariableHtmlTag.matches(tagString)) {
-            getSettings().getLogger()
-                    .info("MetaVariable Html Tag detected");
+            LOGGER.info("MetaVariable Html Tag detected");
             return new MetaVariableHtmlTag(tagString, this);
 
         } else if (IfHtmlTag.matches(tagString)) {
-            getSettings().getLogger()
-                    .info("If Html Tag detected");
+            LOGGER.info("If Html Tag detected");
             return new IfHtmlTag(tagString, this, Code::parseForFunction);
 
         } else if (ElseIfHtmlTag.matches(tagString)) {
-            getSettings().getLogger()
-                    .info("ElseIf Html Tag detected");
+            LOGGER.info("ElseIf Html Tag detected");
             return new ElseIfHtmlTag(tagString, this, Code::parseForFunction);
 
         } else if (ElseHtmlTag.matches(tagString)) { // else tag check should be after else if check
-            getSettings().getLogger()
-                    .info("Else Html Tag detected");
+            LOGGER.info("Else Html Tag detected");
             return new ElseHtmlTag(tagString, this, Code::parseForFunction);
 
         } else if (ForHtmlTag.matches(tagString)) {
-            getSettings().getLogger()
-                    .info("For Html Tag detected");
+            LOGGER.info("For Html Tag detected");
             return new ForHtmlTag(tagString, this, Code::parseForFunction);
 
         } else {
-            getSettings().getLogger()
-                    .info("DynamicAttribute Html Tag detected");
+            LOGGER.info("DynamicAttribute Html Tag detected");
             return new DynamicAttributeHtmlTag(tagString, this, Code::parseForFunction);
         }
 

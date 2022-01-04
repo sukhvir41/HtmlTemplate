@@ -16,7 +16,7 @@
 
 package com.github.sukhvir41.parsers.lineParser;
 
-import com.github.sukhvir41.tags.Content;
+import com.github.sukhvir41.core.tags.Content;
 import com.github.sukhvir41.utils.StringUtils;
 import com.github.sukhvir41.utils.HtmlUtils;
 

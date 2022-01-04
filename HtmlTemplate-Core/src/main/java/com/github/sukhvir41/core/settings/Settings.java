@@ -18,27 +18,25 @@ package com.github.sukhvir41.core.settings;
 
 import java.util.Map;
 import java.util.Optional;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.logging.*;
+import java.util.stream.Stream;
 
 public final class Settings {
     private final Map<SettingOptions<?>, Object> settings;
-    private final Logger logger = Logger.getAnonymousLogger();
 
     public Settings(Map<SettingOptions<?>, Object> settings) {
         this.settings = settings;
-        setLoggerLevel(get(SettingOptions.LOGGING_LEVEL).orElse(Level.OFF));
+        setLoggerSettings(get(SettingOptions.LOGGING_LEVEL).orElse(Level.OFF));
     }
 
-    public void setLoggerLevel(Level level) {
+    public void setLoggerSettings(Level level) {
         //https://stackoverflow.com/a/31852952/4803757
-        Handler console = new ConsoleHandler();
-        console.setLevel(level);
-        logger.addHandler(console);
-        logger.setUseParentHandlers(false);
-        logger.setLevel(level);
+        Logger rootLogger = LogManager.getLogManager().getLogger("");
+        Stream.of(rootLogger.getHandlers())
+                .forEach(rootLogger::removeHandler);
+        rootLogger.addHandler(new ConsoleHandler());
+        Stream.of(rootLogger.getHandlers())
+                .forEach(handler -> handler.setLevel(level));
     }
 
 
@@ -53,9 +51,5 @@ public final class Settings {
             );
         }
 
-    }
-
-    public Logger getLogger() {
-        return logger;
     }
 }

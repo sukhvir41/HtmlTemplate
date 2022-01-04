@@ -22,7 +22,7 @@ import com.github.sukhvir41.core.statements.PlainStringRenderBodyStatement;
 import com.github.sukhvir41.core.template.RuntimeSubTemplate;
 import com.github.sukhvir41.core.template.RuntimeTemplate;
 import com.github.sukhvir41.core.template.Template;
-import com.github.sukhvir41.tags.HtmlTag;
+import com.github.sukhvir41.core.tags.HtmlTag;
 import org.joor.Reflect;
 import org.junit.Assert;
 import org.junit.Rule;

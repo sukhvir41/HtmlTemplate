@@ -22,8 +22,11 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.logging.Logger;
 
 public final class TemplateFactory {
+
+    private static final Logger LOGGER = Logger.getLogger(TemplateFactory.class.getName());
 
     public static Template getTemplate(Path file, TemplateType type, Settings settings) {
         return getTemplate(file, type, "", settings);
@@ -43,21 +46,17 @@ public final class TemplateFactory {
 
         switch (type) {
             case RUN_TIME:
-                settings.getLogger()
-                        .info("Runtime template mode selected for file " + file.getFileName());
+                LOGGER.info("Runtime template mode selected for file " + file.getFileName());
                 if (StringUtils.isBlank(packageName)) {
-                    settings.getLogger()
-                            .fine("Blank package name");
+                    LOGGER.fine("Blank package name");
                     return new RuntimeTemplate(file, settings);
                 } else {
-                    settings.getLogger()
-                            .fine("Package name " + packageName);
+                    LOGGER.fine("Package name " + packageName);
                     return new RuntimeTemplate(file, packageName, settings);
                 }
 
             case COMPILE_TIME:
-                settings.getLogger()
-                        .info("compile time template mode selected");
+                LOGGER.info("compile time template mode selected");
                 validateFileLocation(settings, file);
                 return new CompileTimeTemplate(file, packageName, settings);
             default:

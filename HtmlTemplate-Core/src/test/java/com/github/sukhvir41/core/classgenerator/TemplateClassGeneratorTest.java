@@ -2,7 +2,7 @@ package com.github.sukhvir41.core.classgenerator;
 
 import com.github.sukhvir41.TestUtils;
 import com.github.sukhvir41.core.template.Template;
-import com.github.sukhvir41.tags.HtmlTag;
+import com.github.sukhvir41.core.tags.HtmlTag;
 import org.joor.Reflect;
 import org.junit.Assert;
 import org.junit.Test;

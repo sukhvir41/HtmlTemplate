@@ -8,6 +8,8 @@ public abstract class HtTemplateExtension {
 
     public abstract Property<String> getJavaPackage();
 
+    public abstract Property<String> getLogLevel();
+
     public abstract ListProperty<String> getIgnoreFiles();
 
     public abstract Property<Boolean> getSuppressExceptions();

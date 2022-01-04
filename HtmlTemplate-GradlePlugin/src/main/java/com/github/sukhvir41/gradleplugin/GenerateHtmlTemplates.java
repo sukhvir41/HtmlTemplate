@@ -31,6 +31,10 @@ public abstract class GenerateHtmlTemplates extends DefaultTask {
 
     @Input
     @Optional
+    public abstract Property<String> getLogLevel();
+
+    @Input
+    @Optional
     public abstract ListProperty<String> getIgnoreFiles();
 
     @Input
@@ -50,6 +54,7 @@ public abstract class GenerateHtmlTemplates extends DefaultTask {
         Settings settings = SettingsManager.load(
                 Map.of(
                         SettingOptions.PACKAGE_NAME, getJavaPackage().getOrElse(""),
+                        SettingOptions.LOGGING_LEVEL, getLogLevel().getOrElse("OFF"),
                         SettingOptions.ROOT_FOLDER, getTemplateDirectory().get().getAsFile().toPath(),
                         SettingOptions.SUPPRESS_EXCEPTIONS, getSuppressExceptions().getOrElse(true)
                 )

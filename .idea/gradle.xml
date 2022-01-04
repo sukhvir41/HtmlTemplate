@@ -14,6 +14,7 @@
             <option value="$PROJECT_DIR$/HtmlTemplate-Cli" />
             <option value="$PROJECT_DIR$/HtmlTemplate-Core" />
             <option value="$PROJECT_DIR$/HtmlTemplate-GradlePlugin" />
+            <option value="$PROJECT_DIR$/HtmlTemplate-MavenPlugin" />
             <option value="$PROJECT_DIR$/buildSrc" />
           </set>
         </option>

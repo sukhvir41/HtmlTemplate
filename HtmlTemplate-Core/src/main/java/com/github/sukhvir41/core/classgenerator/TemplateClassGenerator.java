@@ -3,7 +3,7 @@ package com.github.sukhvir41.core.classgenerator;
 import com.github.sukhvir41.core.statements.PlainStringRenderBodyStatement;
 import com.github.sukhvir41.core.statements.RenderBodyStatement;
 import com.github.sukhvir41.core.template.Template;
-import com.github.sukhvir41.tags.HtmlTag;
+import com.github.sukhvir41.core.tags.HtmlTag;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 

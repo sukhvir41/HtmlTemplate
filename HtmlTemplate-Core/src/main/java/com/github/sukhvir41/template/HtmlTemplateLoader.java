@@ -25,8 +25,10 @@ import org.joor.Reflect;
 
 import java.nio.file.Path;
 import java.util.Set;
+import java.util.logging.Logger;
 
 public class HtmlTemplateLoader {
+    private static final Logger LOGGER = Logger.getLogger(HtmlTemplateLoader.class.getName());
 
     public static HtmlTemplate load(Path file) {
         Settings settings = SettingsManager.load();
@@ -37,8 +39,7 @@ public class HtmlTemplateLoader {
         Template template = TemplateFactory.getTemplate(file, TemplateType.RUN_TIME, settings);
         template.readAndProcessTemplateFile();
         String templateCode = template.render();
-        settings.getLogger()
-                .info("Class generated: \n" + templateCode);
+        LOGGER.info("Class generated: \n" + templateCode);
         Reflect reflect = Reflect.compile(template.getFullyQualifiedName(), templateCode);
         return new HtmlTemplate(reflect);
     }

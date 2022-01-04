@@ -17,15 +17,15 @@ mainClassName = "com.github.sukhvir41.cli.Main"
 
 
 dependencies {
-    implementation 'info.picocli:picocli:4.2.0'
-    annotationProcessor 'info.picocli:picocli-codegen:4.2.0'
-    implementation 'org.projectlombok:lombok:1.18.12'
-    annotationProcessor 'org.projectlombok:lombok:1.18.12'
-    implementation 'org.apache.commons:commons-lang3:3.10'
+    implementation 'info.picocli:picocli:4.6.2'
+    annotationProcessor 'info.picocli:picocli-codegen:4.6.2'
+    implementation 'org.projectlombok:lombok:1.18.22'
+    annotationProcessor 'org.projectlombok:lombok:1.18.22'
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
     implementation project(":HtmlTemplate-Core")
 
     testImplementation group: 'junit', name: 'junit', version: '4.13'
-    testImplementation 'org.jooq:joor:0.9.12'
+    testImplementation 'org.jooq:joor:0.9.14'
 }
 
 compileJava {

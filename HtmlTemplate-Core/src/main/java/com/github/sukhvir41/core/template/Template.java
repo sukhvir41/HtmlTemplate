@@ -20,13 +20,16 @@ import com.github.sukhvir41.core.classgenerator.TemplateClassGenerator;
 import com.github.sukhvir41.core.settings.Settings;
 import com.github.sukhvir41.parsers.htmlParsers.HtmlParserData;
 import com.github.sukhvir41.parsers.htmlParsers.HtmlParsers;
-import com.github.sukhvir41.tags.HtmlTag;
+import com.github.sukhvir41.core.tags.HtmlTag;
 import org.apache.commons.lang3.StringUtils;
 
 import java.nio.file.Path;
 import java.util.Objects;
+import java.util.logging.Logger;
 
 public abstract class Template {
+
+    private static final Logger LOGGER = Logger.getLogger(Template.class.getName());
 
     private final Path file;
     private int depth;
@@ -50,20 +53,17 @@ public abstract class Template {
     }
 
     public void readAndProcessTemplateFile() {
-        settings.getLogger()
-                .info("reading template file");
+        LOGGER.info("reading template file");
         TemplateReader.read(file, (section) -> {
             if (StringUtils.isNotBlank(section)) {
-                settings.getLogger()
-                        .info("processing section: " + section);
+                LOGGER.info("processing section: " + section);
                 processSection(section);
             }
         });
     }
 
     private void processSection(String section) {
-        this.settings.getLogger()
-                .info("parsing section with parser " + htmlParser.name());
+        LOGGER.info("parsing section with parser " + htmlParser.name());
         htmlParser.parse(
                 HtmlParserData.builder()
                         .setSection(section)

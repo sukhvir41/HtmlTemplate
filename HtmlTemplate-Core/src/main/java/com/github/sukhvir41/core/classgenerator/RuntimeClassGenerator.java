@@ -130,7 +130,7 @@ public class RuntimeClassGenerator extends TemplateClassGenerator {
                 .values()
                 .stream()
                 .mapToLong(builder -> builder.length())
-                .sum()*2;
+                .sum() * 2;
 
         if (size > Integer.MAX_VALUE) {
             size = Integer.MAX_VALUE;
@@ -295,16 +295,22 @@ public class RuntimeClassGenerator extends TemplateClassGenerator {
     }
 
     private StringBuilder getSubTemplateParameters(TemplateData templateData) {
-        return new StringBuilder("Writer ")
-                .append(getWriterVariableName())
-                .append(",")
-                .append(
-                        templateData.getVariables()
-                                .entrySet()
-                                .stream()
-                                .map(entry -> " " + entry.getValue() + " " + entry.getKey())
-                                .collect(Collectors.joining(","))
-                );
+        if (templateData.getVariables().size() > 0) {
+            return new StringBuilder("Writer ")
+                    .append(getWriterVariableName())
+                    .append(",")
+                    .append(
+                            templateData.getVariables()
+                                    .entrySet()
+                                    .stream()
+                                    .map(entry -> " " + entry.getValue() + " " + entry.getKey())
+                                    .collect(Collectors.joining(","))
+                    );
+        } else {
+            return new StringBuilder("Writer ")
+                    .append(getWriterVariableName());
+        }
+
     }
 
     private void appendClosingClass(StringBuilder classString) {

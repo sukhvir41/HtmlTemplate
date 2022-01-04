@@ -12,8 +12,7 @@ dependencies {
     implementation gradleApi()
     implementation project(":HtmlTemplate-Core")
     implementation 'org.apache.commons:commons-lang3:3.12.0'
-    implementation 'commons-io:commons-io:2.7'
-    testImplementation('junit:junit:4.13')
+    testImplementation('junit:junit:4.13.2')
 }
 
 gradlePlugin {

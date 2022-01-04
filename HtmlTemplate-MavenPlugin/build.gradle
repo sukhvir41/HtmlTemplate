@@ -1,0 +1,27 @@
+plugins {
+    id 'java'
+    id 'de.benediktritter.maven-plugin-development' version '0.3.1'
+}
+
+group = "com.github.sukhvir41"
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation "org.apache.maven:maven-plugin-api:3.8.4"
+    implementation 'org.apache.maven:maven-project:2.2.1'
+    implementation project(":HtmlTemplate-Core")
+    compileOnly("org.apache.maven.plugin-tools:maven-plugin-annotations:3.6.2")
+
+    testImplementation('junit:junit:4.13.2')
+}
+
+
+test {
+    useJUnitPlatform()
+}
+
+apply plugin: ProjectReleasePlugin
